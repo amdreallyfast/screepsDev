@@ -1,7 +1,6 @@
 
-
-var CreepRoutineGetEnergy = {
-    run: function(creep) {
+module.exports = {
+    run: function (creep) {
         if (!creep.memory.energyPickup) {
             // find something
             let droppedEnergy = creep.room.find(FIND_DROPPED_ENERGY);
@@ -27,7 +26,7 @@ var CreepRoutineGetEnergy = {
                             goToThis = container;
                         }
                     }
-                    
+
                     creep.memory.energyPickup = goToThis;
                     creep.memory.energyPickupType = "container";
                 }
@@ -38,7 +37,7 @@ var CreepRoutineGetEnergy = {
                 }
             }
         }
-        
+
         // go to the energy pickup
         let result = OK;
         if (creep.memory.energyPickupType === "dropped") {
@@ -51,8 +50,9 @@ var CreepRoutineGetEnergy = {
             console.log("CreepRoutineGetEnergy::run(...): " + creep.name + ": unknown energy pickup type '" + creep.memory.energyPickupType + "'");
             return;
         }
-        
+
         if (result === OK) {
+            // energy pickup and withdrawl happens in one tick, so move along if it was successful
             creep.memory.energyPickup = null;
             creep.memory.energyPickupType = null;
         }
@@ -64,5 +64,3 @@ var CreepRoutineGetEnergy = {
         }
     }
 }
-
-module.exports = CreepRoutineGetEnergy;

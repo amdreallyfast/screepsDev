@@ -1,11 +1,15 @@
 
-var routineHarvest = require("CreepRoutine.HarvestEnergy");
-var routineGetEnergy = require("CreepRoutine.GetEnergy");
+var routineHarvest = require("creepRoutine.harvestEnergy");
+var routineGetEnergy = require("creepRoutine.getEnergy");
+var routineRefill = require("creepRoutine.refill");
+var routineRepair = require("creepRoutine.repair");
+var routineBuild = require("creepRoutine.build");
+var routineUpgrade = require("creepRoutine.upgrade");
+
 var jobQueue = require("Jobs.WorkQueue");
-var routineUpgradeRoomController = require("CreepRoutine.Upgrade");
 
 // this is the high-level role control for all creeps
-var CreepRoutineWork {
+module.exports = {
     run: function(creep) {
         if (creep.memory.role == "miner") {
             routineHarvest.run(creep);
@@ -17,7 +21,7 @@ var CreepRoutineWork {
         let energyEmpty = (creep.energy === 0);
         let energyFull = (creep.energy === creep.energyCapacity);
         let working = creep.memory.working;
-        if (working && energyEmpty)
+        if (working && energyEmpty) {
             creep.say("⚡ need energy");
             creep.memory.working = false;
         }
@@ -32,17 +36,25 @@ var CreepRoutineWork {
         
         // get to work
         if (!creep.memory.job) {
-            jobQueue.assignJobTo(creep);
+            jobQueue.assignJobs(creep);
         }
         
-        if (!creep.memory.job) {
-            // still no work available; default to upgrading the room controller
-            routineUpgradeRoomController.run(creep);
+        if (creep.memory.refillEnergyJobId !== null) {
+            // energy refill takes presendence so that the spawn and extensions are ready to 
+            // build and so that the turrets are ready to shoot
+            routineRefill.run(creep);
         }
-        
-        // have a job
-        
+        else if (creep.memory.repairJobId !== null) {
+            // stop stuff from breaking down
+            routineRepair.run(creep);
+        }
+        else if (creep.memory.constructionJobId !== null) {
+            // roads, bypasses (gotta build bypasses), whatever
+            routineBuild.run(creep);
+        }
+        else {
+            // nothing else to do, so upgrade the controller
+            routineUpgrade.run(creep);
+        }
     }
 }
-
-module.exports = CreepRoutineWork;

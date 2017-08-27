@@ -1,40 +1,40 @@
 
-var creepBuildQueue = {}
+var creepBuildQueues = {}
 
 var SpawnBuildQueue = {
     submit: function(buildThis) {
-        if (!creepBuildQueue[spawn]) {
+        if (!creepBuildQueues[spawn]) {
             // must be a new spawn; make a build queue
-            creepBuildQueue[spawn] = [];
+            creepBuildQueues[spawn] = [];
         }
         
         // check if it already exists
-        for (var buildRequest in creepBuildQueue) {
+        for (var buildRequest in creepBuildQueues) {
             if (buildRequest === buildThis) {
                 return;
             }
         }
         
         // don't have this job, so make it happen
-        creepBuildQueue[spawn].push(buildThis);
+        creepBuildQueues[spawn].push(buildThis);
     },
     
     haveBuildJob: function(spawn) {
-        if (!creepBuildQueue[spawn]) {
+        if (!creepBuildQueues[spawn]) {
             // don't even have a build queue
             return false;
         }
         
-        return (creepBuildQueue[spawn].length > 0);
+        return (creepBuildQueues[spawn].length > 0);
     },
     
     requiredEnergyForNext: function(spawn) {
-        if (!creepBuildQueue[spawn]) {
+        if (!creepBuildQueues[spawn]) {
             // don't even have a build queue
             return 0;
         }
         
-        let buildRequest = creepBuildQueue[spawn];
+        let buildRequest = creepBuildQueues[spawn];
         let energyCost = 0;
         for (let part in buildRequest.body) {
             if (part === WORK) {
@@ -55,16 +55,16 @@ var SpawnBuildQueue = {
     },
     
     getNext: function(spawn) {
-        if (!creepBuildQueue[spawn]) {
+        if (!creepBuildQueues[spawn]) {
             // don't even have a build queue
             return null;
         }
-        else if (creepBuildQueue[spawn].length === 0) {
+        else if (creepBuildQueues[spawn].length === 0) {
             return null;
         }
         
         // array.pop() removes the last element, but I want a FIFO queue
-        return creepBuildQueue.shift();
+        return creepBuildQueues.shift();
     }
 }
 
