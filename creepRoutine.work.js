@@ -1,7 +1,7 @@
 
 var routineHarvest = require("creepRoutine.harvestEnergy");
 var routineGetEnergy = require("creepRoutine.getEnergy");
-var routineRefill = require("creepRoutine.refill");
+var routineRefill = require("creepRoutine.refillEnergy");
 var routineRepair = require("creepRoutine.repair");
 var routineBuild = require("creepRoutine.build");
 var routineUpgrade = require("creepRoutine.upgrade");
