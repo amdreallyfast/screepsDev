@@ -52,7 +52,6 @@ module.exports = {
         }
 
         if (result === OK) {
-            // energy pickup and withdrawl happens in one tick, so move along if it was successful
             creep.memory.energyPickup = null;
             creep.memory.energyPickupType = null;
         }

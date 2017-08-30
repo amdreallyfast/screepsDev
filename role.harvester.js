@@ -22,8 +22,8 @@ var roleHarvester = {
                 let spawn = Game.spawns['Spawn1'];
                 creep.moveTo(spawn);
             }
-            else if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            else if(creep.transfer(targets[1], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(targets[1], {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }
 	}

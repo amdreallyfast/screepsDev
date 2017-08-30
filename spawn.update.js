@@ -9,40 +9,31 @@ var NewName = function() {
     }
 }();
 
-module.exports = {
-    run: function(spawn) {
-        if (spawn.spawning !== null) {
-            // busy
-            return;
-        }
-    
-        if (!spawnBuildQueue.haveBuildJob(spawn)) {
-            // nothing to do
-            return;
-        }
-    
-        if (spawn.room.energyAvailable < spawnBuildQueue.requiredEnergyForNext(spawn)) {
-            // "need additional pylons"
-            return;
-        }
-    
-        // spawn is not building, there is a queued creep build request, and there is energy to build it
-        var next = spawnBuildQueue.getNext(spawn);
-        if (next.role === "miner") {
-            spawn.createCreep(next.body, NewName(), {
-                role: next.role, 
-                energySouceId: next.energySourceId,
-            });
-        }
-        else {
-            spawn.createCreep(next.body, NewName(), {
-                role: next.role,
-                refillEnergyJobId: null,
-                repairJobId: null,
-                constructionJobId: null
-            });
-        }
-
+var UpdateSpawn(spawn) {
+    if (spawn.spawning !== null) {
+        // busy
+        return;
     }
-
+    
+    if (!spawnBuildQueue.haveBuildJob(spawn)) {
+        // nothing to do
+        return;
+    }
+    
+    if (spawn.room.energyAvailable < spawnBuildQueue.requiredEnergyForNext(spawn)) {
+        // "need additional pylons"
+        return;
+    }
+    
+    // spawn is not building, there is a queued creep build request, and there is energy to build it
+    var next = spawnBuildQueue.getNext(spawn);
+    if (next.role === "miner") {
+        spawn.createCreep(next.body, NewName(), {role: next.role, energySouceId: next.energySourceId});
+    }
+    else {
+        spawn.createCreep(next.body, NewName(), {role: next.role});
+    }
+    
 }
+
+module.exports = UpdateSpawn;

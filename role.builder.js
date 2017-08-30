@@ -30,12 +30,12 @@ var roleBuilder = {
 	    }
 	    else {
 	        var sources = creep.room.find(FIND_SOURCES);
-	        var retVal = creep.harvest(sources[1]);
+	        var retVal = creep.harvest(sources[0]);
 	        if (retVal == OK) {
 	            doingSomething = true;
 	        }
             else if (retVal === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
+                creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
                 doingSomething = true;
             }
 	    }

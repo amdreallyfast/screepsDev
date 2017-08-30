@@ -1,4 +1,4 @@
-﻿/// <reference path="creepRoutine.build.js" />
+/// <reference path="creepRoutine.build.js" />
 /// <reference path="creepRoutine.getEnergy.js" />
 /// <reference path="creepRoutine.harvestEnergy.js" />
 /// <reference path="creepRoutine.upgrade.js" />
