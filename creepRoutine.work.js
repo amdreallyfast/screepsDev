@@ -34,6 +34,9 @@ module.exports = {
         }
         
         // get to work
+        // TODO: 
+        // - only get new job assignments after refilled
+        // - if currently running a job, do that until refill (that is, only switch jobs after a refill so that they don't try to run back across the whole map to help with refilling, thus wasting a lot of time)
         if (!creep.memory.job) {
             jobQueue.assignJobs(creep);
         }
