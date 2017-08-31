@@ -1,4 +1,6 @@
-﻿var roleHarvester = require('role.harvester');
+﻿let spawnBuildQueue = require("spawn.buildQueue");
+
+var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 
@@ -13,10 +15,20 @@ module.exports.loop = function () {
     // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
     var repairTargets = spawn.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
-            console.log("hits: " + structure.hits + ", max hits: " + structure.hitsMax);
             return (structure.hits < structure.hitsMax);
         }
     });
+
+    var energyRefillTargets = spawn.room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (
+                structure.structureType == STRUCTURE_EXTENSION ||
+                structure.structureType == STRUCTURE_SPAWN ||
+                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+        }
+    });
+
+    var buildTargets = spawn.room.find(FIND_CONSTRUCTION_SITES);
 
 
     for (var name in Game.creeps) {
@@ -37,7 +49,7 @@ module.exports.loop = function () {
         if (!creep.memory.working) {
             creep.say("📵");
             if (!creep.memory.energySourceId) {
-                creep.memory.energySourceId = energySource[energySource % creep.memory.number].id;
+                creep.memory.energySourceId = energySources[energySources.length % creep.memory.number].id;
             }
             let energySource = Game.getObjectById(creep.memory.energySourceId);
             if (creep.harvest(energySource) == ERR_NOT_IN_RANGE) {
@@ -52,23 +64,6 @@ module.exports.loop = function () {
             }
         }
         else {
-            console.log("number of repair targets: " + repairTargets.length);
-            //if (repairTargets.length > 0) {
-            //    creep.say("🔧");
-            //    if (creep.repair(repairTargets[0]) === ERR_NOT_IN_RANGE) {
-            //        creep.moveTo(repairTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
-            //    }
-            //    continue;
-            //}
-
-            var energyRefillTargets = creep.room.find(FIND_MY_STRUCTURES, {
-                filter: (structure) => {
-                    return (
-                        structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-                }
-            });
             if (energyRefillTargets.length > 0) {
                 creep.say("⚡");
                 if (creep.transfer(energyRefillTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
@@ -77,7 +72,14 @@ module.exports.loop = function () {
                 continue;
             }
 
-            var buildTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
+            if (repairTargets.length > 0) {
+                creep.say("🔧");
+                if (creep.repair(repairTargets[0]) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(repairTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+                }
+                continue;
+            }
+
             if (buildTargets.length > 0 && workersBuilding < 2) {
                 workersBuilding++;
                 creep.say("🔨");
@@ -117,12 +119,12 @@ module.exports.loop = function () {
     var maxWorkers = 6;
     for (let num = 0; num < maxWorkers; num++) {
         let needHarvester = !workerNumbers[num];
-        let haveEnergyToCreate = (spawn.room.energyAvailable >= 500);
+        let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
         //console.log("need harvester " + num + " ?: " + needHarvester);
         if (needHarvester && haveEnergyToCreate) {
             console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
             let newEnergySourceId = energySources[num % energySources.length].id;
-            spawn.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
+            spawn.createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
                 role: 'worker',
                 number: num,
                 energySourceId: newEnergySourceId

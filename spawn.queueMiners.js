@@ -1,6 +1,15 @@
 
 let spawnQueue = require("spawn.buildQueue");
+
+// TODO: change to Memory.
 let roomEnergySources = {}
+
+var NewName = function(role) {
+    var num = 0;
+    return function() {
+        return (role + (num++));
+    }
+}();
 
 module.exports = {
     run: function(spawn) {
@@ -57,10 +66,11 @@ module.exports = {
         if (createNewMiner) {
             let buildRequest = {
                 body: [WORK, WORK, WORK, WORK, WORK, MOVE],
+                name: NewName("miner"),
                 role: "miner",
                 energySourceId: newMinerEnergySourceId
             }
-            spawnQueue.submit(buildRequest);
+            spawnQueue.submit(buildRequest, spawn);
         }
     }
 }
