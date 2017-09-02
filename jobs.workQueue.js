@@ -90,15 +90,15 @@ module.exports = {
         // spawns and extensions and turrets
         needWork = (creep.memory.refillEnergyJobId === null || creep.memory.constructionJobId === undefined);
         haveWork = (roomJobs.refillEnergyQueue.length > 0);
-        if (!needWork) {
-            console.log(creep.name + ": already have construction job '" + creep.memory.refillEnergyJobId + "'");
-        }
-        else if (!haveWork) {
-            console.log(creep.name + ": no energy refill jobs available");
-        }
-        else {
-            console.log(creep.name + ": there are '" + roomJobs.refillEnergyQueue.length + "' refill jobs available; taking 1st available");
-        }
+        //if (!needWork) {
+        //    console.log(creep.name + ": already have construction job '" + creep.memory.refillEnergyJobId + "'");
+        //}
+        //else if (!haveWork) {
+        //    console.log(creep.name + ": no energy refill jobs available");
+        //}
+        //else {
+        //    console.log(creep.name + ": there are '" + roomJobs.refillEnergyQueue.length + "' refill jobs available; taking 1st available");
+        //}
         //if (needWork && haveWork) {
         //    creep.memory.refillEnergyJobId = roomJobs.refillEnergyQueue.shift();
         //}
