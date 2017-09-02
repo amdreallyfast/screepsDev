@@ -1,4 +1,6 @@
 ﻿let spawnBuildQueue = require("spawn.buildQueue");
+let spawnQueueMiners = require("spawn.queueMiners");
+let spawnQueueWorkers = require("spawn.queueWorkers");
 
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
@@ -95,22 +97,6 @@ module.exports.loop = function () {
                 creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
             }
         }
-
-        //if(creep.memory.role == 'harvester') {
-        //    harvesters[num] = true;
-        //    //creep.moveTo(spawn);
-        //    roleHarvester.run(creep);
-        //}
-        //if(creep.memory.role == 'upgrader') {
-        //    upgraders[num] = true;
-        //    creep.moveTo(spawn.room.controller);
-        //    //roleUpgrader.run(creep);
-        //}
-        //if(creep.memory.role == 'builder') {
-        //    builders[num] = true;
-        //    creep.moveTo(spawn.room.controller);
-        //    //roleBuilder.run(creep);
-        //}
     }
 
     var spawn = Game.spawns['Spawn1'];
@@ -133,29 +119,4 @@ module.exports.loop = function () {
         }
     }
 
-    //var maxUpgraders = 1;
-    //for (let num = 0; num < maxUpgraders; num++) {
-    //    let needUpgrader = !upgraders[num];
-    //    let haveEnergyToCreate = (spawn.energy === spawn.energyCapacity);
-    //    if (needUpgrader && haveEnergyToCreate) {
-    //        console.log("creating upgrader" + num);
-    //        spawn.createCreep([WORK, CARRY, MOVE], "upgrader" + num, {role: 'upgrader', number: num});
-    //        break;
-    //    }
-    //}
-
-    //var maxBuilders = 2;
-    //for (let num = 0; num < maxBuilders; num++) {
-    //    let needBuilder = !builders[num];
-    //    let haveEnergyToCreate = (spawn.energy === spawn.energyCapacity);
-    //    if (needBuilder && haveEnergyToCreate) {
-    //        console.log("creating builder" + num);
-    //        spawn.createCreep([WORK, CARRY, MOVE], "builder" + num, {role: 'builder', number: num});
-    //        break;
-    //    }
-    //}
-
-    if (spawn.room.energyAvailable >= 550) {
-        //console.log("can create uber miner");
-    }
 }
