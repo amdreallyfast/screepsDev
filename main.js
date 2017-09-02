@@ -106,29 +106,29 @@ module.exports.loop = function () {
     }
 
     var spawn = Game.spawns['Spawn1'];
-    //spawnQueueMiners.run(spawn.room);
-    //spawnQueueWorkers.run(spawn.room);
-    //spawnBuildQueue.run(spawn);
+    spawnQueueMiners.run(spawn.room);
+    spawnQueueWorkers.run(spawn.room);
+    spawnBuildQueue.run(spawn);
 
     
 
-    // refill the workers with any names that might have expired
-    var maxWorkers = 6;
-    for (let num = 0; num < maxWorkers; num++) {
-        let needHarvester = !workerNumbers[num];
-        let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
-        //console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
-        if (needHarvester && haveEnergyToCreate) {
-            console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
-            let newEnergySourceId = energySources[num % energySources.length].id;
-            spawn.createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
-                role: 'worker',
-                number: num,
-                energySourceId: newEnergySourceId
-            });
-            break;
-        }
-    }
+    //// refill the workers with any names that might have expired
+    //var maxWorkers = 6;
+    //for (let num = 0; num < maxWorkers; num++) {
+    //    let needHarvester = !workerNumbers[num];
+    //    let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
+    //    //console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
+    //    if (needHarvester && haveEnergyToCreate) {
+    //        console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
+    //        let newEnergySourceId = energySources[num % energySources.length].id;
+    //        spawn.createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
+    //            role: 'worker',
+    //            number: num,
+    //            energySourceId: newEnergySourceId
+    //        });
+    //        break;
+    //    }
+    //}
 
 
 

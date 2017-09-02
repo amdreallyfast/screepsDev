@@ -60,12 +60,12 @@ let parseForAdditionalArguments = function (buildRequest) {
 }
 
 let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
-    //console.log("size of build queue for room " + room.name + ": " + Memory.creepBuildQueues[room.name].length);
+    console.log("size of build queue for room " + room.name + ": " + Memory.creepBuildQueues[room.name].length);
 
     let haveDuplicate = false;
     Memory.creepBuildQueues[room.name].forEach(function (existingBuildRequest) {
         // for debugging
-        //console.log("existing/new role: '" + existingBuildRequest.role + "'/'" + newBuildRequest.role + "', existing/new name: '" + existingBuildRequest.name + "'/'" + newBuildRequest.name + "'");
+        console.log("existing/new role: '" + existingBuildRequest.role + "'/'" + newBuildRequest.role + "', existing/new name: '" + existingBuildRequest.name + "'/'" + newBuildRequest.name + "'");
 
         if (existingBuildRequest.role === newBuildRequest.role &&
             existingBuildRequest.name === newBuildRequest.name) {
@@ -83,7 +83,7 @@ module.exports = {
         ensureCreepBuildQueueExist(room);
 
         if (!haveBuildRequest(room)) {
-            console.log("no jobs for " + room.name);
+            console.log("no build jobs for " + room.name);
             return;
         }
         //console.log("have creep build request for room " + room.name);
@@ -108,6 +108,7 @@ module.exports = {
         ensureCreepBuildQueueExist(room);
 
         //Memory.creepBuildQueues[room.name].length = 0;
+        console.log("build request: " + buildThis.name);
         let result = checkForDuplicateBuildRequest(buildThis, room);
         if (result) {
             // duplicate creep build request
@@ -115,11 +116,12 @@ module.exports = {
             return false;
         }
         else {
-            Memory.creepBuildQueues[room.name].push(buildThis);
+            console.log("new creep build request: " + buildThis.name);
+            //Memory.creepBuildQueues[room.name].push(buildThis);
             //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
-            return true;
         }
 
         console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
+        return true;
     },
 }

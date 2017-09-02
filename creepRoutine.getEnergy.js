@@ -1,6 +1,10 @@
 ﻿
 module.exports = {
     run: function (creep) {
+        if (creep.spawning) {
+            return;
+        }
+
         var energySources = creep.room.find(FIND_SOURCES);
         creep.say("📵");
 
