@@ -109,12 +109,12 @@ module.exports = {
             console.log("not enough energy available for next creep in room " + room.name);
             return;
         }
-        //console.log("creating creep with in room " + room.name);
 
         // have build job and the required energy for it
         //Memory.currentlyBuilding[room.name]   
 
         let buildRequest = getNextBuildRequest(room);
+        console.log(spawn.name + " spawning creep '" + buildRequest.name + "' in room " + room.name);
         spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
     },
 

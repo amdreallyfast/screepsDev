@@ -11,14 +11,14 @@ var routineUpgrade = require("creepRoutine.upgrade");
 // TODO: rename to creep.doTheThing
 // this is the high-level role control for all creeps
 module.exports = {
-    run: function(creep) {
+    run: function (creep) {
         if (creep.memory.role == "miner") {
             routineHarvest.run(creep);
 
             // miners don't do any jobs
             return;
         }
-        
+
         let energyEmpty = (creep.carry.energy === 0);
         let energyFull = (creep.carry.energy === creep.carryCapacity);
         let working = creep.memory.working;
@@ -54,12 +54,13 @@ module.exports = {
         }
 
 
-        
+
         if (!creep.memory.working) {
             //console.log(creep.name + " getting energy");
             routineGetEnergy.run(creep);
         }
         else {
+            // refill takes priority
             if (!creep.memory.refillEnergyJobId) {
                 //console.log(creep.name + " delivering");
                 var energyRefillTargets = creep.room.find(FIND_STRUCTURES, {
@@ -76,15 +77,10 @@ module.exports = {
                     let smaller = (energyRefillTargets.length > num) ? num : energyRefillTargets.length;
                     smaller = (smaller <= 0) ? 1 : smaller;
 
-                    //// space out the delivery requests using a mod (%) operator so that there isn't a traffic jam with everyone delivering to one place at the same time
-                    //console.log(creep.name + " has number " + creep.memory.number + ", there are " + energyRefillTargets.length + " refill targets");
-                    //console.log("bigger % smaller = " + bigger + " % " + smaller + " = " + (bigger % smaller));
-                    //console.log(energyRefillTargets[bigger % smaller]);
+                    // space out the delivery requests using a mod (%) operator so that there isn't a traffic jam with everyone delivering to one place at the same time
                     creep.memory.refillEnergyJobId = energyRefillTargets[bigger % smaller].id;
-                    //creep.memory.refillEnergyJobId = energyRefillTargets[0].id;
                 }
             }
-
             if (creep.memory.number < 4 && creep.memory.refillEnergyJobId !== null) {   // fudging this: worker creeps 0-3 will be on refill duty (until I get the "refill jobs" running
                 creep.say("⚡");
                 let delivery = Game.getObjectById(creep.memory.refillEnergyJobId);
@@ -98,10 +94,52 @@ module.exports = {
                 else {
                     //??throw a fit??
                 }
+                return;
             }
 
-                //// very useful
-                //// http://unicode.org/emoji/charts/emoji-style.txt
+            // repair things
+            if (!creep.memory.repairJobId) {
+                // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
+                var repairTargets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.hits < structure.hitsMax);
+                    }
+                });
+                if (repairTargets.length > 0) {
+                    let num = creep.memory.number;
+                    let bigger = (repairTargets.length > num) ? repairTargets.length : num;
+                    let smaller = (repairTargets.length > num) ? num : repairTargets.length;
+                    smaller = (smaller <= 0) ? 1 : smaller;
+                    creep.memory.repairJobId = repairTargets[bigger % smaller].id;
+                }
+            }
+            if (creep.memory.number < 4 && creep.memory.repairJobId !== null) {
+                creep.say("🔧");
+                let structure = Game.getObjectById(creep.memory.repairJobId);
+                if (structure.hits < structure.maxHits) {
+                    let result = creep.repair(structure);
+                    if (result === OK) {
+                        // 
+                    }
+                    else if (result === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(structure, { visualizePathStyle: { stroke: "#ffffff" } });
+                    }
+                    else {
+                        //??throw a fit??
+                    }
+                    return;
+                }
+            }
+
+            // no refill jobs and no repair jobs; carry on
+            routineUpgrade.run(creep);
+            if (creep.memory.priorityJob === "upgrade") {
+                routineUpgrade.run(creep);
+            }
+
+
+            //// very useful
+            //// http://unicode.org/emoji/charts/emoji-style.txt
             //if (creep.memory.priorityJob === "refill") {
             //    routineRefill.run(creep);
             //}
@@ -111,14 +149,14 @@ module.exports = {
             //else if (creep.memory.priorityJob === "construction") {
             //    routineBuild.run(creep);
             //}
-            else if (creep.memory.priorityJob === "upgrade") {
-                routineUpgrade.run(creep);
-            }
-            else {
-                // uh oh; problem
-                creep.say(creep.name + " ❔");
-                creep.memory.priorityJob = "upgrade";
-            }
+            //else if (creep.memory.priorityJob === "upgrade") {
+            //    routineUpgrade.run(creep);
+            //}
+            //else {
+            //    // uh oh; problem
+            //    creep.say(creep.name + " ❔");
+            //    creep.memory.priorityJob = "upgrade";
+            //}
         }
     }
 }

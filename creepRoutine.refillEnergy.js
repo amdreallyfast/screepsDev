@@ -8,8 +8,15 @@ module.exports = {
         }
 
         let structure = Game.getObjectById(creep.memory.refillEnergyJobId);
-        if (structure.energy === structure.energyCapacity) {
+        if (!structure) {
+            // huh; structure doesn't exist anymore; decayed? destroyed?
             creep.memory.refillEnergyJobId = null;
+            return;
+        }
+        else if (structure.energy === structure.energyCapacity) {
+            // already topped off
+            creep.memory.refillEnergyJobId = null;
+            return;
         }
 
         creep.say("⚡");

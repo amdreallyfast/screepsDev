@@ -1,8 +1,9 @@
 ﻿
 module.exports = {
     run: function (creep) {
-        if (!creep.memory.constructionJobId) {
-            // nothing to do
+        let notMyJob = (creep.memory.role !== "worker");
+        let noJob = (!creep.memory.constructionJobId);
+        if (notMyJob || noJob) {
             return;
         }
 

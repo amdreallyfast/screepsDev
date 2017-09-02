@@ -109,33 +109,12 @@ module.exports.loop = function () {
     if (!Memory.spawnUpdateTimer) {
         Memory.spawnUpdateTimer = 0;
     }
+
+    // 50 ticks is long enough to build all my creeps right now (9-2-2017)
     if (Memory.spawnUpdateTimer++ > 50) {
         Memory.spawnUpdateTimer = 0;
         spawnQueueMiners.run(spawn.room);
         spawnQueueWorkers.run(spawn.room);
         spawnBuildQueue.run(spawn);
     }
-
-    
-
-    //// refill the workers with any names that might have expired
-    //var maxWorkers = 6;
-    //for (let num = 0; num < maxWorkers; num++) {
-    //    let needHarvester = !workerNumbers[num];
-    //    let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
-    //    //console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
-    //    if (needHarvester && haveEnergyToCreate) {
-    //        console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
-    //        let newEnergySourceId = energySources[num % energySources.length].id;
-    //        spawn.createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
-    //            role: 'worker',
-    //            number: num,
-    //            energySourceId: newEnergySourceId
-    //        });
-    //        break;
-    //    }
-    //}
-
-
-
 }
