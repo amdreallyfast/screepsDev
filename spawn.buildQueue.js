@@ -83,7 +83,7 @@ module.exports = {
         ensureCreepBuildQueueExist(room);
 
         if (!haveBuildRequest(room)) {
-            console.log("no build jobs for " + room.name);
+            //console.log("no build jobs for " + room.name);
             return;
         }
         //console.log("have creep build request for room " + room.name);
@@ -117,7 +117,7 @@ module.exports = {
         }
         else {
             console.log("new creep build request: " + buildThis.name);
-            //Memory.creepBuildQueues[room.name].push(buildThis);
+            Memory.creepBuildQueues[room.name].push(buildThis);
             //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
         }
 

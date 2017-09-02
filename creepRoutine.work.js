@@ -74,10 +74,13 @@ module.exports = {
                     let num = creep.memory.number;
                     let bigger = (energyRefillTargets.length > num) ? energyRefillTargets.length : num;
                     let smaller = (energyRefillTargets.length > num) ? num : energyRefillTargets.length;
+                    smaller = (smaller <= 0) ? 1 : smaller;
 
                     // space out the delivery requests using a mod (%) operator so that there isn't a traffic jam with everyone delivering to one place at the same time
+                    console.log(creep.name + " has number " + creep.memory.number + ", there are " + energyRefillTargets.length + " refill targets");
+                    console.log("bigger % smaller = " + bigger + " % " + smaller + " = " + (bigger % smaller));
                     console.log(energyRefillTargets[bigger % smaller]);
-                    //creep.memory.refillEnergyJobId = energyRefillTargets[bigger % smaller].id;
+                    creep.memory.refillEnergyJobId = energyRefillTargets[bigger % smaller].id;
                     //creep.memory.refillEnergyJobId = energyRefillTargets[0].id;
                 }
             }
