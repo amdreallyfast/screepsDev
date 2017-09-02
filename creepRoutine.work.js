@@ -1,10 +1,14 @@
 
+let creepJobQueue = require("jobs.workQueue");
+
 var routineHarvest = require("creepRoutine.harvestEnergy");
 var routineGetEnergy = require("creepRoutine.getEnergy");
 var routineRefill = require("creepRoutine.refillEnergy");
 var routineRepair = require("creepRoutine.repair");
 var routineBuild = require("creepRoutine.build");
 var routineUpgrade = require("creepRoutine.upgrade");
+
+
 
 //var jobQueue = require("Jobs.WorkQueue");
 
@@ -33,7 +37,7 @@ module.exports = {
             // priority job popped up.  Creeps are not fast, so have them work until they run 
             // out of energy, get more energy, THEN look for more work.
             creep.memory.working = true;
-            //jobQueue.assignJobs(creep);
+            creepJobQueue.assignJobs(creep);
             //if (!creep.memory.refillEnergyJobId) {
             //    // energy refill takes presendence so that the spawn and extensions are ready to 
             //    // build and so that the turrets are ready to shoot

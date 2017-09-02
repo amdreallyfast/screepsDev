@@ -3,9 +3,9 @@ let spawnQueueMiners = require("spawn.queueMiners");
 let spawnQueueWorkers = require("spawn.queueWorkers");
 let creepWorkRoutine = require("creepRoutine.work");
 
-var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
+//var roleHarvester = require('role.harvester');
+//var roleUpgrader = require('role.upgrader');
+//var roleBuilder = require('role.builder');
 
 module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1'];

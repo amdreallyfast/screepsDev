@@ -1,12 +1,72 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('Jobs.Harvesting');
- * mod.thing == 'a thing'; // true
- */
+
+let creepJobQueue = require("jobs.workQueue");
 
 module.exports = {
+    run: function (room) {
+        var energyRefillTargets = room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                // not counting containers or storage structures; those are meant to not be easily filled
+                let canStoreEnergy =
+                    structure.structureType == STRUCTURE_EXTENSION ||
+                    structure.structureType == STRUCTURE_SPAWN ||
+                    structure.structureType == STRUCTURE_TOWER;
+                let needsEnergy = (structure.energy < structure.energyCapacity);
 
+                return (canStoreEnergy && needsEnergy);
+            }
+        });
+
+        for (let index in energyRefillTargets) {
+            let structure = energyRefillTargets[index];
+            if (structure.structureType === STRUCTURE_EXTENSION) {
+                // extensions are small and only store 50 energy; 1 worker is more than enough
+                creepJobQueue.submitRefillEnergyJob(structure);
+            }
+            else if (structure.structureType === STRUCTURE_SPAWN) {
+                // spawns can hold 300
+                let lessThanHalfEnergy = (structure.energy < (structure.energyCapacity * 0.5));
+                if (lessThanHalfEnergy) {
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                }
+                else {
+                    // just needs to be topped off
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                }
+            }
+            else if (structure.structureType === STRUCTURE_TOWER) {
+                // towers can store a whopping 1000 energy, so parse out how much energy it and react accordingly
+                let halfEnergy = (structure.energyCapacity * 0.50);
+                let threeQuarterEnergy = (structure.energyCapacity * 0.75);
+                if (structure.energy < halfEnergy) {
+                    // get the band together
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                }
+                else if (structure.energy < threeQuarterEnergy) {
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                }
+                else if (structure.energy < structure.energyCapacity) {
+                    // >75%, so a few guys will work
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueue.submitRefillEnergyJob(structure);
+                }
+            }
+        }
+    }
 };

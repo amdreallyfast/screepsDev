@@ -21,7 +21,7 @@ module.exports = {
 
         creep.say("⚡");
         if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(structure);
+            creep.moveTo(structure, { visualizePathStyle: { stroke: "#ffffff" } });
         }
     }
 }
