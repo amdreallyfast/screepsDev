@@ -6,6 +6,13 @@ let ensureCreepBuildQueueExist = function (room) {
     if (!Memory.creepBuildQueues[room.name]) {
         Memory.creepBuildQueues[room.name] = [];
     }
+
+    if (!Memory.currentlyBuilding) {
+        Memory.currentlyBuilding = {};
+    }
+    if (!Memory.currentlyBuilding[room.name]) {
+        Memory.currentlyBuilding[room.name] = [];
+    }
 };
 
 let haveBuildRequest = function (room) {
@@ -62,6 +69,12 @@ let parseForAdditionalArguments = function (buildRequest) {
 let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
     console.log("size of build queue for room " + room.name + ": " + Memory.creepBuildQueues[room.name].length);
 
+
+
+    //??how do I check if a creep that is being built is finished??
+
+
+
     let haveDuplicate = false;
     Memory.creepBuildQueues[room.name].forEach(function (existingBuildRequest) {
         // for debugging
@@ -82,6 +95,10 @@ module.exports = {
         let room = spawn.room;
         ensureCreepBuildQueueExist(room);
 
+        if (spawn.spawning) {
+            return;
+        }
+
         if (!haveBuildRequest(room)) {
             //console.log("no build jobs for " + room.name);
             return;
@@ -95,6 +112,8 @@ module.exports = {
         //console.log("creating creep with in room " + room.name);
 
         // have build job and the required energy for it
+        //Memory.currentlyBuilding[room.name]   
+
         let buildRequest = getNextBuildRequest(room);
         spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
     },
@@ -120,6 +139,7 @@ module.exports = {
             Memory.creepBuildQueues[room.name].push(buildThis);
             //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
         }
+
 
         console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
         return true;

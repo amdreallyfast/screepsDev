@@ -106,9 +106,9 @@ module.exports.loop = function () {
     }
 
     var spawn = Game.spawns['Spawn1'];
-    //spawnQueueMiners.run(spawn.room);
-    //spawnQueueWorkers.run(spawn.room);
-    //spawnBuildQueue.run(spawn);
+    spawnQueueMiners.run(spawn.room);
+    spawnQueueWorkers.run(spawn.room);
+    spawnBuildQueue.run(spawn);
 
     
 
