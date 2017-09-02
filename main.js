@@ -106,9 +106,15 @@ module.exports.loop = function () {
     }
 
     var spawn = Game.spawns['Spawn1'];
-    spawnQueueMiners.run(spawn.room);
-    spawnQueueWorkers.run(spawn.room);
-    spawnBuildQueue.run(spawn);
+    if (!Memory.spawnUpdateTimer) {
+        Memory.spawnUpdateTimer = 0;
+    }
+    if (Memory.spawnUpdateTimer++ > 50) {
+        Memory.spawnUpdateTimer = 0;
+        spawnQueueMiners.run(spawn.room);
+        spawnQueueWorkers.run(spawn.room);
+        spawnBuildQueue.run(spawn);
+    }
 
     
 

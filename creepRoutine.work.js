@@ -85,7 +85,7 @@ module.exports = {
                 }
             }
 
-            if (creep.memory.refillEnergyJobId !== null) {
+            if (creep.memory.number < 4 && creep.memory.refillEnergyJobId !== null) {   // fudging this: worker creeps 0-3 will be on refill duty (until I get the "refill jobs" running
                 creep.say("⚡");
                 let delivery = Game.getObjectById(creep.memory.refillEnergyJobId);
                 let result = creep.transfer(delivery, RESOURCE_ENERGY);

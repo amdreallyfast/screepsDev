@@ -28,12 +28,12 @@ module.exports = {
         }
 
         // TODO: ??change the number dynamically somehow? calculate per room based on available resources??
-        let maxWorkersPerRoom = 7;
+        let maxWorkersPerRoom = 15;
         for (let num = 0; num < maxWorkersPerRoom; num++) {
             if (!workerNumbers[num]) {
                 let newRole = "worker";
                 let buildRequest = {
-                    body: [WORK, WORK, CARRY, MOVE, MOVE, MOVE],
+                    body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
                     name: newRole + num,
                     role: newRole,
                     number: num,

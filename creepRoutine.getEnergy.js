@@ -25,7 +25,7 @@ module.exports = {
         //console.log(container.structureType);
         if (!creep.memory.energyPickupId) {
             // find something
-            console.log(creep.name + ": finding energy pickup");
+            //console.log(creep.name + ": finding energy pickup");
             let droppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
             if (droppedEnergy) {
                 //console.log(creep.name + ": found energy drop");
@@ -75,56 +75,88 @@ module.exports = {
                 creep.memory.energyPickup = null;
                 creep.memory.energyPickupId = null;
                 creep.memory.energyPickupType = null;
+                return;
             }
         }
 
 
-        //console.log(creep.name + " hi there");
+        ////console.log(creep.name + " hi there");
+        //if (creep.memory.energyPickupType === "dropped") {
+        //    let energyDrop = Game.getObjectById(creep.memory.energyPickupId);
+        //    //console.log(creep.name + ": energy drop '" + energyDrop.resourceType + "'");
+        //    if (energyDrop) {
+        //        let result = creep.pickup(energyDrop);
+        //        if (result === OK) {
+        //            creep.memory.energyPickupId = null;
+        //            creep.memory.energyPickupType = null;
+        //        }
+        //        else if (result === ERR_NOT_IN_RANGE) {
+        //            result = creep.moveTo(energyDrop, { vizualizePathStyle: { stroke: "#ffffff" } });
+        //        }
+        //        else {
+        //            console.log("CreepRoutineGetEnergy::run(...): " + creep.name + " err '" + result + "'");
+        //        }
+        //    }
+        //}
+        //else if (creep.memory.energyPickupType === "container") {
+        //    let container = Game.getObjectById(creep.memory.energyPickupId);
+        //    //console.log(creep.name + ": container has '" + container.store[RESOURCE_ENERGY] + "' energy in it");
+        //    if (container) {
+        //        let result = creep.withdraw(container, RESOURCE_ENERGY);
+        //        if (result === OK) {
+        //            creep.memory.energyPickupId = null;
+        //            creep.memory.energyPickupType = null;
+        //        }
+        //        else if (result === ERR_NOT_IN_RANGE) {
+        //            result = creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
+        //        }
+        //        else {
+        //            console.log("CreepRoutineGetEnergy::run(...): " + creep.name + " err '" + result + "'");
+        //        }
+        //    }
+        //}
+        //else {
+        //    console.log("hi there");
+        //    let obj = Game.getObjectById(creep.memory.energyPickupId);
+        //    if (!obj) {
+        //        console.log(creep.name + ": bad energy pickup object");
+        //    }
+        //    else {
+        //        console.log(obj.pos);
+        //    }
+        //}
+
+
+
+
+        let result = OK;
+        let thing = null;
         if (creep.memory.energyPickupType === "dropped") {
-            let energyDrop = Game.getObjectById(creep.memory.energyPickupId);
-            //console.log(creep.name + ": energy drop '" + energyDrop.resourceType + "'");
-            if (energyDrop) {
-                let result = creep.pickup(energyDrop);
-                if (result === OK) {
-                    creep.memory.energyPickupId = null;
-                    creep.memory.energyPickupType = null;
-                }
-                else if (result === ERR_NOT_IN_RANGE) {
-                    result = creep.moveTo(energyDrop, { vizualizePathStyle: { stroke: "#ffffff" } });
-                }
-                else {
-                    console.log("CreepRoutineGetEnergy::run(...): " + creep.name + " err '" + result + "'");
-                }
-            }
+            thing = Game.getObjectById(creep.memory.energyPickupId);
+            result = creep.pickup(thing);
         }
         else if (creep.memory.energyPickupType === "container") {
-            let container = Game.getObjectById(creep.memory.energyPickupId);
-            //console.log(creep.name + ": container has '" + container.store[RESOURCE_ENERGY] + "' energy in it");
-            if (container) {
-                let result = creep.withdraw(container, RESOURCE_ENERGY);
-                if (result === OK) {
-                    creep.memory.energyPickupId = null;
-                    creep.memory.energyPickupType = null;
-                }
-                else if (result === ERR_NOT_IN_RANGE) {
-                    result = creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
-                }
-                else {
-                    console.log("CreepRoutineGetEnergy::run(...): " + creep.name + " err '" + result + "'");
-                }
-            }
+            thing = Game.getObjectById(creep.memory.energyPickupId);
+            result = creep.withdraw(container, RESOURCE_ENERGY);
         }
         else {
-            console.log("hi there");
-            let obj = Game.getObjectById(creep.memory.energyPickupId);
-            if (!obj) {
-                console.log(creep.name + ": bad energy pickup object");
-            }
-            else {
-                console.log(obj.pos);
-            }
-
+            creep.say(creep.name + " ❔");
         }
+
+        if (result === OK) {
+            creep.memory.energyPickupId = null;
+            creep.memory.energyPickupType = null;
+        }
+        else if (result === ERR_NOT_IN_RANGE) {
+            result = creep.moveTo(thing, { visualizePathStyle: { stroke: "#ffffff" } });
+        }
+        else {
+            console.log("creepRoutine.getEnergy::run(...): " + creep.name + " err '" + result + "'");
+        }
+
+
+
+
         //}
         //else {
         //    if (!creep.memory.energySourceId) {
