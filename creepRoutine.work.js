@@ -72,8 +72,15 @@ module.exports = {
 
             if (energyRefillTargets.length > 0) {
                 creep.say("⚡");
-                if (creep.transfer(energyRefillTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(energyRefillTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+                let num = creep.memory.number;
+                let bigger = (energyRefillTargets.length > num) ? energyRefillTargets.length : num;
+                let smaller = (energyRefillTargets.length > num) ? num : energyRefillTargets.length;
+
+                // space out the delivery requests so that there isn't a traffic jam with everyone delivering to one place at the same time
+                //let delivery = energyRefillTargets[energyRefillTargets.length % creep.memory.number];
+                let delivery = energyRefillTargets[bigger % smaller];
+                if (creep.transfer(delivery, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(delivery, { visualizePathStyle: { stroke: "#ffffff" } });
                 }
             }
 

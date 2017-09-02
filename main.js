@@ -117,7 +117,7 @@ module.exports.loop = function () {
     for (let num = 0; num < maxWorkers; num++) {
         let needHarvester = !workerNumbers[num];
         let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
-        console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
+        //console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
         if (needHarvester && haveEnergyToCreate) {
             console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
             let newEnergySourceId = energySources[num % energySources.length].id;

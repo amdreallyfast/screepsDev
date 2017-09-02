@@ -8,7 +8,7 @@ module.exports = {
 
         //creep.moveTo(RoomPosition(7, 42, creep.room.name));
         //creep.moveTo(Game.spawns['Spawn1']);
-        return;
+        //return;
 
         // if miner is full, dump at nearest container (hopefully right next to it)
         let dropIt = false;
