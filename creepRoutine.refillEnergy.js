@@ -1,7 +1,9 @@
 ﻿
 module.exports = {
     run: function (creep) {
-        if (!creep.memory.refillEnergyJobId) {
+        let notMyJob = (creep.memory.role !== "worker");
+        let noJob = (!creep.memory.refillEnergyJobId);
+        if (notMyJob || noJob) {
             return;
         }
 
@@ -10,6 +12,7 @@ module.exports = {
             creep.memory.refillEnergyJobId = null;
         }
 
+        creep.say("⚡");
         if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(structure);
         }

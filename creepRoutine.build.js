@@ -1,4 +1,4 @@
-
+﻿
 module.exports = {
     run: function (creep) {
         if (!creep.memory.constructionJobId) {
@@ -19,6 +19,7 @@ module.exports = {
             return;
         }
 
+        creep.say("🔨");
         if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
             creep.moveTo(constructionSite);
         }

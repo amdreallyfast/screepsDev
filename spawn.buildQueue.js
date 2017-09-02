@@ -1,16 +1,19 @@
 
-let ensureCreepBuildQueueExist = function(spawnId) {
-    if (!Memory.creepBuildQueues[spawnId]) {
-        Memory.creepBuildQueues[spawnId] = [];
+let ensureCreepBuildQueueExist = function (room) {
+    if (!Memory.creepBuildQueues) {
+        Memory.creepBuildQueues = {};
+    }
+    if (!Memory.creepBuildQueues[room.name]) {
+        Memory.creepBuildQueues[room.name] = [];
     }
 };
 
-let haveBuildRequest = function(spawnId) {
-    return (Memory.creepBuildQueues[spawnId].length > 0);
+let haveBuildRequest = function (room) {
+    return (Memory.creepBuildQueues[room.name].length > 0);
 };
 
-let requiredEnergyForNext = function (spawnId) {
-    let buildQueue = Memory.creepBuildQueues[spawn.id];
+let requiredEnergyForNext = function (room) {
+    let buildQueue = Memory.creepBuildQueues[room.name];
     if (buildQueue.length === 0) {
         return 0;
     }
@@ -35,8 +38,8 @@ let requiredEnergyForNext = function (spawnId) {
     return energyCost;
 };
 
-let getNextBuildRequest = function(spawnId) {
-    let buildQueue = Memory.creepBuildQueues[spawn.id];
+let getNextBuildRequest = function (room) {
+    let buildQueue = Memory.creepBuildQueues[room.name];
     if (buildQueue.length === 0) {
         return 0;
     }
@@ -45,7 +48,7 @@ let getNextBuildRequest = function(spawnId) {
     return buildQueue.shift();
 }
 
-let parseForAdditionalArguments = function(buildRequest) {
+let parseForAdditionalArguments = function (buildRequest) {
     let optionalArguments = {};
     for (let key in buildRequest) {
         if (key === "body" || key === "name") {
@@ -56,27 +59,43 @@ let parseForAdditionalArguments = function(buildRequest) {
     return optionalArguments;
 }
 
+let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
+    //console.log("size of build queue for room " + room.name + ": " + Memory.creepBuildQueues[room.name].length);
+
+    let haveDuplicate = false;
+    Memory.creepBuildQueues[room.name].forEach(function (existingBuildRequest) {
+        // for debugging
+        //console.log("existing/new role: '" + existingBuildRequest.role + "'/'" + newBuildRequest.role + "', existing/new name: '" + existingBuildRequest.name + "'/'" + newBuildRequest.name + "'");
+
+        if (existingBuildRequest.role === newBuildRequest.role &&
+            existingBuildRequest.name === newBuildRequest.name) {
+            haveDuplicate = true;
+        }
+    });
+
+    return haveDuplicate;
+}
+
+// TODO: rename to room.creepPopulation.buildQueue
 module.exports = {
-    run: function(spawn) {
-        if (!Memory.creepBuildQueues) {
-            Memory.creepBuildQueues = {};
-        }
-        ensureCreepBuildQueueExist(spawn.id);
+    run: function (spawn) {
+        let room = spawn.room;
+        ensureCreepBuildQueueExist(room);
 
-        if (!haveBuildRequest(spawn.id)) {
-            console.log("no jobs for " + spawn);
+        if (!haveBuildRequest(room)) {
+            console.log("no jobs for " + room.name);
             return;
         }
-        console.log("have creep build request for spawn " + spawn);
+        //console.log("have creep build request for room " + room.name);
 
-        if (spawn.room.energyAvailable < requiredEnergyForNext(spawn.id)) {
-            console.log("not enough energy available for next energy job for spawn " + spawn);
+        if (room.energyAvailable < requiredEnergyForNext(room)) {
+            console.log("not enough energy available for next creep in room " + room.name);
             return;
         }
-        console.log("creating creep with spawn " + spawn);
+        //console.log("creating creep with in room " + room.name);
 
         // have build job and the required energy for it
-        let buildRequest = getNextBuildRequest(spawn.id);
+        let buildRequest = getNextBuildRequest(room);
         spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
     },
 
@@ -85,19 +104,22 @@ module.exports = {
     // - role: "..."
     // - name: "..."
     // - (additional arguments depend on the role)
-    submit: function(buildThis, withThisSpawn) {
-        ensureCreepBuildQueueExist(withThisSpawn.id);
+    submit: function (buildThis, room) {
+        ensureCreepBuildQueueExist(room);
 
-        // ensure that it 
-        Memory.creepBuildQueues[withThisSpawn.id].forEach(function(existingBuildRequest) {
-            if (existingBuildRequest.role === buildThis.role &&
-                existingBuildRequest.name === buildThis.name) {
+        //Memory.creepBuildQueues[room.name].length = 0;
+        let result = checkForDuplicateBuildRequest(buildThis, room);
+        if (result) {
+            // duplicate creep build request
+            //console.log("duplicate creep build request: " + buildThis.name);
+            return false;
+        }
+        else {
+            Memory.creepBuildQueues[room.name].push(buildThis);
+            //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
+            return true;
+        }
 
-                // duplicate creep build request
-                return;
-            }
-        });
-
-        Memory.creepBuildQueues[withThisSpawn.id].push(buildThis);
+        console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
     },
 }

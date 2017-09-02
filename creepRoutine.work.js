@@ -6,8 +6,9 @@ var routineRepair = require("creepRoutine.repair");
 var routineBuild = require("creepRoutine.build");
 var routineUpgrade = require("creepRoutine.upgrade");
 
-var jobQueue = require("Jobs.WorkQueue");
+//var jobQueue = require("Jobs.WorkQueue");
 
+// TODO: rename to creep.doTheThing
 // this is the high-level role control for all creeps
 module.exports = {
     run: function(creep) {
@@ -19,8 +20,9 @@ module.exports = {
         }
         
         let energyEmpty = (creep.carry.energy === 0);
-        let energyFull = (creep.carry.energy === creep.energyCapacity);
+        let energyFull = (creep.carry.energy === creep.carryCapacity);
         let working = creep.memory.working;
+        //console.log(creep.name + ": working? " + working + ", empty? " + energyEmpty + ", full? " + energyFull);
         if (working && energyEmpty) {
             creep.memory.working = false;
         }
@@ -31,51 +33,68 @@ module.exports = {
             // priority job popped up.  Creeps are not fast, so have them work until they run 
             // out of energy, get more energy, THEN look for more work.
             creep.memory.working = true;
-            jobQueue.assignJobs(creep);
-            if (!creep.memory.refillEnergyJobId) {
-                // energy refill takes presendence so that the spawn and extensions are ready to 
-                // build and so that the turrets are ready to shoot
-                creep.memory.priorityJob = "refill";
-            }
-            else if (!creep.memory.repairJobId) {
-                // stop stuff from breaking down
-                creep.memory.priorityJob = "repair";
-            }
-            else if (!creep.memory.constructionJobId) {
-                // roads, bypasses (gotta build bypasses), whatever
-                creep.memory.priorityJob = "construction";
-            }
-            else {
-                // nothing else to do, so upgrade the controller
-                creep.memory.priorityJob = "upgrade";
-            }
+            //jobQueue.assignJobs(creep);
+            //if (!creep.memory.refillEnergyJobId) {
+            //    // energy refill takes presendence so that the spawn and extensions are ready to 
+            //    // build and so that the turrets are ready to shoot
+            //    creep.memory.priorityJob = "refill";
+            //}
+            //else if (!creep.memory.repairJobId) {
+            //    // stop stuff from breaking down
+            //    creep.memory.priorityJob = "repair";
+            //}
+            //else if (!creep.memory.constructionJobId) {
+            //    // roads, bypasses (gotta build bypasses), whatever
+            //    creep.memory.priorityJob = "construction";
+            //}
+            //else {
+            //    // nothing else to do, so upgrade the controller
+            //    creep.memory.priorityJob = "upgrade";
+            //}
         }
+
+
         
         if (!creep.memory.working) {
+            //console.log(creep.name + " getting energy");
             routineGetEnergy.run(creep);
         }
         else {
-            // very useful
-            // http://unicode.org/emoji/charts/emoji-style.txt
-            if (creep.memory.priorityJob === "refill") {
+            //console.log(creep.name + " delivering");
+            var energyRefillTargets = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (
+                        structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_SPAWN ||
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                }
+            });
+
+            if (energyRefillTargets.length > 0) {
                 creep.say("⚡");
-                routineRefill.run(creep);
+                if (creep.transfer(energyRefillTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(energyRefillTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+                }
             }
-            else if (creep.memory.priorityJob === "repair") {
-                creep.say("🔧");
-                routineRepair.run(creep);
-            }
-            else if (creep.memory.priorityJob === "construction") {
-                creep.say("🔨");
-                routineBuild.run(creep);
-            }
+
+            //// very useful
+            //// http://unicode.org/emoji/charts/emoji-style.txt
+            //if (creep.memory.priorityJob === "refill") {
+            //    routineRefill.run(creep);
+            //}
+            //else if (creep.memory.priorityJob === "repair") {
+            //    routineRepair.run(creep);
+            //}
+            //else if (creep.memory.priorityJob === "construction") {
+            //    routineBuild.run(creep);
+            //}
             else if (creep.memory.priorityJob === "upgrade") {
-                creep.say("⚙️");
                 routineUpgrade.run(creep);
             }
             else {
                 // uh oh; problem
-                creep.say("❔");
+                creep.say(creep.name + " ❔");
+                creep.memory.priorityJob = "upgrade";
             }
         }
     }

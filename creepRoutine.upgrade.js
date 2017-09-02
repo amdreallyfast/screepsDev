@@ -1,12 +1,14 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('CreepRoutine.Upgrade');
- * mod.thing == 'a thing'; // true
- */
-
+﻿
 module.exports = {
+    run: function (creep) {
+        if (!creep.memory.role === "worker") {
+            return;
+        }
 
-};
+        // nothing else to do; upgrade controller
+        creep.say("⚙️");
+        if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
+        }
+    }
+}

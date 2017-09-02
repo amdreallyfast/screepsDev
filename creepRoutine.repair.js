@@ -10,6 +10,7 @@ module.exports = {
             creep.memory.repairJobId = null;
         }
 
+        creep.say("🔧");
         if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
             creep.moveTo(structure);
         }

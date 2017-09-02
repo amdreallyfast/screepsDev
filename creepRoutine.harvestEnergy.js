@@ -1,9 +1,14 @@
 
+// TODO: rename to creep.routine.harvestEnergy
 module.exports = {
     run: function (creep) {
         if (creep.memory.role !== "miner") {
             return;
         }
+
+        //creep.moveTo(RoomPosition(7, 42, creep.room.name));
+        //creep.moveTo(Game.spawns['Spawn1']);
+        return;
 
         // if miner is full, dump at nearest container (hopefully right next to it)
         let dropIt = false;
@@ -59,7 +64,11 @@ module.exports = {
             }
             else if (result === ERR_NOT_IN_RANGE) {
                 creep.say('📵');
-                creep.moveTo(source, { visualizePathStyle: { stroke: "aaaaaa" } });
+                creep.moveTo(source, { visualizePathStyle: { stroke: "#ffffff" } });
+            }
+            else {
+                // uh oh; problem
+                creep.say(creep.name + " ❔");
             }
         }
     }
