@@ -65,7 +65,7 @@ module.exports = {
     
         if (createNewMiner) {
             let buildRequest = {
-                body: [WORK, WORK, WORK, WORK, WORK, MOVE],
+                body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE],
                 name: NewName("miner"),
                 role: "miner",
                 energySourceId: newMinerEnergySourceId
