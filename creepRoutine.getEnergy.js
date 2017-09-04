@@ -5,7 +5,9 @@ module.exports = {
             return;
         }
 
-        var energySources = creep.room.find(FIND_SOURCES);
+        // the queue for miner creeps should have already defined this
+        //var energySources = creep.room.find(FIND_SOURCES);
+        let energySources = Memory.roomEnergySources[creep.room.name];
         creep.say("📵");
         if (!creep.memory.energyPickupId) {
             // find something
@@ -42,9 +44,16 @@ module.exports = {
                     }
                 }
                 else {
-                    // no dropped energy and no containers with energy
-                    console.log("CreepRoutineGetEnergy::run(...): " + creep.name + ": no energy available");
-                    return;
+                    // no dropped energy and no containers with energy; do I have do everything myself?
+                    //console.log("CreepRoutineGetEnergy::run(...): " + creep.name + ": no energy available");
+                    let num = creep.memory.number;
+                    let bigger = (energySources.length > num) ? energySources.length : num;
+                    let smaller = (energySources.length > num) ? num : energySources.length;
+                    smaller = (smaller <= 0) ? 1 : smaller;
+
+                    // space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam 
+                    creep.memory.energyPickupId = energySources[bigger % smaller].id;
+                    creep.memory.energyPickupType = "harvest";
                 }
             }
         }
@@ -66,15 +75,22 @@ module.exports = {
         }
         else if (creep.memory.energyPickupType === "container") {
             thing = Game.getObjectById(creep.memory.energyPickupId);
-            result = creep.withdraw(container, RESOURCE_ENERGY);
+            result = creep.withdraw(thing, RESOURCE_ENERGY);
+        }
+        else if (creep.memory.energyPickupType === "harvest") {
+            thing = Game.getObjectById(creep.memory.energyPickupId);
+            result = creep.harvest(thing);
         }
         else {
-            creep.say(creep.name + " ❔");
+            creep.say(creep.name + ": ❔can haz energy❔");
         }
 
         if (result === OK) {
-            creep.memory.energyPickupId = null;
-            creep.memory.energyPickupType = null;
+            if (creep.carry.energy === creep.carryCapacity) {
+                // pick up from a new source next time (keeps things flexible)
+                creep.memory.energyPickupId = null;
+                creep.memory.energyPickupType = null;
+            }
         }
         else if (result === ERR_NOT_IN_RANGE) {
             result = creep.moveTo(thing, { visualizePathStyle: { stroke: "#ffffff" } });

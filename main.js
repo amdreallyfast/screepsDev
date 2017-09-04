@@ -43,72 +43,72 @@ module.exports.loop = function () {
 
         var creep = Game.creeps[name];
 
-        //creepWorkRoutine.run(creep);
+        creepWorkRoutine.run(creep);
 
-        if (creep.memory.role === "worker") {
-            workerNumbers[creep.memory.number] = true;
-        }
+        //if (creep.memory.role === "worker") {
+        //    workerNumbers[creep.memory.number] = true;
+        //}
 
-        let energyEmpty = (creep.carry.energy === 0);
-        let energyFull = (creep.carry.energy === creep.carryCapacity);
-        let working = creep.memory.working;
-        if (working && energyEmpty) {
-            creep.memory.working = false;
-        }
-        if (!working && energyFull) {
-            creep.memory.working = true;
-        }
+        //let energyEmpty = (creep.carry.energy === 0);
+        //let energyFull = (creep.carry.energy === creep.carryCapacity);
+        //let working = creep.memory.working;
+        //if (working && energyEmpty) {
+        //    creep.memory.working = false;
+        //}
+        //if (!working && energyFull) {
+        //    creep.memory.working = true;
+        //}
 
-        if (!creep.memory.working) {
-            creep.say("📵");
-            if (!creep.memory.energySourceId) {
-                //creep.memory.energySourceId = energySources[energySources.length % creep.memory.number].id;
-                creep.memory.energySourceId = energySources[0].id;
-            }
-            let energySource = Game.getObjectById(creep.memory.energySourceId);
-            if (creep.harvest(energySource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(energySource, { visualizePathStyle: { stroke: "#ffffff" } });
-            }
-        }
-        //else if (creep.memory.number === 0) {
-        //    // one guy is always upgrading (until this new system gets under control)
+        //if (!creep.memory.working) {
+        //    creep.say("📵");
+        //    if (!creep.memory.energySourceId) {
+        //        //creep.memory.energySourceId = energySources[energySources.length % creep.memory.number].id;
+        //        creep.memory.energySourceId = energySources[0].id;
+        //    }
+        //    let energySource = Game.getObjectById(creep.memory.energySourceId);
+        //    if (creep.harvest(energySource) == ERR_NOT_IN_RANGE) {
+        //        creep.moveTo(energySource, { visualizePathStyle: { stroke: "#ffffff" } });
+        //    }
+        //}
+        ////else if (creep.memory.number === 0) {
+        ////    // one guy is always upgrading (until this new system gets under control)
+        ////    creep.say("⚙️");
+        ////    if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+        ////        creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
+        ////    }
+        ////}
+        //else {
+        //    if (energyRefillTargets.length > 0) {
+        //        creep.say("⚡");
+        //        if (creep.transfer(energyRefillTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        //            creep.moveTo(energyRefillTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+        //        }
+        //        continue;
+        //    }
+
+        //    if (repairTargets.length > 0) {
+        //        creep.say("🔧");
+        //        if (creep.repair(repairTargets[0]) === ERR_NOT_IN_RANGE) {
+        //            creep.moveTo(repairTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+        //        }
+        //        continue;
+        //    }
+
+        //    if (buildTargets.length > 0 && workersBuilding < 2) {
+        //        workersBuilding++;
+        //        creep.say("🔨");
+        //        if (creep.build(buildTargets[0]) === ERR_NOT_IN_RANGE) {
+        //            creep.moveTo(buildTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
+        //        }
+        //        continue;
+        //    }
+
+        //    // nothing else to do; upgrade controller
         //    creep.say("⚙️");
         //    if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
         //        creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
         //    }
         //}
-        else {
-            if (energyRefillTargets.length > 0) {
-                creep.say("⚡");
-                if (creep.transfer(energyRefillTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(energyRefillTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
-                }
-                continue;
-            }
-
-            if (repairTargets.length > 0) {
-                creep.say("🔧");
-                if (creep.repair(repairTargets[0]) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(repairTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
-                }
-                continue;
-            }
-
-            if (buildTargets.length > 0 && workersBuilding < 2) {
-                workersBuilding++;
-                creep.say("🔨");
-                if (creep.build(buildTargets[0]) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(buildTargets[0], { visualizePathStyle: { stroke: "#ffffff" } });
-                }
-                continue;
-            }
-
-            // nothing else to do; upgrade controller
-            creep.say("⚙️");
-            if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
-            }
-        }
     }
 
     var spawn = Game.spawns['Spawn1'];
@@ -120,8 +120,8 @@ module.exports.loop = function () {
     //console.log(Memory.spawnUpdateTimer);
     if (Memory.spawnUpdateTimer++ > 50) {
         Memory.spawnUpdateTimer = 0;
-        //spawnQueueMiners.run(spawn.room);
-        spawnQueueWorkers.run(spawn.room);
+        spawnQueueMiners.run(spawn.room);
+        //spawnQueueWorkers.run(spawn.room);
         
     }
     spawnBuildQueue.run(spawn);

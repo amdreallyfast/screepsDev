@@ -69,28 +69,57 @@ let parseForAdditionalArguments = function (buildRequest) {
     return optionalArguments;
 }
 
-let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
-    //console.log("size of build queue for room " + room.name + ": " + Memory.creepBuildQueues[room.name].length);
-
-
-
-    //??how do I check if a creep that is being built is finished??
-
-
-
-    let haveDuplicate = false;
-    Memory.creepBuildQueues[room.name].forEach(function (existingBuildRequest) {
-        // for debugging
-        //console.log("existing/new role: '" + existingBuildRequest.role + "'/'" + newBuildRequest.role + "', existing/new name: '" + existingBuildRequest.name + "'/'" + newBuildRequest.name + "'");
-
-        if (existingBuildRequest.role === newBuildRequest.role &&
-            existingBuildRequest.name === newBuildRequest.name) {
-            haveDuplicate = true;
-        }
-    });
-
-    return haveDuplicate;
+let sameBuildRequest = function (buildRequestA, buildRequestB) {
+    return (
+        buildRequestA.role === buildRequestB.role &&
+        buildRequestA.name === buildRequestB.name);
 }
+
+let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
+    //??how do I check if a creep that is being built is finished??
+    let creepBuildQueue = Memory.creepBuildQueues[room.name];
+    for (let index in Memory.creepBuildQueues[room.name]) {
+        let existingBuildRequest = creepBuildQueue[index];
+        if (sameBuildRequest(existingBuildRequest, newBuildRequest)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+let printBuildQueue = function (room) {
+    let str = "";
+    Memory.creepBuildQueues[room.name].forEach(function (buildRequest) {
+        str += (buildRequest.name + "; ");
+    });
+    console.log(str);
+}
+
+//// Note: This function was introduced because, over the weekend of 9-2-2017 to 9-4-2017, there was an error and a bunch of stuff timed out, and my spawn was waiting for the 550-ish energy to spawn a worker, but all the workers were gone, so its limit was the amount of energy that the spawn itself could summon (300).
+//// ??if that was only a problem because of a code error, would this really fix it??
+//let notEnoughEnergyTimeout = function (room, requiredEnergy) {
+//    if (!Memory.lastTimeEnergyAvailableToSpawn) {
+//        Memory.lastTimeEnergyAvailableToSpawn = {};
+//    }
+//    if (!Memory.lastTimeEnergyAvailableToSpawn[room.name]) {
+//        Memory.lastTimeEnergyAvailableToSpawn[room.name] = 0;
+//    }
+
+//    let counter = Memory.lastTimeEnergyAvailableToSpawn[room.name];
+//    if (requiredEnergy < room.energyAvailable) {
+//        counter++;
+//        if (counter === 1000) {
+//            // yeah, energy is not happening
+//            return true;
+//        }
+//    }
+//    else {
+//        // energy available
+//        counter = 0;
+//    }
+
+//    return false;
+//}
 
 // TODO: rename to room.creepPopulation.buildQueue
 module.exports = {
@@ -103,22 +132,23 @@ module.exports = {
             return;
         }
 
-        // for clearing out the queue in case of problems
-        //Memory.creepBuildQueues[room.name].length = 0
+        //Memory.creepBuildQueues[room.name].length = 0;
 
         if (!haveBuildRequest(room)) {
             //console.log("no build requests for creeps for " + room.name);
             return;
         }
-        //console.log("have creep build request for room " + room.name);
 
-        if (room.energyAvailable < requiredEnergyForNext(room)) {
-            //console.log("not enough energy available for next creep in room " + room.name + "; have " + room.energyAvailable + ", need " + requiredEnergyForNext(room));
-            return;
+        // in the event of disaster, reset the queue
+        let requiredEnergy = requiredEnergyForNext(room);
+        if (room.energyCapacityAvailable < requiredEnergy) {
+            Memory.creepBuildQueues[room.name].length = 0
         }
 
-        // have build job and the required energy for it
-        //Memory.currentlyBuilding[room.name]   
+        if (room.energyAvailable < requiredEnergy) {
+            //console.log(spawn.name + ": not enough energy available to build next creep in room " + room.name + "; have " + room.energyAvailable + ", need " + requiredEnergyForNext(room));
+            return;
+        }
 
         let buildRequest = getNextBuildRequest(room);
         let result = spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
@@ -143,6 +173,7 @@ module.exports = {
         }
         else {
             console.log("new creep build request: " + buildThis.name);
+            printBuildQueue(room);
             Memory.creepBuildQueues[room.name].push(buildThis);
             //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
         }

@@ -10,7 +10,37 @@ let creepBuildQueue = require("spawn.buildQueue");
 //}();
 
 
+// TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
+// TODO: create myConstants module;
+//  - memory constants
+//  - MY_ERR_* constants
+//  - spawn.buildQueue.submit(...) returns OK if all went well, MY_ERR_CREEP_SPAWN_REQUEST_DUPLICATE, or MY_ERR_CREEP_SPAWN_REQUEST_ENERGY_LEVEL_TIMEOUT
+// TODO: in spawn.buildQueue.submit
+//  - if okay to submit build request, push back an object { energyRequired: ..., blueprint: buildRequest }
+// TODO: create room.energyLevelMonitoring module
+//  - handle energy level timeouts there
+//  - in 50-energy increments
+//  - query for energy timeout (energy)
+//  - looked up by spawn.buildQueue to figure out if the energy needed for a spawn build request is ever going to happen (if so, dump that creep spawn request)
+//  - looked up by worker queue and by miner queue to determine if their 
+// TODO: create creep.energyRequired module
+//  - used by spawn.buildQueue to determine how much energy is needed for the build (??just carry energy required along with the build request??)
+//  - used by spawn.queueWorkers to determine if it should shrink the energy needed for a particular module
+//  - used by spawn.queueMiners to determine if the room is ready for miners or if it should still use general-purpose workers.
 
+
+let workerBodyBasedOnAvailableEnergy = function(room) {
+    let roomPotentialEnergy = room.energyCapacityAvailable;
+
+    // NotE: As the RCL increases, each level allows 5 more extensions; assume that, if there are any extensions, 
+    if (roomPotentialEnergy === 300) {
+        // one spawn only
+    }
+    else {
+
+    }
+
+}
 
 // TODO: rename module to room.creepPopulation.workers
 module.exports = {
