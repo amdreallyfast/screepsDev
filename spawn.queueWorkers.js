@@ -9,6 +9,9 @@ let creepBuildQueue = require("spawn.buildQueue");
 //    }
 //}();
 
+
+
+
 // TODO: rename module to room.creepPopulation.workers
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room, not a spawn.
@@ -28,18 +31,19 @@ module.exports = {
         }
 
         // TODO: ??change the number dynamically somehow? calculate per room based on available resources??
-        let maxWorkersPerRoom = 15;
+        let maxWorkersPerRoom = 10;
         for (let num = 0; num < maxWorkersPerRoom; num++) {
             if (!workerNumbers[num]) {
                 let newRole = "worker";
                 let buildRequest = {
-                    body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                    //body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                    body: [WORK, CARRY, MOVE],
                     name: newRole + num,
                     role: newRole,
                     number: num,
                 }
 
-                //console.log("submitting worker creep build request: " + buildRequest.name);
+                console.log("submitting worker creep build request: " + buildRequest.name);
                 creepBuildQueue.submit(buildRequest, room);
             }
         }

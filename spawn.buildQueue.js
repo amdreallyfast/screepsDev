@@ -27,7 +27,8 @@ let requiredEnergyForNext = function (room) {
 
     let buildRequest = buildQueue[0];
     let energyCost = 0;
-    for (let part in buildRequest.body) {
+    for (let index in buildRequest.body) {
+        let part = buildRequest.body[index];
         if (part === WORK) {
             energyCost += 100;
         }
@@ -39,7 +40,9 @@ let requiredEnergyForNext = function (room) {
         }
         else {
             // TODO: other body parts
+            console.log("don't recognize body part '" + part + "' from key '" + index + "'");
         }
+        //console.log("energy needed after adding body part " + part + ": " + energyCost);
     }
 
     return energyCost;
@@ -96,17 +99,21 @@ module.exports = {
         ensureCreepBuildQueueExist(room);
 
         if (spawn.spawning) {
+            //console.log(spawn.name + " is busy spawning")
             return;
         }
 
+        // for clearing out the queue in case of problems
+        //Memory.creepBuildQueues[room.name].length = 0
+
         if (!haveBuildRequest(room)) {
-            //console.log("no build jobs for " + room.name);
+            //console.log("no build requests for creeps for " + room.name);
             return;
         }
         //console.log("have creep build request for room " + room.name);
 
         if (room.energyAvailable < requiredEnergyForNext(room)) {
-            console.log("not enough energy available for next creep in room " + room.name);
+            //console.log("not enough energy available for next creep in room " + room.name + "; have " + room.energyAvailable + ", need " + requiredEnergyForNext(room));
             return;
         }
 
@@ -114,8 +121,8 @@ module.exports = {
         //Memory.currentlyBuilding[room.name]   
 
         let buildRequest = getNextBuildRequest(room);
-        console.log(spawn.name + " spawning creep '" + buildRequest.name + "' in room " + room.name);
-        spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
+        let result = spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
+        console.log(spawn.name + " attempting to spawn creep '" + buildRequest.name + "' in room " + room.name + "; result = " + result);
     },
 
     // expected "buildThis" format:

@@ -106,6 +106,11 @@ module.exports = {
                 // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
                 var repairTargets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
+                        console.log(structure);
+                        console.log(structure.structureType);
+                        if (!structure) {
+                            console.log("WHAT THE HEY? A NULL STRUCTURE IN A FIND_STRUCTURES FILTER?");
+                        }
                         return (structure.hits < structure.hitsMax);
                     }
                 });
