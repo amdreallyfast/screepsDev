@@ -1,7 +1,9 @@
 ﻿let spawnBuildQueue = require("spawn.buildQueue");
-let spawnQueueMiners = require("spawn.queueMiners");
-let spawnQueueWorkers = require("spawn.queueWorkers");
+let queueMinerCreeps = require("spawn.queueMiners");
+let queueWorkerCreeps = require("spawn.queueWorkers");
 let creepWorkRoutine = require("creepRoutine.work");
+
+let queueFillEnergyJobs = require("jobs.fillEnergy");
 
 //var roleHarvester = require('role.harvester');
 //var roleUpgrader = require('role.upgrader');
@@ -43,10 +45,11 @@ module.exports.loop = function () {
 
     var buildTargets = spawn.room.find(FIND_CONSTRUCTION_SITES);
 
-
+    let creepAges = "";
     for (var name in Game.creeps) {
 
         var creep = Game.creeps[name];
+        creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
 
         creepWorkRoutine.run(creep);
 
@@ -116,17 +119,25 @@ module.exports.loop = function () {
         //}
     }
 
-    if (!Memory.spawnUpdateTimer) {
-        Memory.spawnUpdateTimer = 0;
-    }
+    //if (!Memory.spawnUpdateTimer) {
+    //    Memory.spawnUpdateTimer = 0;
+    //}
+
+    //console.log(creepAges);
+    
 
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
     //console.log(Memory.spawnUpdateTimer);
-    if (Memory.spawnUpdateTimer++ > 50) {
-        Memory.spawnUpdateTimer = 0;
-        spawnQueueMiners.run(spawn.room);
-        spawnQueueWorkers.run(spawn.room);
+    //if (Memory.spawnUpdateTimer++ > 50) {
+    console.log("that time yet? " + (Game.time % 100));
+    if (Game.time % 100 === 0) {
+        //Memory.spawnUpdateTimer = 0;
+        queueMinerCreeps.run(spawn.room);
+        queueWorkerCreeps.run(spawn.room);
+
+        queueFillEnergyJobs.run(spawn.room);
     }
+    //queueFillEnergyJobs.run(spawn.room);
     spawnBuildQueue.constructNextCreepInQueue(spawn);
 
     //// refill the workers with any names that might have expired

@@ -37,7 +37,7 @@ let printRefillEnergyQueue = function (room) {
             console.log("uh oh; null structure needing energy refill");
         }
         else {
-            str += (structure.structureType + "(" + structure.pos.x + "," + structure.pos.y + "); ");
+            str += (structure.structureType + "(" + structure.energy + "/" + structure.energyCapacity + "); ");
         }
     }
 
@@ -53,7 +53,7 @@ let printRepairQueue = function (room) {
             console.log("uh oh; null structure needing repair");
         }
         else {
-            str += (structure.structureType + "(" + structure.pos.x + "," + structure.pos.y + "); ");
+            str += (structure.structureType + "(" + structure.hits + "/" + structure.hitsMax + "); ");
         }
     }
 
@@ -118,44 +118,101 @@ module.exports = {
         Memory.creepJobs[thing.room.name].repairQueue.push(thing.id);
     },
 
-    /** @param {creep} self-explanatory **/
-    assignJobs: function(creep) {
+    getConstructionJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
+        //printConstructionQueue(creep.room);
+        let queue = Memory.creepJobs[creep.room.name].constructionQueue;
 
-        // Note: Using shift() instead of pop() because the latter pops off the back and I want a FIFO queue.
-        // Also Note: JavaScript passes objects by reference, so shifting out of this variable will affect the original object.
-        let roomJobs = Memory.creepJobs[creep.room.name];
-        let needWork = false;
-        let haveWork;
-
-        // building
-        needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
-        haveWork = (roomJobs.constructionQueue.length > 0);
+        let needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
+        let haveWork = (queue.length > 0);
+        //console.log(creep.name + " needs construction work? " + needWork + ", have construction work? " + haveWork);
         if (needWork && haveWork) {
-            creep.memory.constructionJobId = roomJobs.constructionQueue.shift();
+            //console.log(creep.name + " assigning construction work");
+            creep.memory.constructionJobId = queue.shift();
         }
+    },
 
-        // spawns and extensions and turrets
+    getRefillEnergyJobFor: function (creep) {
+        ensureJobQueuesExist(creep.room);
+        printRefillEnergyQueue(creep.room);
+        let queue = Memory.creepJobs[creep.room.name].refillEnergyQueue;
+
         needWork = (creep.memory.refillEnergyJobId === null || creep.memory.constructionJobId === undefined);
-        haveWork = (roomJobs.refillEnergyQueue.length > 0);
-        //if (!needWork) {
-        //    console.log(creep.name + ": already have construction job '" + creep.memory.refillEnergyJobId + "'");
-        //}
-        //else if (!haveWork) {
-        //    console.log(creep.name + ": no energy refill jobs available");
-        //}
-        //else {
-        //    console.log(creep.name + ": there are '" + roomJobs.refillEnergyQueue.length + "' refill jobs available; taking 1st available");
-        //}
+        haveWork = (queue.length > 0);
+        //console.log(creep.name + " needs energy refill work? " + needWork + ", have energy refill work? " + haveWork);
         if (needWork && haveWork) {
-            creep.memory.refillEnergyJobId = roomJobs.refillEnergyQueue.shift();
+            console.log(creep.name + " assigning energy refill work");
+            let objectId = queue.shift();
+            let thing = Game.getObjectById(objectId);
+            console.log(creep.name + " now assigned to refill " + thing.structureType);
+            creep.memory.refillEnergyJobId = objectId;
         }
+    },
 
-        // structures that are decaying or damaged 
-        needWork = (creep.memory.repairJobId === null || creep.memory.constructionJobId === undefined);
-        haveWork = (roomJobs.repairQueue.length > 0);
+    getRepairJobFor: function (creep) {
+        ensureJobQueuesExist(creep.room);
+        //printRepairQueue(creep.room);
+        let queue = Memory.creepJobs[creep.room.name].repairQueue;
+
+        let needWork = (creep.memory.repairJobId === null || creep.memory.constructionJobId === undefined);
+        let haveWork = (queue.length > 0);
+        //console.log(creep.name + " needs repair work? " + needWork + ", have repair work? " + haveWork);
         if (needWork && haveWork) {
-            creep.memory.repairJobId = roomJobs.repairQueue.shift();
+            //console.log(creep.name + " assigning repair work");
+            creep.memory.repairJobId = queue.shift();
         }
-    }
+    },
+
+    ///** @param {creep} self-explanatory **/
+    //assignJobs: function (creep) {
+    //    ensureJobQueuesExist(creep.room);
+
+    //    getRefillEnergyJobFor(creep);
+    //    getRepairJobFor(creep);
+    //    getConstructionJobFor(creep);
+
+    //    ////printRefillEnergyQueue(creep.room);
+    //    ////printRepairQueue(creep.room);
+    //    ////printConstructionQueue(creep.room);
+
+    //    //// Note: Using shift() instead of pop() because the latter pops off the back and I want a FIFO queue.
+    //    //// Also Note: JavaScript passes objects by reference, so shifting out of this variable will affect the original object.
+    //    //let roomJobs = Memory.creepJobs[creep.room.name];
+    //    //let needWork = false;
+    //    //let haveWork;
+
+    //    //// building
+    //    //needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
+    //    //haveWork = (roomJobs.constructionQueue.length > 0);
+    //    ////console.log(creep.name + " needs construction work? " + needWork + ", have construction work? " + haveWork);
+    //    //if (needWork && haveWork) {
+    //    //    //creep.log(creep.name + " assigning construction work");
+    //    //    creep.memory.constructionJobId = roomJobs.constructionQueue.shift();
+    //    //}
+
+    //    //// spawns and extensions and turrets
+    //    //needWork = (creep.memory.refillEnergyJobId === null || creep.memory.constructionJobId === undefined);
+    //    //haveWork = (roomJobs.refillEnergyQueue.length > 0);
+    //    ////console.log(creep.name + " needs energy refill work? " + needWork + ", have energy refill work? " + haveWork);
+    //    ////if (!needWork) {
+    //    ////    console.log(creep.name + ": already have construction job '" + creep.memory.refillEnergyJobId + "'");
+    //    ////}
+    //    ////else if (!haveWork) {
+    //    ////    console.log(creep.name + ": no energy refill jobs available");
+    //    ////}
+    //    ////else {
+    //    ////    console.log(creep.name + ": there are '" + roomJobs.refillEnergyQueue.length + "' refill jobs available; taking 1st available");
+    //    ////}
+    //    //if (needWork && haveWork) {
+    //    //    creep.memory.refillEnergyJobId = roomJobs.refillEnergyQueue.shift();
+    //    //}
+
+    //    //// structures that are decaying or damaged 
+    //    //needWork = (creep.memory.repairJobId === null || creep.memory.constructionJobId === undefined);
+    //    //haveWork = (roomJobs.repairQueue.length > 0);
+    //    ////console.log(creep.name + " needs repair work? " + needWork + ", have repair work? " + haveWork);
+    //    //if (needWork && haveWork) {
+    //    //    creep.memory.repairJobId = roomJobs.repairQueue.shift();
+    //    //}
+    //}
 }

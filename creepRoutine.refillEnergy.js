@@ -11,17 +11,12 @@ module.exports = {
         let structure = Game.getObjectById(creep.memory.refillEnergyJobId);
         if (!structure) {
             // huh; structure doesn't exist anymore; decayed? destroyed?
-            abortJob = true;
-        }
-        else if (!structure.energy || !structure.energyCapacity) {
-            // Note: "refill energy" jobs are only meant for spawns, extensions, and turrets 
-            // because they are the only structures with 'energy' and 'energyCapacity' 
-            // properties.  If the structure does not have these, then this structure should not 
-            // have submitted a "refill energy" job and it should not be refilled.
+            console.log(creep.name + ": target structure doesn't exist");
             abortJob = true;
         }
         else if (structure.energy === structure.energyCapacity) {
             // already topped off
+            console.log(creep.name + ": target structure already full");
             abortJob = true;
         }
 

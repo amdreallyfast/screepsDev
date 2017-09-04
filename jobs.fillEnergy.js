@@ -1,9 +1,9 @@
 
-let creepJobQueue = require("jobs.workQueue");
+let creepJobQueues = require("jobs.workQueue");
 
 module.exports = {
     run: function (room) {
-        var energyRefillTargets = room.find(FIND_STRUCTURES, {
+        let energyRefillTargets = room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 // not counting containers or storage structures; those are meant to not be easily filled
                 let canStoreEnergy =
@@ -16,23 +16,24 @@ module.exports = {
             }
         });
 
-        for (let index in energyRefillTargets) {
-            let structure = energyRefillTargets[index];
+        console.log("number of energy refill targets: " + energyRefillTargets.length);
+
+        energyRefillTargets.forEach(function (structure) {
             if (structure.structureType === STRUCTURE_EXTENSION) {
                 // extensions are small and only store 50 energy; 1 worker is more than enough
-                creepJobQueue.submitRefillEnergyJob(structure);
+                creepJobQueues.submitRefillEnergyJob(structure);
             }
             else if (structure.structureType === STRUCTURE_SPAWN) {
                 // spawns can hold 300
                 let lessThanHalfEnergy = (structure.energy < (structure.energyCapacity * 0.5));
                 if (lessThanHalfEnergy) {
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
                 }
                 else {
                     // just needs to be topped off
-                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
                 }
             }
             else if (structure.structureType === STRUCTURE_TOWER) {
@@ -41,32 +42,32 @@ module.exports = {
                 let threeQuarterEnergy = (structure.energyCapacity * 0.75);
                 if (structure.energy < halfEnergy) {
                     // get the band together
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
                 }
                 else if (structure.energy < threeQuarterEnergy) {
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
                 }
                 else if (structure.energy < structure.energyCapacity) {
                     // >75%, so a few guys will work
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
-                    creepJobQueue.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
+                    creepJobQueues.submitRefillEnergyJob(structure);
                 }
             }
-        }
+        });
     }
 };

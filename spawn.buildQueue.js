@@ -120,7 +120,7 @@ let sameBuildRequest = function (buildRequestA, buildRequestB) {
         buildRequestA.name === buildRequestB.name);
 }
 
-let checkForDuplicateBuildRequest = function (newBuildRequest, spawn) {
+let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
     ////??how do I check if a creep that is being built is finished??
 
     //if (sameBuildRequest(Memory.spawnCurrentBuildRequest[spawn.name]), newBuildRequest) {
@@ -142,7 +142,7 @@ let printBuildQueue = function (room) {
     Memory.creepBuildQueues[room.name].forEach(function (buildRequest) {
         str += (buildRequest.name + "; ");
     });
-    console.log(str);
+    console.log("creep build queue for room '" + room.name + "': " + str);
 }
 
 //// Note: This function was introduced because, over the weekend of 9-2-2017 to 9-4-2017, there was an error and a bunch of stuff timed out, and my spawn was waiting for the 550-ish energy to spawn a worker, but all the workers were gone, so its limit was the amount of energy that the spawn itself could summon (300).
@@ -177,6 +177,9 @@ module.exports = {
         let room = spawn.room;
         ensureCreepBuildQueueExist(room);
         //ensurespawnCurrentBuildRequestExist(spawn);
+
+        // in case I'm curious
+        //printBuildQueue(room);
 
         if (spawn.spawning) {
             //console.log(spawn.name + " is busy spawning")
