@@ -12,6 +12,54 @@ let ensureJobQueuesExist = function (room) {
     }
 }
 
+let printConstructionQueue = function (room) {
+    let str = "construction sites in room " + room.name + ": ";
+    let queue = Memory.creepJobs[room.name].constructionQueue;
+    for (let index in queue) {
+        let site = Game.getObjectById(queue[index]);
+        if (!site) {
+            // uh oh; null site; 
+            console.log("uh oh; null construction site");
+        }
+        else {
+            str += (site.structureType + "(" + site.pos.x + "," + site.pos.y + "); ");
+        }
+    }
+    console.log(str);
+}
+
+let printRefillEnergyQueue = function (room) {
+    let str = "structures needing energy in room " + room.name + ": ";
+    let queue = Memory.creepJobs[room.name].refillEnergyQueue;
+    for (let index in queue) {
+        let structure = Game.getObjectById(queue[index]);
+        if (!structure) {
+            console.log("uh oh; null structure needing energy refill");
+        }
+        else {
+            str += (structure.structureType + "(" + structure.pos.x + "," + structure.pos.y + "); ");
+        }
+    }
+
+    console.log(str);
+}
+
+let printRepairQueue = function (room) {
+    let str = "structures needing repair in room " + room.name + ": ";
+    let queue = Memory.creepJobs[room.name].repairQueue;
+    for (let index in queue) {
+        let structure = Game.getObjectById(queue[index]);
+        if (!structure) {
+            console.log("uh oh; null structure needing repair");
+        }
+        else {
+            str += (structure.structureType + "(" + structure.pos.x + "," + structure.pos.y + "); ");
+        }
+    }
+
+    console.log(str);
+}
+
 module.exports = {
     // TODO: put this into one of the update routines that creates construction sites
     ///** @param {where} a RoomPosition object **/
@@ -52,7 +100,7 @@ module.exports = {
     //    });
     //},
 
-    /** @param {constructionSiteId} slef-explanatory **/
+    /** @param {constructionSiteId} self-explanatory **/
     submitBuildJob: function (constructionSite) {
         ensureJobQueuesExist(constructionSite.room);
         Memory.creepJobs[constructionSite.room.name].constructionQueue.push(constructionSite.id);
@@ -99,9 +147,9 @@ module.exports = {
         //else {
         //    console.log(creep.name + ": there are '" + roomJobs.refillEnergyQueue.length + "' refill jobs available; taking 1st available");
         //}
-        //if (needWork && haveWork) {
-        //    creep.memory.refillEnergyJobId = roomJobs.refillEnergyQueue.shift();
-        //}
+        if (needWork && haveWork) {
+            creep.memory.refillEnergyJobId = roomJobs.refillEnergyQueue.shift();
+        }
 
         // structures that are decaying or damaged 
         needWork = (creep.memory.repairJobId === null || creep.memory.constructionJobId === undefined);

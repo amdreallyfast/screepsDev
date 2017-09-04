@@ -147,11 +147,29 @@ module.exports = {
             //    }
             //}
 
-
-
             // no refill jobs and no repair jobs; carry on
             routineUpgrade.run(creep);
             if (creep.memory.priorityJob === "upgrade") {
+                routineUpgrade.run(creep);
+            }
+
+            return;
+
+            if (!creep.memory.refillEnergyJobId) {
+                // energy refill takes presendence so that the spawn and extensions are ready to 
+                // build and so that the turrets are ready to shoot
+                routineRefill.run(creep);
+            }
+            else if (!creep.memory.repairJobId) {
+                // stop stuff from breaking down
+                routineRepair.run(creep);
+            }
+            else if (!creep.memory.constructionJobId) {
+                // roads, bypasses (gotta build bypasses), whatever
+                routineBuild.run(creep);
+            }
+            else {
+                // nothing else to do, so upgrade the controller
                 routineUpgrade.run(creep);
             }
 

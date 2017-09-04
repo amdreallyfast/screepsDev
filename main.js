@@ -7,6 +7,11 @@ let creepWorkRoutine = require("creepRoutine.work");
 //var roleUpgrader = require('role.upgrader');
 //var roleBuilder = require('role.builder');
 
+
+// TODO: go through all keys in Memory and see what you don't need; delete those that you don't
+
+
+
 module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1'];
 
@@ -121,9 +126,8 @@ module.exports.loop = function () {
         Memory.spawnUpdateTimer = 0;
         spawnQueueMiners.run(spawn.room);
         spawnQueueWorkers.run(spawn.room);
-        
     }
-    spawnBuildQueue.run(spawn);
+    spawnBuildQueue.constructNextCreepInQueue(spawn);
 
     //// refill the workers with any names that might have expired
     //var maxWorkers = 6;
