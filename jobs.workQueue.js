@@ -13,8 +13,8 @@ let ensureJobQueuesExist = function (room) {
 }
 
 let printConstructionQueue = function (room) {
-    let str = "construction sites in room " + room.name + ": ";
     let queue = Memory.creepJobs[room.name].constructionQueue;
+    let str = "construction sites in room " + room.name + " (" + queue.length + "): ";
     for (let index in queue) {
         let site = Game.getObjectById(queue[index]);
         if (!site) {
@@ -29,8 +29,8 @@ let printConstructionQueue = function (room) {
 }
 
 let printRefillEnergyQueue = function (room) {
-    let str = "structures needing energy in room " + room.name + ": ";
     let queue = Memory.creepJobs[room.name].refillEnergyQueue;
+    let str = "structures needing energy in room " + room.name + " (" + queue.length + "): ";
     for (let index in queue) {
         let structure = Game.getObjectById(queue[index]);
         if (!structure) {
@@ -45,8 +45,8 @@ let printRefillEnergyQueue = function (room) {
 }
 
 let printRepairQueue = function (room) {
-    let str = "structures needing repair in room " + room.name + ": ";
     let queue = Memory.creepJobs[room.name].repairQueue;
+    let str = "structures needing repair in room " + room.name + " (" + queue.length + "): ";
     for (let index in queue) {
         let structure = Game.getObjectById(queue[index]);
         if (!structure) {

@@ -50,6 +50,7 @@ module.exports.loop = function () {
 
         var creep = Game.creeps[name];
         creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
+        
 
         creepWorkRoutine.run(creep);
 
@@ -123,22 +124,31 @@ module.exports.loop = function () {
     //    Memory.spawnUpdateTimer = 0;
     //}
 
-    //console.log(creepAges);
+    console.log(creepAges);
     
 
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
     //console.log(Memory.spawnUpdateTimer);
     //if (Memory.spawnUpdateTimer++ > 50) {
-    console.log("that time yet? " + (Game.time % 100));
-    if (Game.time % 100 === 0) {
+    console.log("that time yet? " + (Game.time % 50));
+    let currentTick = Game.time;
+    if (currentTick % 50 === 0) {
         //Memory.spawnUpdateTimer = 0;
         queueMinerCreeps.run(spawn.room);
         queueWorkerCreeps.run(spawn.room);
+        spawnBuildQueue.constructNextCreepInQueue(spawn);
 
-        queueFillEnergyJobs.run(spawn.room);
+        // the energy is used upon spawning, but it isn't gone until the next tick
+        Memory.refillEnergy = true;
     }
+    else if (Memory.refillEnergy) {
+        queueFillEnergyJobs.run(spawn.room);
+        Memory.refillEnergy = false;
+    }
+
+
     //queueFillEnergyJobs.run(spawn.room);
-    spawnBuildQueue.constructNextCreepInQueue(spawn);
+    
 
     //// refill the workers with any names that might have expired
     //var maxWorkers = 6;
