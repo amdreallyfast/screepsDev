@@ -31,15 +31,39 @@ let creepBuildQueue = require("spawn.buildQueue");
 
 let workerBodyBasedOnAvailableEnergy = function(room) {
     let roomPotentialEnergy = room.energyCapacityAvailable;
+    let body = [];
 
-    // NotE: As the RCL increases, each level allows 5 more extensions; assume that, if there are any extensions, 
+    // Note: As the RCL increases, each level allows 5 more extensions; assume that, if there are any extensions, 
     if (roomPotentialEnergy === 300) {
-        // one spawn only
+        // only have the spawn
+        body = [WORK, CARRY, MOVE];
+    }
+    else if (roomPotentialEnergy === 350) {
+        body = [WORK, CARRY, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy === 400) {
+        body = [WORK, WORK, CARRY, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy === 450) {
+        body = [WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy === 500) {
+        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy === 550) {
+        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy === 600) {
+        body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy >= 650) {
+        body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     }
     else {
-
+        // uh oh
     }
 
+    return body;
 }
 
 // TODO: rename module to room.creepPopulation.workers
@@ -66,14 +90,13 @@ module.exports = {
             if (!workerNumbers[num]) {
                 let newRole = "worker";
                 let buildRequest = {
-                    //body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
-                    body: [WORK, CARRY, MOVE],
+                    body: workerBodyBasedOnAvailableEnergy(room),
                     name: newRole + num,
                     role: newRole,
                     number: num,
                 }
 
-                console.log("submitting worker creep build request: " + buildRequest.name);
+                //console.log("submitting worker creep build request: " + buildRequest.name + ", " + buildRequest.body);
                 creepBuildQueue.submit(buildRequest, room);
             }
         }

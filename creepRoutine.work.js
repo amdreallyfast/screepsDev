@@ -106,44 +106,44 @@ module.exports = {
                 return;
             }
 
-            // repair things
-            if (!creep.memory.repairJobId) {
-                // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
-                var repairTargets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        //console.log(structure);
-                        //console.log(structure.structureType);
-                        if (!structure) {
-                            console.log("WHAT THE HEY? A NULL STRUCTURE IN A FIND_STRUCTURES FILTER?");
-                        }
-                        return (structure.hits < structure.hitsMax);
-                    }
-                });
-                if (repairTargets.length > 0) {
-                    let num = creep.memory.number;
-                    let bigger = (repairTargets.length > num) ? repairTargets.length : num;
-                    let smaller = (repairTargets.length > num) ? num : repairTargets.length;
-                    smaller = (smaller <= 0) ? 1 : smaller;
-                    creep.memory.repairJobId = repairTargets[bigger % smaller].id;
-                }
-            }
-            if (creep.memory.number < 4 && creep.memory.repairJobId !== null) {
-                creep.say("🔧");
-                let structure = Game.getObjectById(creep.memory.repairJobId);
-                if (structure.hits < structure.maxHits) {
-                    let result = creep.repair(structure);
-                    if (result === OK) {
-                        // 
-                    }
-                    else if (result === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(structure, { visualizePathStyle: { stroke: "#ffffff" } });
-                    }
-                    else {
-                        //??throw a fit??
-                    }
-                    return;
-                }
-            }
+            //// repair things
+            //if (!creep.memory.repairJobId) {
+            //    // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
+            //    var repairTargets = creep.room.find(FIND_STRUCTURES, {
+            //        filter: (structure) => {
+            //            return (structure.hits < structure.hitsMax);
+            //        }
+            //    });
+            //    if (repairTargets.length > 0) {
+            //        let num = creep.memory.number;
+            //        let bigger = (repairTargets.length > num) ? repairTargets.length : num;
+            //        let smaller = (repairTargets.length > num) ? num : repairTargets.length;
+            //        smaller = (smaller <= 0) ? 1 : smaller;
+            //        creep.memory.repairJobId = repairTargets[bigger % smaller].id;
+            //    }
+            //}
+            //if (creep.memory.number < 4 && creep.memory.repairJobId !== null) {
+            //    creep.say("🔧");
+            //    let structure = Game.getObjectById(creep.memory.repairJobId);
+            //    if (!structure) {
+            //        // huh; got a bad object (??throw a fit??)
+            //        creep.memory.repairJobId = null;
+            //    }
+            //    else if (structure.hits < structure.hitsMax) {
+            //        let result = creep.repair(structure);
+            //        if (result === ERR_NOT_IN_RANGE) {
+            //            creep.moveTo(structure, { visualizePathStyle: { stroke: "#ffffff" } });
+            //        }
+            //        // keep repairing
+            //        return;
+            //    }
+            //    else {
+            //        // done
+            //        creep.memory.repairJobId = null;
+            //    }
+            //}
+
+
 
             // no refill jobs and no repair jobs; carry on
             routineUpgrade.run(creep);

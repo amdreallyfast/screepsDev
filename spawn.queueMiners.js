@@ -51,7 +51,8 @@ module.exports = {
             if (!minerNumbers[num]) {
                 let newRole = "miner";
                 let buildRequest = {
-                    body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE],
+                    //body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE],
+                    body: [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE],
                     name: newRole + num,
                     role: newRole,
                     number: num,

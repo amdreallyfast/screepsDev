@@ -5,6 +5,8 @@ module.exports = {
             return;
         }
 
+        //creep.memory.energyPickupId = null;
+
         // the queue for miner creeps should have already defined this
         //var energySources = creep.room.find(FIND_SOURCES);
         let energySources = Memory.roomEnergySources[creep.room.name];
@@ -54,6 +56,15 @@ module.exports = {
                     // space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam 
                     creep.memory.energyPickupId = energySources[bigger % smaller].id;
                     creep.memory.energyPickupType = "harvest";
+
+                    // Note: Harvesting requires multiple ticks, while energy pickup only needs 
+                    // one.  If, in the course of events, a creep is trying to harvest but there 
+                    // is someone in the way (perhaps a new miner creep has come in to provide 
+                    // dedidcated energy mining and is hogging the mining spot) for a sufficient 
+                    // amount of time, reset the energy pickup ID and look for a new energy 
+                    // source.  Perhaps an energy drop is now available.  Or maybe it is just a 
+                    // traffic jam and this loop will begin again.
+                    creep.memory.energyPickupTimeout = 0;
                 }
             }
         }
@@ -78,8 +89,16 @@ module.exports = {
             result = creep.withdraw(thing, RESOURCE_ENERGY);
         }
         else if (creep.memory.energyPickupType === "harvest") {
+            //console.log(creep.name + "trying to harvest; energy " + creep.carry.energy + "/" + creep.carryCapacity);
             thing = Game.getObjectById(creep.memory.energyPickupId);
             result = creep.harvest(thing);
+            if (result === ERR_NOT_IN_RANGE) {
+                if (creep.memory.energyPickupTimeout++ > 50) {
+                    // you've had enough time to get across the room; must be a traffic jam or there is a miner forever hogging the source
+                    creep.memory.energyPickupId = null;
+                    return;
+                }
+            }
         }
         else {
             creep.say(creep.name + ": ❔can haz energy❔");

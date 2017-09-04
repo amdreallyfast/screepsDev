@@ -152,7 +152,7 @@ module.exports = {
 
         let buildRequest = getNextBuildRequest(room);
         let result = spawn.createCreep(buildRequest.body, buildRequest.name, parseForAdditionalArguments(buildRequest));
-        console.log(spawn.name + " attempting to spawn creep '" + buildRequest.name + "' in room " + room.name + "; result = " + result);
+        console.log(spawn.name + " attempting to spawn creep '" + buildRequest.name + "' with body '" + buildRequest.body + "' in room " + room.name + "; result = " + result);
     },
 
     // expected "buildThis" format:

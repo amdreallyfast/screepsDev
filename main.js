@@ -18,14 +18,14 @@ module.exports.loop = function () {
     // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
     var repairTargets = spawn.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
-            //console.log(structure);
-            //console.log(structure.structureType);
-            if (!structure) {
-                console.log("WHAT THE HEY? A NULL STRUCTURE IN A FIND_STRUCTURES FILTER?");
-            }
             return (structure.hits < structure.hitsMax);
         }
     });
+    //let str = "";
+    //repairTargets.forEach(function (target) {
+    //    str += (target.structureType + " " + target.hits + "/" + target.hitsMax + ";");
+    //});
+    //console.log(str);
 
     var energyRefillTargets = spawn.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
@@ -111,7 +111,6 @@ module.exports.loop = function () {
         //}
     }
 
-    var spawn = Game.spawns['Spawn1'];
     if (!Memory.spawnUpdateTimer) {
         Memory.spawnUpdateTimer = 0;
     }
@@ -121,7 +120,7 @@ module.exports.loop = function () {
     if (Memory.spawnUpdateTimer++ > 50) {
         Memory.spawnUpdateTimer = 0;
         spawnQueueMiners.run(spawn.room);
-        //spawnQueueWorkers.run(spawn.room);
+        spawnQueueWorkers.run(spawn.room);
         
     }
     spawnBuildQueue.run(spawn);
