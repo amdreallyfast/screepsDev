@@ -41,9 +41,9 @@ module.exports = {
             // priority job popped up.  Creeps are not fast, so have them work until they run 
             // out of energy, get more energy, THEN look for more work.
             creep.memory.working = true;
-            //creepJobQueues.getConstructionJobFor(creep);
             creepJobQueues.getRefillEnergyJobFor(creep);
-            //creepJobQueues.getRepairJobFor(creep);
+            creepJobQueues.getRepairJobFor(creep);
+            creepJobQueues.getConstructionJobFor(creep);
 
             //creepJobQueues.assignJobs(creep);
             //if (!creep.memory.refillEnergyJobId) {
@@ -96,36 +96,59 @@ module.exports = {
 
 
 
-            if (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined) {   // fudging this: worker creeps 0-3 will be on refill duty (until I get the "refill jobs" running
+            //if (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined) {   // fudging this: worker creeps 0-3 will be on refill duty (until I get the "refill jobs" running
+            //    if (!routineRefill.run(creep)) {
+            //        // already working on refills, the code got here, so you're not empty yet, so refill something else
+            //        // refill something
+            //        console.log(creep.name + ": getting another refill job");
+            //        creepJobQueues.getRefillEnergyJobFor(creep);
+            //    }
+            //    //creep.say("⚡");
+            //    //let delivery = Game.getObjectById(creep.memory.refillEnergyJobId);
+            //    //if (delivery.energy === delivery.energyCapacity) {
+            //    //    // someone else filled it
+            //    //    creep.memory.refillEnergyJobId = null;
+            //    //    creepJobQueues.getRefillEnergyJobFor(creep);
+            //    //}
+            //    //else {
+            //    //    let result = creep.transfer(delivery, RESOURCE_ENERGY);
+            //    //    if (result === OK || result === ERR_FULL) {
+            //    //        creep.memory.refillEnergyJobId = null
+            //    //        creepJobQueues.getRefillEnergyJobFor(creep);
+            //    //    }
+            //    //    else if (result === ERR_NOT_IN_RANGE) {
+            //    //        creep.moveTo(delivery, { visualizePathStyle: { stroke: "#ffffff" } });
+            //    //    }
+            //    //    else {
+            //    //        //??throw a fit??
+            //    //    }
+            //    //}
+            //    return;
+            //}
+
+            // very useful for vizual indication of what the creep is doing
+            // http://unicode.org/emoji/charts/emoji-style.txt
+            if (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined) {
+                // energy refill takes presendence so that the spawn and extensions are ready to 
+                // build and so that the turrets are ready to shoot
                 if (!routineRefill.run(creep)) {
                     // already working on refills, the code got here, so you're not empty yet, so refill something else
-                    // refill something
-                    console.log(creep.name + ": getting another refill job");
+                    //console.log(creep.name + ": getting another refill job");
                     creepJobQueues.getRefillEnergyJobFor(creep);
                 }
-                //creep.say("⚡");
-                //let delivery = Game.getObjectById(creep.memory.refillEnergyJobId);
-                //if (delivery.energy === delivery.energyCapacity) {
-                //    // someone else filled it
-                //    creep.memory.refillEnergyJobId = null;
-                //    creepJobQueues.getRefillEnergyJobFor(creep);
-                //}
-                //else {
-                //    let result = creep.transfer(delivery, RESOURCE_ENERGY);
-                //    if (result === OK || result === ERR_FULL) {
-                //        creep.memory.refillEnergyJobId = null
-                //        creepJobQueues.getRefillEnergyJobFor(creep);
-                //    }
-                //    else if (result === ERR_NOT_IN_RANGE) {
-                //        creep.moveTo(delivery, { visualizePathStyle: { stroke: "#ffffff" } });
-                //    }
-                //    else {
-                //        //??throw a fit??
-                //    }
-                //}
-                return;
             }
-
+            else if (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined) {
+                // stop stuff from breaking down
+                routineRepair.run(creep);
+            }
+            else if (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined) {
+                // roads, bypasses (gotta build bypasses), whatever
+                routineBuild.run(creep);
+            }
+            else {
+                // nothing else to do, so upgrade the controller
+                routineUpgrade.run(creep);
+            }
 
 
 
@@ -166,31 +189,31 @@ module.exports = {
             //    }
             //}
 
-            // no refill jobs and no repair jobs; carry on
-            routineUpgrade.run(creep);
-            if (creep.memory.priorityJob === "upgrade") {
-                routineUpgrade.run(creep);
-            }
+            //// no refill jobs and no repair jobs; carry on
+            //routineUpgrade.run(creep);
+            //if (creep.memory.priorityJob === "upgrade") {
+            //    routineUpgrade.run(creep);
+            //}
 
             return;
 
-            if (!creep.memory.refillEnergyJobId) {
-                // energy refill takes presendence so that the spawn and extensions are ready to 
-                // build and so that the turrets are ready to shoot
-                routineRefill.run(creep);
-            }
-            else if (!creep.memory.repairJobId) {
-                // stop stuff from breaking down
-                routineRepair.run(creep);
-            }
-            else if (!creep.memory.constructionJobId) {
-                // roads, bypasses (gotta build bypasses), whatever
-                routineBuild.run(creep);
-            }
-            else {
-                // nothing else to do, so upgrade the controller
-                routineUpgrade.run(creep);
-            }
+            //if (!creep.memory.refillEnergyJobId) {
+            //    // energy refill takes presendence so that the spawn and extensions are ready to 
+            //    // build and so that the turrets are ready to shoot
+            //    routineRefill.run(creep);
+            //}
+            //else if (!creep.memory.repairJobId) {
+            //    // stop stuff from breaking down
+            //    routineRepair.run(creep);
+            //}
+            //else if (!creep.memory.constructionJobId) {
+            //    // roads, bypasses (gotta build bypasses), whatever
+            //    routineBuild.run(creep);
+            //}
+            //else {
+            //    // nothing else to do, so upgrade the controller
+            //    routineUpgrade.run(creep);
+            //}
 
 
             //// very useful

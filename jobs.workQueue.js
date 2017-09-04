@@ -12,6 +12,19 @@ let ensureJobQueuesExist = function (room) {
     }
 }
 
+//??more efficient approach than running through all construction sites?
+let alreadyQueuedConstructionJob = function (newSite) {
+    let queue = Memory.creepJobs[newSite.room.name].constructionQueue;
+    for (let index in queue) {
+        let existingSiteId = queue[index];
+        if (newSite.id === existingSiteId) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 let printConstructionQueue = function (room) {
     let queue = Memory.creepJobs[room.name].constructionQueue;
     let str = "construction sites in room " + room.name + " (" + queue.length + "): ";
@@ -101,8 +114,11 @@ module.exports = {
     //},
 
     /** @param {constructionSiteId} self-explanatory **/
-    submitBuildJob: function (constructionSite) {
+    submitConstructionJob: function (constructionSite) {
         ensureJobQueuesExist(constructionSite.room);
+        if (alreadyQueuedConstructionJob(constructionSite)) {
+            return;
+        }
         Memory.creepJobs[constructionSite.room.name].constructionQueue.push(constructionSite.id);
     },
 
@@ -120,7 +136,7 @@ module.exports = {
 
     getConstructionJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        //printConstructionQueue(creep.room);
+        printConstructionQueue(creep.room);
         let queue = Memory.creepJobs[creep.room.name].constructionQueue;
 
         let needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
@@ -134,17 +150,17 @@ module.exports = {
 
     getRefillEnergyJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        printRefillEnergyQueue(creep.room);
+        //printRefillEnergyQueue(creep.room);
         let queue = Memory.creepJobs[creep.room.name].refillEnergyQueue;
 
         needWork = (creep.memory.refillEnergyJobId === null || creep.memory.constructionJobId === undefined);
         haveWork = (queue.length > 0);
         //console.log(creep.name + " needs energy refill work? " + needWork + ", have energy refill work? " + haveWork);
         if (needWork && haveWork) {
-            console.log(creep.name + " assigning energy refill work");
+            //console.log(creep.name + " assigning energy refill work");
             let objectId = queue.shift();
-            let thing = Game.getObjectById(objectId);
-            console.log(creep.name + " now assigned to refill " + thing.structureType);
+            //let thing = Game.getObjectById(objectId);
+            //console.log(creep.name + " now assigned to refill " + thing.structureType);
             creep.memory.refillEnergyJobId = objectId;
         }
     },

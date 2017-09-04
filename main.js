@@ -4,6 +4,8 @@ let queueWorkerCreeps = require("spawn.queueWorkers");
 let creepWorkRoutine = require("creepRoutine.work");
 
 let queueFillEnergyJobs = require("jobs.fillEnergy");
+let queueRepairJobs = require("jobs.repair");
+let queueManualConstructionJobs = require("jobs.manualConstruction")
 
 //var roleHarvester = require('role.harvester');
 //var roleUpgrader = require('role.upgrader');
@@ -124,7 +126,7 @@ module.exports.loop = function () {
     //    Memory.spawnUpdateTimer = 0;
     //}
 
-    console.log(creepAges);
+    //console.log(creepAges);
     
 
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
@@ -138,6 +140,9 @@ module.exports.loop = function () {
         queueWorkerCreeps.run(spawn.room);
         spawnBuildQueue.constructNextCreepInQueue(spawn);
 
+        queueRepairJobs.run(spawn.room);
+        queueManualConstructionJobs.run(spawn.room);
+
         // the energy is used upon spawning, but it isn't gone until the next tick
         Memory.refillEnergy = true;
     }
@@ -145,7 +150,6 @@ module.exports.loop = function () {
         queueFillEnergyJobs.run(spawn.room);
         Memory.refillEnergy = false;
     }
-
 
     //queueFillEnergyJobs.run(spawn.room);
     

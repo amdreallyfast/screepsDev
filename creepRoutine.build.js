@@ -4,7 +4,7 @@ module.exports = {
         let notMyJob = (creep.memory.role !== "worker");
         let noJob = (!creep.memory.constructionJobId);
         if (notMyJob || noJob) {
-            return;
+            return false;
         }
 
         let constructionSite = Game.getObjectById(creep.memory.constructionJobId);
@@ -17,12 +17,14 @@ module.exports = {
             // (2) construction completed.  
             // Assume the latter unless this becomes a problem.
             creep.memory.constructionJobId = null;
-            return;
+            return false;
         }
 
         creep.say("🔨");
         if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(constructionSite);
+            creep.moveTo(constructionSite, { visualizePathStyle: { stroke: "#ffffff" } });
         }
+
+        return true;
     }
 };
