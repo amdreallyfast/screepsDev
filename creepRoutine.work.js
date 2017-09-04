@@ -97,6 +97,10 @@ module.exports = {
                 if (result === OK || result === ERR_FULL) {
                     creep.memory.refillEnergyJobId = null
                 }
+                else if (delivery.energy === delivery.energyCapacity) {
+                    // someone else filled it
+                    creep.memory.refillEnergyJobId = null;
+                }
                 else if (result === ERR_NOT_IN_RANGE) {
                     creep.moveTo(delivery, { visualizePathStyle: { stroke: "#ffffff" } });
                 }
