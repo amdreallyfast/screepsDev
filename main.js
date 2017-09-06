@@ -150,7 +150,6 @@ module.exports.loop = function () {
     }
 
 
-
     //// refill the workers with any names that might have expired
     //var maxWorkers = 6;
     //for (let num = 0; num < maxWorkers; num++) {
