@@ -7,7 +7,7 @@ module.exports = {
         }
 
         // nothing else to do; upgrade controller
-        creep.say("⚙️");
+        creep.say("🛠️");
         if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
             creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
         }

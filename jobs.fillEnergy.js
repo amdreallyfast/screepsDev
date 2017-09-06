@@ -16,7 +16,7 @@ module.exports = {
             }
         });
 
-        console.log("number of energy refill targets: " + energyRefillTargets.length);
+        //console.log("number of energy refill targets: " + energyRefillTargets.length);
 
         energyRefillTargets.forEach(function (structure) {
             if (structure.structureType === STRUCTURE_EXTENSION) {

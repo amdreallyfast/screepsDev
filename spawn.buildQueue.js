@@ -61,36 +61,45 @@ let canCreateNextCreep = function (spawn) {
     }
 
     // Note: Cost of canCreateCreep(...) is AVERAGE, so try not to use it every tick.
-    let nextCreep = buildQueue[0];
-    let result = spawn.canCreateCreep(nextCreep.body, nextCreep.name);
-    if (result === OK) {
-        return true;
+    while (buildQueue.length > 0) {
+        let nextCreep = buildQueue[0];
+        let result = spawn.canCreateCreep(nextCreep.body, nextCreep.name);
+
+        if (result === OK) {
+            return true;
+        }
+        else if (result === ERR_NAME_EXISTS) {
+            // delete duplicates 
+            // Note: Duplicates can slip in if the spawn is creating a creep.  The function 
+            // checkForDuplicateBuildRequest(...) could conceivably look through all game spawns and 
+            // isolate the ones in that room and then check some special memory that is recording 
+            // which build requests are active, but it is easier to remove duplicates than to 
+            // prevent them.
+            console.log(spawn.name + ": creep " + nextCreep.name + " already exists; dumping spawn request");
+            buildQueue.shift();
+            // next
+        }
+        else if (result === ERR_NOT_ENOUGH_ENERGY) {
+            // keep waiting
+            console.log(spawn.name + ": not enough energy available to build next creep");
+            break;
+        }
+        else if (result === ERR_INVALID_ARGS) {
+            console.log(spawn.name + ": invalid arguments attempting to create creep '" + nextCreep.name + "'");
+            buildQueue.shift();
+            // next
+        }
+        else if (result === ERR_RCL_NOT_ENOUGH) {
+            console.log(spawn.name + ": creep build request submitted (" + nextCreep.name + " [" + nextCreep.body + "]), but RCL is not high enough");
+            buildQueue.shift();
+            // next
+        }
+        else {
+            // not owner, or some other error that I am not checking right now
+        }
     }
-    else if (result === ERR_NAME_EXISTS) {
-        // delete duplicates 
-        // Note: Duplicates can slip in if the spawn is creating a creep.  The function 
-        // checkForDuplicateBuildRequest(...) could conceivably look through all game spawns and 
-        // isolate the ones in that room and then check some special memory that is recording 
-        // which build requests are active, but it is easier to remove duplicates than to 
-        // prevent them.
-        buildQueue.shift();
-        return false;
-    }
-    else if (result === ERR_NOT_ENOUGH_ENERGY) {
-        // keep waiting
-        return false;
-    }
-    else if (result === ERR_INVALID_ARGS) {
-        console.log("invalid arguments attempting to create creep '" + nextCreep.name + "'");
-        return false;
-    }
-    else if (result === ERR_RCL_NOT_ENOUGH) {
-        console.log("creep build request submitted (" + nextCreep.name + " [" + nextCreep.body + "]), but RCL is not high enough");
-        return false;
-    }
-    else {
-        // not owner, or some other error that I am not checking right now
-    }
+
+    return false;
 }
 
 let getNextBuildRequest = function (room) {
@@ -173,21 +182,26 @@ let printBuildQueue = function (room) {
 
 // TODO: rename to room.creepPopulation.buildQueue
 module.exports = {
+    // in the event of disaster and creeps can't be built
+    clearQueues: function(room) {
+        Memory.creepBuildQueues[room.name].length = 0;
+    },
+
     constructNextCreepInQueue: function (spawn) {
         let room = spawn.room;
         ensureCreepBuildQueueExist(room);
         //ensurespawnCurrentBuildRequestExist(spawn);
 
         //// in case I'm curious
-        //printBuildQueue(room);
+        printBuildQueue(room);
 
         if (spawn.spawning) {
-            //console.log(spawn.name + " is busy spawning")
+            console.log(spawn.name + " is busy spawning")
             return;
         }
 
         if (!haveBuildRequest(room)) {
-            //console.log("no build requests for creeps for " + room.name);
+            console.log("no build requests for creeps for " + room.name);
             return;
         }
 

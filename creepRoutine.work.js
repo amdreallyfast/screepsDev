@@ -44,7 +44,7 @@ module.exports = {
             creepJobQueues.getRefillEnergyJobFor(creep);
             creepJobQueues.getRepairJobFor(creep);
             creepJobQueues.getConstructionJobFor(creep);
-
+            console.log(creep.name + ": refill job (" + creep.memory.refillEnergyJobId + "), repair job (" + creep.memory.repairJobId + "), construction job (" + creep.memory.constructionJobId + ")");
             //creepJobQueues.assignJobs(creep);
             //if (!creep.memory.refillEnergyJobId) {
             //    // energy refill takes presendence so that the spawn and extensions are ready to 
@@ -126,6 +126,8 @@ module.exports = {
             //    return;
             //}
 
+            
+
             // very useful for vizual indication of what the creep is doing
             // http://unicode.org/emoji/charts/emoji-style.txt
             if (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined) {
@@ -139,14 +141,17 @@ module.exports = {
             }
             else if (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined) {
                 // stop stuff from breaking down
+                //console.log(creep.name + ": repairing");
                 routineRepair.run(creep);
             }
             else if (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined) {
                 // roads, bypasses (gotta build bypasses), whatever
+                //console.log(creep.name + ": building");
                 routineBuild.run(creep);
             }
             else {
                 // nothing else to do, so upgrade the controller
+                //console.log(creep.name + ": upgrading");
                 routineUpgrade.run(creep);
             }
 

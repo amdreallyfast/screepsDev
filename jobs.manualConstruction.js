@@ -6,7 +6,7 @@ module.exports = {
     run: function (room) {
         let sites = room.find(FIND_CONSTRUCTION_SITES);
 
-        console.log("number of construction sites: " + sites.length);
+        //console.log("number of construction sites: " + sites.length);
 
         sites.forEach(function (site) {
             creepJobQueues.submitConstructionJob(site);

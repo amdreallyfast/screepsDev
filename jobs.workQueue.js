@@ -113,25 +113,38 @@ module.exports = {
     //    });
     //},
 
+    // in the event of disaster and jobs have built up to no end
+    clearJobs: function(room) {
+        Memory.creepJobs[room.name].constructionQueue.length = 0;
+        Memory.creepJobs[room.name].refillEnergyQueue.length = 0;
+        Memory.creepJobs[room.name].repairQueue.length = 0;
+    },
+
     /** @param {constructionSiteId} self-explanatory **/
     submitConstructionJob: function (constructionSite) {
         ensureJobQueuesExist(constructionSite.room);
         if (alreadyQueuedConstructionJob(constructionSite)) {
             return;
         }
-        Memory.creepJobs[constructionSite.room.name].constructionQueue.push(constructionSite.id);
+        let queue = Memory.creepJobs[constructionSite.room.name].constructionQueue;
+        queue.push(constructionSite.id);
+        console.log("number of construction jobs: " + queue.length);
     },
 
     /** @param {thing} any object that can store energy (technically can be a creep, but I'd advise against having creeps submit "refill" jobs because they can move and then you have one creep chasing another **/
     submitRefillEnergyJob: function (thing) {
         ensureJobQueuesExist(thing.room);
-        Memory.creepJobs[thing.room.name].refillEnergyQueue.push(thing.id);
+        let queue = Memory.creepJobs[thing.room.name].refillEnergyQueue;
+        queue.push(thing.id);
+        console.log("number of energy refill jobs: " + queue.length);
     },
 
     /** @param {thing} any damaged structure that needs repair (spawn, containers, ramparts, roads, turrets, etc.) **/
     submitRepairJob: function (thing) {
         ensureJobQueuesExist(thing.room);
-        Memory.creepJobs[thing.room.name].repairQueue.push(thing.id);
+        let queue = Memory.creepJobs[thing.room.name].repairQueue;
+        queue.push(thing.id);
+        console.log("number of repair jobs: " + queue.length);
     },
 
     getConstructionJobFor: function (creep) {
@@ -142,9 +155,30 @@ module.exports = {
         let needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
         let haveWork = (queue.length > 0);
         //console.log(creep.name + " needs construction work? " + needWork + ", have construction work? " + haveWork);
-        if (needWork && haveWork) {
-            //console.log(creep.name + " assigning construction work");
-            creep.memory.constructionJobId = queue.shift();
+        //if (needWork && haveWork) {
+        //    //console.log(creep.name + " assigning construction work");
+        //    //let constructionId = null;
+        //    //while (queue.length > 0) {
+        //    //    let obj = Game.getObjectById(queue.shift());
+        //    //    if (obj !== null && obj !== undefined {
+        //    //        break;
+        //    //    }
+        //    //}
+        //    creep.memory.constructionJobId = queue.shift();
+        //}
+        if (needWork) {
+            let siteId = null;
+            while (queue.length > 0) {
+                siteId = queue.shift();
+                let site = Game.getObjectById(siteId);
+                if (site !== null && site !== undefined) {
+                    break;
+                }
+                else {
+                    // already built
+                }
+            }
+            creep.memory.constructionJobId = siteId;
         }
     },
 
@@ -156,27 +190,56 @@ module.exports = {
         needWork = (creep.memory.refillEnergyJobId === null || creep.memory.constructionJobId === undefined);
         haveWork = (queue.length > 0);
         //console.log(creep.name + " needs energy refill work? " + needWork + ", have energy refill work? " + haveWork);
-        if (needWork && haveWork) {
-            //console.log(creep.name + " assigning energy refill work");
-            let objectId = queue.shift();
-            //let thing = Game.getObjectById(objectId);
-            //console.log(creep.name + " now assigned to refill " + thing.structureType);
-            creep.memory.refillEnergyJobId = objectId;
+        //if (needWork && haveWork) {
+        //    //console.log(creep.name + " assigning energy refill work");
+        //    let objectId = queue.shift();
+        //    //let thing = Game.getObjectById(objectId);
+        //    //console.log(creep.name + " now assigned to refill " + thing.structureType);
+        //    creep.memory.refillEnergyJobId = objectId;
+        //}
+
+        if (needWork) {
+            // refill jobs can stack up
+            let structureId = null;
+            while (queue.length > 0) {
+                structureId = queue.shift();
+                let structure = Game.getObjectById(structureId);
+                if (structure.energy < structure.energyCapacity) {
+                    break;
+                }
+                else {
+                    // already full; next
+                }
+            }
+            creep.memory.refillEnergyJobId = structureId;
         }
     },
 
     getRepairJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        //printRepairQueue(creep.room);
+        printRepairQueue(creep.room);
         let queue = Memory.creepJobs[creep.room.name].repairQueue;
 
         let needWork = (creep.memory.repairJobId === null || creep.memory.constructionJobId === undefined);
         let haveWork = (queue.length > 0);
         //console.log(creep.name + " needs repair work? " + needWork + ", have repair work? " + haveWork);
-        if (needWork && haveWork) {
-            //console.log(creep.name + " assigning repair work");
-            creep.memory.repairJobId = queue.shift();
+        //if (needWork && haveWork) {
+        //    //console.log(creep.name + " assigning repair work");
+        //    creep.memory.repairJobId = queue.shift();
+        //}
+        let structureId = null;
+        while (queue.length > 0) {
+            structureId = queue.shift();
+            let structure = Game.getObjectById(structureId);
+            if (structure.hits < structure.hitsMax) {
+                break;
+            }
+            else {
+                // already repaired; next
+            }
         }
+        
+        creep.memory.repairJobId = structureId;
     },
 
     ///** @param {creep} self-explanatory **/

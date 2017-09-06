@@ -13,10 +13,10 @@ module.exports = {
         creep.say("📵");
         if (!creep.memory.energyPickupId) {
             // find something
-            //console.log(creep.name + ": finding energy pickup");
+            let energyPickupStatusStr = (creep.name + ": finding energy pickup");
             let droppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
             if (droppedEnergy) {
-                //console.log(creep.name + ": found energy drop");
+                energyPickupStatusStr += ("; found energy drop");
                 // TODO: ??make this more distributed amongst multiple energy drops??
                 creep.memory.energyPickupId = droppedEnergy.id;
                 creep.memory.energyPickupType = "dropped";
@@ -25,29 +25,35 @@ module.exports = {
                 // no dropped energy, so check containers
                 let energyContainers = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType === STRUCTURE_CONTAINER);
+                        if (structure.structureType === STRUCTURE_CONTAINER) {
+                            if (structure.store[RESOURCE_ENERGY] > 0) {
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                 });
                 if (energyContainers.length > 0) {
-                    // pick the first one with energy (there will likely be only one such container
-                    let goToThis = null;
-                    for (let index in energyContainers) {
-                        let container = energyContainers[index];
-                        if (container.store[RESOURCE_ENERGY] > 0) {
-                            goToThis = container;
-                            break;
-                        }
-                    }
+                    //// pick the first one with energy (there will likely be only one such container
+                    //let goToThis = null;
+                    //for (let index in energyContainers) {
+                    //    let container = energyContainers[index];
+                    //    if (container.store[RESOURCE_ENERGY] > 0) {
+                    //        goToThis = container;
+                    //        break;
+                    //    }
+                    //}
 
-                    if (goToThis !== null) {
-                        //console.log("found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
+                    let goToThis = energyContainers[0];
+                    //if (goToThis !== null) {
+                    energyPickupStatusStr += ("; found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
                         creep.memory.energyPickupId = goToThis.id;
                         creep.memory.energyPickupType = "container";
-                    }
+                    //}
                 }
                 else {
                     // no dropped energy and no containers with energy; do I have do everything myself?
-                    //console.log("CreepRoutineGetEnergy::run(...): " + creep.name + ": no energy available");
+                    energyPickupStatusStr += ("harvesting");
                     let num = creep.memory.number;
                     let bigger = (energySources.length > num) ? energySources.length : num;
                     let smaller = (energySources.length > num) ? num : energySources.length;
@@ -67,15 +73,20 @@ module.exports = {
                     creep.memory.energyPickupTimeout = 0;
                 }
             }
+
+            console.log(energyPickupStatusStr);
         }
         else {
-            let obj = Game.getObjectById(creep.memory.energyPickupId);
-            if (!obj) {
-                // not a valid game object (perhaps a dropped energy source that disappeared)
-                creep.memory.energyPickupId = null;
-                creep.memory.energyPickupType = null;
-                return;
-            }
+            //console.log(creep.name + ": have energy pickup object (" + creep.memory.energyPickupId + ")");
+        }
+
+        let obj = Game.getObjectById(creep.memory.energyPickupId);
+        if (!obj) {
+            // not a valid game object (perhaps a dropped energy source that disappeared)
+            console.log(creep.name + ": not a valid energy pickup object (" + creep.memory.energyPickupId + ")");
+            creep.memory.energyPickupId = null;
+            creep.memory.energyPickupType = null;
+            return;
         }
 
         let result = OK;
@@ -101,7 +112,8 @@ module.exports = {
             }
         }
         else {
-            creep.say(creep.name + ": ❔can haz energy❔");
+            creep.say("pickup❔");
+            console.log(creep.name + ": energy pickup type: " + creep.memory.energyPickupType);
         }
 
         if (result === OK) {
