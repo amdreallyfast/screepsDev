@@ -178,7 +178,7 @@ module.exports = {
         ensureCreepBuildQueueExist(room);
         //ensurespawnCurrentBuildRequestExist(spawn);
 
-        // in case I'm curious
+        //// in case I'm curious
         //printBuildQueue(room);
 
         if (spawn.spawning) {
