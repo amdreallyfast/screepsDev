@@ -133,8 +133,7 @@ module.exports.loop = function () {
     console.log("that time yet? " + (Game.time % 50));
     let currentTick = Game.time;
     if (currentTick % 50 === 0) {
-        spawnBuildQueue.constructNextCreepInQueue(spawn);
-
+        console.log(creepAges);
         queueMinerCreeps.run(spawn.room);
         queueWorkerCreeps.run(spawn.room);
         queueRepairJobs.run(spawn.room);
@@ -142,6 +141,8 @@ module.exports.loop = function () {
 
         // the energy is used upon spawning, but it isn't gone until the next tick
         Memory.refillEnergy = true;
+
+        spawnBuildQueue.constructNextCreepInQueue(spawn);
     }
     else if (Memory.refillEnergy) {
         queueFillEnergyJobs.run(spawn.room);

@@ -243,7 +243,7 @@ module.exports = {
         }
         else {
             console.log("new creep build request: " + buildThis.name);
-            printBuildQueue(room);
+            //printBuildQueue(room);
             Memory.creepBuildQueues[room.name].push(buildThis);
             //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
         }

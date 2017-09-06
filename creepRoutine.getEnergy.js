@@ -1,4 +1,11 @@
 ﻿
+let biggerModSmaller = function (array, num) {
+    let bigger = (array.length > num) ? array.length : num;
+    let smaller = (array.length > num) ? num : array.length;
+    smaller = (smaller <= 0) ? 1 : smaller;
+    return (bigger % smaller);
+}
+
 module.exports = {
     run: function (creep) {
         if (creep.spawning) {
@@ -14,12 +21,22 @@ module.exports = {
         if (!creep.memory.energyPickupId) {
             // find something
             let energyPickupStatusStr = (creep.name + ": finding energy pickup");
-            let droppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
-            if (droppedEnergy) {
+            //let droppedEnergy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+            //if (droppedEnergy) {
+            //    energyPickupStatusStr += ("; found energy drop");
+            //    // TODO: ??make this more distributed amongst multiple energy drops??
+            //    creep.memory.energyPickupId = droppedEnergy.id;
+            //    creep.memory.energyPickupType = "dropped";
+            //}
+            let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+            if (droppedEnergy.length > 0) {
                 energyPickupStatusStr += ("; found energy drop");
-                // TODO: ??make this more distributed amongst multiple energy drops??
-                creep.memory.energyPickupId = droppedEnergy.id;
+                creep.memory.energyPickupId = droppedEnergy[biggerModSmaller(droppedEnergy, creep.memory.number)].id;
+                if (!Game.getObjectById(creep.memory.energyPickupId)) {
+                    console.log(droppedEnergy)
+                }
                 creep.memory.energyPickupType = "dropped";
+
             }
             else {
                 // no dropped energy, so check containers
@@ -46,22 +63,17 @@ module.exports = {
 
                     let goToThis = energyContainers[0];
                     //if (goToThis !== null) {
-                    energyPickupStatusStr += ("; found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
                         creep.memory.energyPickupId = goToThis.id;
                         creep.memory.energyPickupType = "container";
+                        energyPickupStatusStr += ("; found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
                     //}
                 }
                 else {
                     // no dropped energy and no containers with energy; do I have do everything myself?
-                    energyPickupStatusStr += ("harvesting");
-                    let num = creep.memory.number;
-                    let bigger = (energySources.length > num) ? energySources.length : num;
-                    let smaller = (energySources.length > num) ? num : energySources.length;
-                    smaller = (smaller <= 0) ? 1 : smaller;
-
-                    // space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam 
-                    creep.memory.energyPickupId = energySources[bigger % smaller].id;
+                    // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
+                    creep.memory.energyPickupId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
                     creep.memory.energyPickupType = "harvest";
+                    energyPickupStatusStr += ("harvesting from energy source " + creep.memory.energyPickupId);
 
                     // Note: Harvesting requires multiple ticks, while energy pickup only needs 
                     // one.  If, in the course of events, a creep is trying to harvest but there 
@@ -83,7 +95,7 @@ module.exports = {
         let obj = Game.getObjectById(creep.memory.energyPickupId);
         if (!obj) {
             // not a valid game object (perhaps a dropped energy source that disappeared)
-            console.log(creep.name + ": not a valid energy pickup object (" + creep.memory.energyPickupId + ")");
+            console.log(creep.name + ": not a valid energy pickup object (" + creep.memory.energyPickupId + "): " + obj);
             creep.memory.energyPickupId = null;
             creep.memory.energyPickupType = null;
             return;

@@ -9,7 +9,7 @@ module.exports = {
             }
         });
 
-        console.log("number of repair targets: " + repairTargets.length);
+        //console.log("number of repair targets: " + repairTargets.length);
 
         repairTargets.forEach(function (structure) {
             creepJobQueues.submitRepairJob(structure);

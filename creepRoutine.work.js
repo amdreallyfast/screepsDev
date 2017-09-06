@@ -44,7 +44,7 @@ module.exports = {
             creepJobQueues.getRefillEnergyJobFor(creep);
             creepJobQueues.getRepairJobFor(creep);
             creepJobQueues.getConstructionJobFor(creep);
-            console.log(creep.name + ": refill job (" + creep.memory.refillEnergyJobId + "), repair job (" + creep.memory.repairJobId + "), construction job (" + creep.memory.constructionJobId + ")");
+            
             //creepJobQueues.assignJobs(creep);
             //if (!creep.memory.refillEnergyJobId) {
             //    // energy refill takes presendence so that the spawn and extensions are ready to 
@@ -66,6 +66,7 @@ module.exports = {
         }
 
 
+        //console.log(creep.name + ": refill job (" + creep.memory.refillEnergyJobId + "), repair job (" + creep.memory.repairJobId + "), construction job (" + creep.memory.constructionJobId + ")");
 
         if (!creep.memory.working) {
             //console.log(creep.name + " getting energy");
@@ -130,7 +131,11 @@ module.exports = {
 
             // very useful for vizual indication of what the creep is doing
             // http://unicode.org/emoji/charts/emoji-style.txt
-            if (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined) {
+            let haveRefillJob = (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined);
+            let haveRepairJob = (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined);
+            let haveConstructionJob = (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined);
+
+            if (haveRefillJob) {
                 // energy refill takes presendence so that the spawn and extensions are ready to 
                 // build and so that the turrets are ready to shoot
                 if (!routineRefill.run(creep)) {
@@ -139,12 +144,12 @@ module.exports = {
                     creepJobQueues.getRefillEnergyJobFor(creep);
                 }
             }
-            else if (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined) {
+            else if (haveRepairJob) {
                 // stop stuff from breaking down
                 //console.log(creep.name + ": repairing");
                 routineRepair.run(creep);
             }
-            else if (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined) {
+            else if (haveConstructionJob) {
                 // roads, bypasses (gotta build bypasses), whatever
                 //console.log(creep.name + ": building");
                 routineBuild.run(creep);

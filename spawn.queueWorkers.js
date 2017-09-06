@@ -15,8 +15,12 @@ let creepBuildQueue = require("spawn.buildQueue");
 //  - memory constants
 //  - MY_ERR_* constants
 //  - spawn.buildQueue.submit(...) returns OK if all went well, MY_ERR_CREEP_SPAWN_REQUEST_DUPLICATE, or MY_ERR_CREEP_SPAWN_REQUEST_ENERGY_LEVEL_TIMEOUT
-// TODO: in spawn.buildQueue.submit
+// (not necessary; spawn.canCreateCreep(...) does the necessary checks) TODO: in spawn.buildQueue.submit
 //  - if okay to submit build request, push back an object { energyRequired: ..., blueprint: buildRequest }
+// TODO: create creep specifically for refilling spawns, extensions, towers 
+//  - justification: lots of WORK parts are needed for building, repairing, and upgrading, but only CARRY parts are needed for refilling, and time spent refilling is time not spent building, repairing, or upgrading
+//  - use creepRoutine.refillEnergy and jobs.fillEnergy to tell it what to do
+//  - create room.queueHaulers to create 1 for each energy source
 // TODO: create room.energyLevelMonitoring module
 //  - handle energy level timeouts there
 //  - in 50-energy increments
@@ -27,6 +31,13 @@ let creepBuildQueue = require("spawn.buildQueue");
 //  - used by spawn.buildQueue to determine how much energy is needed for the build (??just carry energy required along with the build request??)
 //  - used by spawn.queueWorkers to determine if it should shrink the energy needed for a particular module
 //  - used by spawn.queueMiners to determine if the room is ready for miners or if it should still use general-purpose workers.
+// TODO: in jobs.roads
+//  - every tick: look at every creep's position and determine if it is undeveloped land; if so, increment a Memory.traffic[pos] counter by 1
+//  - every 100 ticks: if a traffic counter for a position is > 100,
+//      - create construction site there for a road
+//      - set Memory.traffic[pos] = null to flag for cleanup
+// TODO: create jobs.baseBuilding
+//  - get a rouch idea of what a base should look like for different RCLs, plan building jobs accordingly
 
 
 let workerBodyBasedOnAvailableEnergy = function(room) {
