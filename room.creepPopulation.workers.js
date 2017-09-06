@@ -1,15 +1,6 @@
 
 let creepBuildQueue = require("room.creepPopulation.buildQueue");
 
-//// a unique number is useful for performing a % operation to scatter the workers among limited resources like energy sources and energy containers 
-//let NewNumber = function() {
-//    let num = 0;
-//    return function() {
-//        return (num++);
-//    }
-//}();
-
-
 // TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
 // TODO: create myConstants module;
 //  - memory constants

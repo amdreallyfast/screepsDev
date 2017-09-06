@@ -1,7 +1,4 @@
-﻿//let spawnBuildQueue = require("spawn.buildQueue");
-//let queueMinerCreeps = require("spawn.queueMiners");
-//let queueWorkerCreeps = require("spawn.queueWorkers");
-let spawnBuildQueue = require("room.creepPopulation.buildQueue");
+﻿let spawnBuildQueue = require("room.creepPopulation.buildQueue");
 let queueMinerCreeps = require("room.creepPopulation.miners");
 let queueWorkerCreeps = require("room.creepPopulation.workers");
 let creepWorkRoutine = require("creepRoutine.work");
@@ -10,10 +7,6 @@ let queueFillEnergyJobs = require("jobs.fillEnergy");
 let queueRepairJobs = require("jobs.repair");
 let queueManualConstructionJobs = require("jobs.manualConstruction");
 let creepJobQueues = require("jobs.workQueue");
-
-//var roleHarvester = require('role.harvester');
-//var roleUpgrader = require('role.upgrader');
-//var roleBuilder = require('role.builder');
 
 
 // TODO: go through all keys in Memory and see what you don't need; delete those that you don't
