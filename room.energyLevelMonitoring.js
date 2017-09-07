@@ -1,5 +1,5 @@
 ﻿
-const TICKS_UNTIL_TIMEOUT = 100;
+const TICKS_UNTIL_TIMEOUT = 1000;
 
 let guaranteeEnergyLevelMonitoringExists = function (room) {
     if (!Memory.energyLevels) {
