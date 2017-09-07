@@ -1,4 +1,6 @@
-﻿let spawnBuildQueue = require("room.creepPopulation.buildQueue");
+﻿let roomEnergyMonitoring = require("room.energyLevelMonitoring");
+
+let spawnBuildQueue = require("room.creepPopulation.buildQueue");
 let queueMinerCreeps = require("room.creepPopulation.miners");
 let queueWorkerCreeps = require("room.creepPopulation.workers");
 let creepWorkRoutine = require("creepRoutine.work");
@@ -9,46 +11,49 @@ let queueManualConstructionJobs = require("jobs.manualConstruction");
 let creepJobQueues = require("jobs.workQueue");
 
 
+
 // TODO: go through all keys in Memory and see what you don't need; delete those that you don't
 
 
 
 module.exports.loop = function () {
-    var spawn = Game.spawns['Spawn1'];
+    let myRooms = [];
 
-    let workersBuilding = 0;
-    let workerNumbers = {};
 
-    var energySources = spawn.room.find(FIND_SOURCES);
+    //let workersBuilding = 0;
+    //let workerNumbers = {};
 
-    // Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
-    var repairTargets = spawn.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return (structure.hits < structure.hitsMax);
-        }
-    });
-    //let str = "";
-    //repairTargets.forEach(function (target) {
-    //    str += (target.structureType + " " + target.hits + "/" + target.hitsMax + ";");
+    //var energySources = spawn.room.find(FIND_SOURCES);
+
+    //// Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
+    //var repairTargets = spawn.room.find(FIND_STRUCTURES, {
+    //    filter: (structure) => {
+    //        return (structure.hits < structure.hitsMax);
+    //    }
     //});
-    //console.log(str);
+    ////let str = "";
+    ////repairTargets.forEach(function (target) {
+    ////    str += (target.structureType + " " + target.hits + "/" + target.hitsMax + ";");
+    ////});
+    ////console.log(str);
 
-    var energyRefillTargets = spawn.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return (
-                structure.structureType == STRUCTURE_EXTENSION ||
-                structure.structureType == STRUCTURE_SPAWN ||
-                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-        }
-    });
+    //var energyRefillTargets = spawn.room.find(FIND_STRUCTURES, {
+    //    filter: (structure) => {
+    //        return (
+    //            structure.structureType == STRUCTURE_EXTENSION ||
+    //            structure.structureType == STRUCTURE_SPAWN ||
+    //            structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+    //    }
+    //});
 
-    var buildTargets = spawn.room.find(FIND_CONSTRUCTION_SITES);
+    //var buildTargets = spawn.room.find(FIND_CONSTRUCTION_SITES);
 
     let creepAges = "";
     for (var name in Game.creeps) {
 
         var creep = Game.creeps[name];
         creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
+        myRooms.push[creep.room.name];
 
         creepWorkRoutine.run(creep);
         continue;
@@ -126,6 +131,7 @@ module.exports.loop = function () {
 
 
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
+    var spawn = Game.spawns['Spawn1'];
     console.log("that time yet? " + (Game.time % 50));
     let currentTick = Game.time;
     if (currentTick % 50 === 0) {
@@ -144,6 +150,14 @@ module.exports.loop = function () {
         queueFillEnergyJobs.run(spawn.room);
         Memory.refillEnergy = false;
     }
+
+    for (let name in Game.rooms) {
+        console.log("room loops: " + name);
+        let room = Game.rooms[name];
+        roomEnergyMonitoring.update(room);
+        roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
+    }
+
 
 
     //// refill the workers with any names that might have expired
