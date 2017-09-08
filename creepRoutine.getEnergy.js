@@ -1,6 +1,4 @@
 ﻿
-let creepHarvestRoutine = require("creepRoutine.harvestEnergy");
-
 let biggerModSmaller = function (array, num) {
     let bigger = (array.length > num) ? array.length : num;
     let smaller = (array.length > num) ? num : array.length;
@@ -12,8 +10,8 @@ let pickupDroppedEnergy = function (creep) {
     let droppedEnergyObj = Game.getObjectById(creep.memory.energySourceId);
     let result = creep.pickup(droppedEnergyObj);
     if (result === OK) {
-        creep.energySourceId = null;
-        creep.energySourceType = null;
+        creep.memory.energySourceId = null;
+        creep.memory.energySourceType = null;
     }
     else if (result === ERR_NOT_IN_RANGE) {
         result = creep.moveTo(droppedEnergyObj, { visualizePathStyle: { stroke: "#ffffff" } });
@@ -29,16 +27,16 @@ let withdrawFromContainer = function (creep) {
     let container = Game.getObjectById(creep.memory.energySourceId);
     let result = creep.withdraw(container);
     if (result === OK) {
-        creep.energySourceId = null;
-        creep.energySourceType = null;
+        creep.memory.energySourceId = null;
+        creep.memory.energySourceType = null;
     }
     else if (result === ERR_NOT_IN_RANGE) {
         result = creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
     }
     else if (result === ERR_NOT_ENOUGH_RESOURCES) {
-        // must have been a race condition to a container with very little energy; get a new energy pickup
-        creep.energySourceId = null;
-        creep.energySourceType = null;
+        // must have been a race condition to a container with very little energy and it was emptied before you got there; get a new energy pickup
+        creep.memory.energySourceId = null;
+        creep.memory.energySourceType = null;
     }
     else {
         console.log("creepRoutine.getEnergy, withdrawFromContainer(...) for " + creep.name + ": unknown error " + result);
@@ -49,19 +47,20 @@ let withdrawFromContainer = function (creep) {
 
 let harvestFromSource = function (creep) {
     // do as the miners do
-    // Note: But you are a worker, not a miner, so clear your energy source when done (or 
-    // periodically if you haven't been able to get to the source for a while).
-    let result = creepHarvestRoutine.run(creep);
+    let source = Game.getObjectById(creep.memory.energySourceId);
+    result = creep.harvest(source);
     if (result === OK) {
+        // harvesting requires multiple ticks to fill (unlike pickup up an energy drop or withdrawing from a container), so only reset the energy source once the creep is done
         if (creep.carry.energy === creep.carryCapacity) {
-            creep.energySourceId = null;
-            creep.energySourceType = null;
+            creep.memory.energySourceId = null;
+            creep.memory.energySourceType = null;
         }
     }
     else if (result === ERR_NOT_IN_RANGE) {
+        creep.moveTo(source, { visualizePathStyle: { stroke: "#ffffff" } });
         if (creep.memory.energyPickupTimeout++ > 50) {
             creep.memory.energySourceId = null;
-            creep.energySourceType = null;
+            creep.memory.energySourceType = null;
         }
     }
     else {
@@ -77,8 +76,10 @@ module.exports = {
             return;
         }
 
-        //creep.memory.energySourceId = null;
-        //creep.memory.energySourceType = null;
+        //delete creep.energySourceId;
+        //delete creep.energySourceType;
+        //delete creep.memory.energySourceId;
+        //delete creep.memory.energySourceType;
 
         // the queue for miner creeps should have already defined this
         //var energySources = creep.room.find(FIND_SOURCES);
@@ -157,57 +158,13 @@ module.exports = {
         else if (creep.memory.energySourceType === "harvest") {
             result = harvestFromSource(creep);
         }
-        //let result = OK;
-        //let thing = null;
-        //if (creep.memory.energySourceType === "dropped") {
-        //    thing = Game.getObjectById(creep.memory.energySourceId);
-        //    result = creep.pickup(thing);
-        //    //if (result === OK) {
-        //    //    creep.memory.energySourceId = null;
-        //    //    creep.memory.energySourceType = null;
-        //    //}
-        //    //else if (result === ERR_NOT_IN_RANGE) {
-        //    //    result = creep.moveTo()
-        //    //}
-        //    //else {
-
-        //    //}
-        //}
-        //else if (creep.memory.energySourceType === "container") {
-        //    thing = Game.getObjectById(creep.memory.energySourceId);
-        //    result = creep.withdraw(thing, RESOURCE_ENERGY);
-        //}
-        //else if (creep.memory.energySourceType === "harvest") {
-        //    //console.log(creep.name + "trying to harvest; energy " + creep.carry.energy + "/" + creep.carryCapacity);
-        //    thing = Game.getObjectById(creep.memory.energySourceId);
-        //    result = creep.harvest(thing);
-        //    if (result === ERR_NOT_IN_RANGE) {
-        //        if (creep.memory.energyPickupTimeout++ > 50) {
-        //            // you've had enough time to get across the room; must be a traffic jam or there is a miner forever hogging the source
-        //            creep.memory.energySourceId = null;
-        //            return;
-        //        }
-        //    }
-        //}
         else {
             creep.say("pickup❔");
             console.log(creep.name + ": energy source type: " + creep.memory.energySourceType);
+
+            // don't know what went wrong, but whatever it was, get energy from a new source
             creep.memory.energySourceId = null;
             creep.memory.energySourceType = null;
         }
-
-        //if (result === OK) {
-        //    if (creep.carry.energy === creep.carryCapacity) {
-        //        // pick up from a new source next time (keeps things flexible)
-        //        creep.memory.energySourceId = null;
-        //        creep.memory.energySourceType = null;
-        //    }
-        //}
-        //else if (result === ERR_NOT_IN_RANGE) {
-        //    result = creep.moveTo(thing, { visualizePathStyle: { stroke: "#ffffff" } });
-        //}
-        //else {
-        //    console.log("creepRoutine.getEnergy::run(...): " + creep.name + " err '" + result + "'");
-        //}
     }
 }
