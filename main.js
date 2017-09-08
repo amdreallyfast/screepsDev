@@ -17,13 +17,10 @@ let creepJobQueues = require("jobs.workQueue");
 
 
 module.exports.loop = function () {
-    let myRooms = [];
-
-
     //let workersBuilding = 0;
-    //let workerNumbers = {};
+    let workerNumbers = {};
 
-    //var energySources = spawn.room.find(FIND_SOURCES);
+    var energySources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
 
     //// Note: FIND_MY_STRUCTURES does not find roads or containers for some reason.
     //var repairTargets = spawn.room.find(FIND_STRUCTURES, {
@@ -53,14 +50,13 @@ module.exports.loop = function () {
 
         var creep = Game.creeps[name];
         creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
-        myRooms.push[creep.room.name];
 
         creepWorkRoutine.run(creep);
-        continue;
+        //continue;
 
-        //if (creep.memory.role === "worker") {
-        //    workerNumbers[creep.memory.number] = true;
-        //}
+        if (creep.memory.role === "worker") {
+            workerNumbers[creep.memory.number] = true;
+        }
 
         //let energyEmpty = (creep.carry.energy === 0);
         //let energyFull = (creep.carry.energy === creep.carryCapacity);
@@ -125,13 +121,15 @@ module.exports.loop = function () {
     }
 
 
-    //console.log(creepAges);
-    //spawnBuildQueue.clearQueues(spawn.room);
-    //creepJobQueues.clearJobs(spawn.room);
 
 
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
     var spawn = Game.spawns['Spawn1'];
+
+    //console.log(creepAges);
+    //spawnBuildQueue.clearQueues(spawn.room);
+    //creepJobQueues.clearJobs(spawn.room);
+
     console.log("that time yet? " + (Game.time % 50));
     let currentTick = Game.time;
     if (currentTick % 50 === 0) {
@@ -152,10 +150,10 @@ module.exports.loop = function () {
     }
 
     for (let name in Game.rooms) {
-        console.log("room loops: " + name);
+        //console.log("room loops: " + name);
         let room = Game.rooms[name];
         roomEnergyMonitoring.update(room);
-        roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
+        //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
     }
 
 
@@ -165,14 +163,17 @@ module.exports.loop = function () {
     //for (let num = 0; num < maxWorkers; num++) {
     //    let needHarvester = !workerNumbers[num];
     //    //let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
-    //    let haveEnergyToCreate = (spawn.room.energyAvailable >= 350);
+    //    let haveEnergyToCreate = (spawn.room.energyAvailable >= 300);
     //    //console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
     //    if (needHarvester && haveEnergyToCreate) {
-    //        //console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
+    //        console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
     //        let newEnergySourceId = energySources[num % energySources.length].id;
     //        //spawn.createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
     //        //spawn.createCreep([WORK, CARRY, MOVE], "worker" + num, {
-    //        spawn.createCreep([WORK, CARRY, MOVE, MOVE], "worker" + num, {
+    //        //let body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
+    //        let body = [WORK, CARRY, MOVE];
+    //        //let body = [WORK, CARRY, MOVE, MOVE];
+    //        spawn.createCreep(body, "worker" + num, {
     //            role: 'worker',
     //            number: num,
     //            energySourceId: newEnergySourceId
