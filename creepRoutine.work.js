@@ -144,16 +144,16 @@ module.exports = {
                     creepJobQueues.getRefillEnergyJobFor(creep);
                 }
             }
-            else if (haveRepairJob) {
-                // stop stuff from breaking down
-                //console.log(creep.name + ": repairing");
-                routineRepair.run(creep);
-            }
-            else if (haveConstructionJob) {
-                // roads, bypasses (gotta build bypasses), whatever
-                //console.log(creep.name + ": building");
-                routineBuild.run(creep);
-            }
+            //else if (haveRepairJob) {
+            //    // stop stuff from breaking down
+            //    //console.log(creep.name + ": repairing");
+            //    routineRepair.run(creep);
+            //}
+            //else if (haveConstructionJob) {
+            //    // roads, bypasses (gotta build bypasses), whatever
+            //    //console.log(creep.name + ": building");
+            //    routineBuild.run(creep);
+            //}
             else {
                 // nothing else to do, so upgrade the controller
                 //console.log(creep.name + ": upgrading");

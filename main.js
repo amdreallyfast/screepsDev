@@ -130,12 +130,14 @@ module.exports.loop = function () {
     //spawnBuildQueue.clearQueues(spawn.room);
     //creepJobQueues.clearJobs(spawn.room);
 
+
     console.log("that time yet? " + (Game.time % 50));
     let currentTick = Game.time;
     if (currentTick % 50 === 0) {
         console.log(creepAges);
+        roomEnergyMonitoring.printEnergyTimeoutsForRoom(spawn.room);
         queueMinerCreeps.run(spawn.room);
-        queueWorkerCreeps.run(spawn.room);
+        //queueWorkerCreeps.run(spawn.room);
         queueRepairJobs.run(spawn.room);
         queueManualConstructionJobs.run(spawn.room);
 
@@ -156,14 +158,15 @@ module.exports.loop = function () {
         //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
     }
 
-
+    //spawnBuildQueue.constructNextCreepInQueue(spawn);
 
     //// refill the workers with any names that might have expired
     //var maxWorkers = 6;
     //for (let num = 0; num < maxWorkers; num++) {
     //    let needHarvester = !workerNumbers[num];
     //    //let haveEnergyToCreate = (spawn.room.energyAvailable >= 550);
-    //    let haveEnergyToCreate = (spawn.room.energyAvailable >= 300);
+    //    //let haveEnergyToCreate = (spawn.room.energyAvailable >= 300);
+    //    let haveEnergyToCreate = (spawn.room.energyAvailable >= 350);
     //    //console.log("need harvester " + num + " ?: " + needHarvester + ", have energy to create? " + haveEnergyToCreate);
     //    if (needHarvester && haveEnergyToCreate) {
     //        console.log("creating worker" + num + " with energy source index " + (num % energySources.length));
@@ -171,8 +174,8 @@ module.exports.loop = function () {
     //        //spawn.createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE], "worker" + num, {
     //        //spawn.createCreep([WORK, CARRY, MOVE], "worker" + num, {
     //        //let body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
-    //        let body = [WORK, CARRY, MOVE];
-    //        //let body = [WORK, CARRY, MOVE, MOVE];
+    //        //let body = [WORK, CARRY, MOVE];
+    //        let body = [WORK, CARRY, MOVE, MOVE];
     //        spawn.createCreep(body, "worker" + num, {
     //            role: 'worker',
     //            number: num,

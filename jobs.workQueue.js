@@ -113,6 +113,8 @@ module.exports = {
     //    });
     //},
 
+
+
     // in the event of disaster and jobs have built up to no end
     clearJobs: function(room) {
         Memory.creepJobs[room.name].constructionQueue.length = 0;
@@ -197,7 +199,7 @@ module.exports = {
         if (needWork && haveWork) {
             structureId = queue.shift();
             let structure = Game.getObjectById(structureId);
-            console.log(creep.name + ": had refill job (" + creep.memory.refillEnergyJobId + "), now assigning refill job (" + structure.structureType + ", " + structure.energy + "/" + structure.energyCapacity + ")");
+            //console.log(creep.name + ": had refill job (" + creep.memory.refillEnergyJobId + "), now assigning refill job (" + structure.structureType + ", " + structure.energy + "/" + structure.energyCapacity + ")");
             creep.memory.refillEnergyJobId = structureId;
         }
     },
@@ -229,7 +231,7 @@ module.exports = {
         if (needWork && haveWork) {
             structureId = queue.shift();
             let structure = Game.getObjectById(structureId);
-            console.log(creep.name + ": had repair job (" + creep.memory.repairJobId + "), now assigning repair job (" + structure.structureType + ", " + structure.hits + "/" + structure.hitsMax + ")");
+            //console.log(creep.name + ": had repair job (" + creep.memory.repairJobId + "), now assigning repair job (" + structure.structureType + ", " + structure.hits + "/" + structure.hitsMax + ")");
             creep.memory.repairJobId = structureId;
         }
     },
