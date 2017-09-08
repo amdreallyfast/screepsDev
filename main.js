@@ -154,7 +154,7 @@ module.exports.loop = function () {
         //console.log("room loops: " + name);
         let room = Game.rooms[name];
         roomEnergyMonitoring.update(room);
-        roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
+        //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
     }
 
     //spawnBuildQueue.constructNextCreepInQueue(spawn);

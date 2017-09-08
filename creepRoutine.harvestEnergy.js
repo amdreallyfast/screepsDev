@@ -13,6 +13,7 @@ module.exports = {
         //return;
 
         // if miner is full, dump at nearest container (hopefully right next to it)
+        let result = OK;
         let dropIt = false;
         let canHaul = (creep.carryCapacity > 0);
         let amFull = (creep.carry.energy === creep.carryCapacity);
@@ -46,7 +47,7 @@ module.exports = {
             }
 
             // have container in the same room
-            let result = creep.transfer(container, RESOURCE_ENERGY);
+            result = creep.transfer(container, RESOURCE_ENERGY);
             if (result === ERR_FULL) {
                 // whatever; drop it next to it
                 dropIt = true;
@@ -60,12 +61,9 @@ module.exports = {
             }
         }
         else {
-            // read, "creep.carry.energy < creep.carryCapacity"
-
-            //var energySources = spawn.room.find(FIND_SOURCES);
             let source = Game.getObjectById(creep.memory.energySourceId);
 
-            let result = creep.harvest(source);
+            result = creep.harvest(source);
             if (result === OK) {
                 creep.say("⛏️");
             }
@@ -78,5 +76,7 @@ module.exports = {
                 creep.say("energy source❔");
             }
         }
+
+        return result;
     }
 }
