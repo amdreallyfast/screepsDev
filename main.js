@@ -3,7 +3,7 @@
 let spawnBuildQueue = require("room.creepPopulation.buildQueue");
 let queueMinerCreeps = require("room.creepPopulation.miners");
 let queueWorkerCreeps = require("room.creepPopulation.workers");
-let creepWorkRoutine = require("creepRoutine.work");
+let creepWorkRoutine = require("creep.workRoutine.work");
 
 let queueFillEnergyJobs = require("jobs.fillEnergy");
 let queueRepairJobs = require("jobs.repair");

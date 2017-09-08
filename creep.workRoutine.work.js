@@ -1,12 +1,12 @@
 
 let creepJobQueues = require("jobs.workQueue");
 
-var routineHarvest = require("creepRoutine.harvestEnergy");
-var routineGetEnergy = require("creepRoutine.getEnergy");
-var routineRefill = require("creepRoutine.refillEnergy");
-var routineRepair = require("creepRoutine.repair");
-var routineBuild = require("creepRoutine.build");
-var routineUpgrade = require("creepRoutine.upgrade");
+var routineHarvest = require("creep.workRoutine.harvestEnergy");
+var routineGetEnergy = require("creep.workRoutine.getEnergy");
+var routineRefill = require("creep.workRoutine.refillEnergy");
+var routineRepair = require("creep.workRoutine.repair");
+var routineBuild = require("creep.workRoutine.build");
+var routineUpgrade = require("creep.workRoutine.upgrade");
 
 
 //var jobQueue = require("Jobs.WorkQueue");
