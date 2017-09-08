@@ -1,5 +1,7 @@
 
 let creepBuildQueue = require("room.creepPopulation.buildQueue");
+let creepEnergyRequired = require("creep.energyRequired");
+let roomEnergyLevels = require("room.energyLevelMonitoring");
 
 // TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
 // TODO: create myConstants module;
@@ -32,6 +34,7 @@ let creepBuildQueue = require("room.creepPopulation.buildQueue");
 
 
 let workerBodyBasedOnAvailableEnergy = function (room) {
+    //let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
     let roomPotentialEnergy = room.energyCapacityAvailable;
     let body = [];
 
@@ -44,19 +47,10 @@ let workerBodyBasedOnAvailableEnergy = function (room) {
         body = [WORK, CARRY, MOVE, MOVE];
     }
     else if (roomPotentialEnergy === 400) {
-        body = [WORK, WORK, CARRY, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy === 450) {
         body = [WORK, WORK, CARRY, MOVE, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy === 500) {
-        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
     }
     else if (roomPotentialEnergy === 550) {
         body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy === 600) {
-        body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
     else if (roomPotentialEnergy >= 650) {
         body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];

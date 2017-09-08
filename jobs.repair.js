@@ -13,7 +13,6 @@ module.exports = {
 
         repairTargets.forEach(function (structure) {
             creepJobQueues.submitRepairJob(structure);
-            creepJobQueues.submitRepairJob(structure);
         });
     }
 }

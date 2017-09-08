@@ -130,14 +130,13 @@ module.exports.loop = function () {
     //spawnBuildQueue.clearQueues(spawn.room);
     //creepJobQueues.clearJobs(spawn.room);
 
-
     console.log("that time yet? " + (Game.time % 50));
     let currentTick = Game.time;
     if (currentTick % 50 === 0) {
         console.log(creepAges);
         roomEnergyMonitoring.printEnergyTimeoutsForRoom(spawn.room);
         queueMinerCreeps.run(spawn.room);
-        //queueWorkerCreeps.run(spawn.room);
+        queueWorkerCreeps.run(spawn.room);
         queueRepairJobs.run(spawn.room);
         queueManualConstructionJobs.run(spawn.room);
 
@@ -155,7 +154,7 @@ module.exports.loop = function () {
         //console.log("room loops: " + name);
         let room = Game.rooms[name];
         roomEnergyMonitoring.update(room);
-        //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
+        roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
     }
 
     //spawnBuildQueue.constructNextCreepInQueue(spawn);

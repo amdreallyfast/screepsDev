@@ -206,7 +206,7 @@ module.exports = {
 
     getRepairJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        printRepairQueue(creep.room);
+        //printRepairQueue(creep.room);
 
         let queue = Memory.creepJobs[creep.room.name].repairQueue;
         let needWork = (creep.memory.repairJobId === null || creep.memory.repairJobId === undefined);
