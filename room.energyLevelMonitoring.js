@@ -26,7 +26,7 @@ module.exports = {
         let str = ("room " + room.name + " capacity: " + room.energyCapacityAvailable + ", available: ");
         for (let index in energyTimeouts) {
             let timeout = energyTimeouts[index];
-            str += (timeout.energy + "(" + ((timeout.ticksUntilTimeout > 0) ? ("timeout in " + timeout.ticksUntilTimeout) : " timed out") + "); ");
+            str += (timeout.energy + "(" + ((timeout.ticksUntilTimeout > 0) ? ("timeout in " + timeout.ticksUntilTimeout) : "timed out") + "); ");
         }
 
         console.log(str);

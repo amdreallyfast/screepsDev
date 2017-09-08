@@ -151,13 +151,10 @@ module.exports.loop = function () {
     }
 
     for (let name in Game.rooms) {
-        //console.log("room loops: " + name);
         let room = Game.rooms[name];
         roomEnergyMonitoring.update(room);
         //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
     }
-
-    //spawnBuildQueue.constructNextCreepInQueue(spawn);
 
     //// refill the workers with any names that might have expired
     //var maxWorkers = 6;

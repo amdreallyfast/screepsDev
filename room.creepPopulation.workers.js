@@ -3,27 +3,10 @@ let creepBuildQueue = require("room.creepPopulation.buildQueue");
 let creepEnergyRequired = require("creep.energyRequired");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 
-// TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
-// TODO: create myConstants module;
-//  - memory constants
-//  - MY_ERR_* constants
-//  - spawn.buildQueue.submit(...) returns OK if all went well, MY_ERR_CREEP_SPAWN_REQUEST_DUPLICATE, or MY_ERR_CREEP_SPAWN_REQUEST_ENERGY_LEVEL_TIMEOUT
-// (not necessary; spawn.canCreateCreep(...) does the necessary checks) TODO: in spawn.buildQueue.submit
-//  - if okay to submit build request, push back an object { energyRequired: ..., blueprint: buildRequest }
-// TODO: create creep specifically for refilling spawns, extensions, towers 
+// TODO: create creep specifically for refilling spawns, extensions, towers (and if nothing else, a container in the center of the base; if that's full, then try to find a storage container and dump it there so that the energy never goes to waste)
 //  - justification: lots of WORK parts are needed for building, repairing, and upgrading, but only CARRY parts are needed for refilling, and time spent refilling is time not spent building, repairing, or upgrading
 //  - use creepRoutine.refillEnergy and jobs.fillEnergy to tell it what to do
 //  - create room.queueHaulers to create 1 for each energy source
-// TODO: create room.energyLevelMonitoring module
-//  - handle energy level timeouts there
-//  - in 50-energy increments
-//  - query for energy timeout (energy)
-//  - looked up by spawn.buildQueue to figure out if the energy needed for a spawn build request is ever going to happen (if so, dump that creep spawn request)
-//  - looked up by worker queue and by miner queue to determine if their 
-// TODO: create creep.energyRequired module
-//  - used by spawn.buildQueue to determine how much energy is needed for the build (??just carry energy required along with the build request??)
-//  - used by spawn.queueWorkers to determine if it should shrink the energy needed for a particular module
-//  - used by spawn.queueMiners to determine if the room is ready for miners or if it should still use general-purpose workers.
 // TODO: in jobs.roads
 //  - every tick: look at every creep's position and determine if it is undeveloped land; if so, increment a Memory.traffic[pos] counter by 1
 //  - every 100 ticks: if a traffic counter for a position is > 100,
@@ -34,8 +17,11 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 
 
 let workerBodyBasedOnAvailableEnergy = function (room) {
-    //let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
-    let roomPotentialEnergy = room.energyCapacityAvailable;
+    // TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
+    let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+    console.log(room.name + ": maximum supported energy " + roomPotentialEnergy);
+
+    roomPotentialEnergy = room.energyCapacityAvailable;
     let body = [];
 
     // Note: As the RCL increases, each level allows 5 more extensions; assume that, if there are any extensions, 

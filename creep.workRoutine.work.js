@@ -1,17 +1,13 @@
 
 let creepJobQueues = require("jobs.workQueue");
 
-var routineHarvest = require("creep.workRoutine.harvestEnergy");
-var routineGetEnergy = require("creep.workRoutine.getEnergy");
-var routineRefill = require("creep.workRoutine.refillEnergy");
-var routineRepair = require("creep.workRoutine.repair");
-var routineBuild = require("creep.workRoutine.build");
-var routineUpgrade = require("creep.workRoutine.upgrade");
+let routineHarvest = require("creep.workRoutine.harvestEnergy");
+let routineGetEnergy = require("creep.workRoutine.getEnergy");
+let routineRefill = require("creep.workRoutine.refillEnergy");
+let routineRepair = require("creep.workRoutine.repair");
+let routineBuild = require("creep.workRoutine.build");
+let routineUpgrade = require("creep.workRoutine.upgrade");
 
-
-//var jobQueue = require("Jobs.WorkQueue");
-
-// TODO: rename to creep.doTheThing
 // this is the high-level role control for all creeps
 module.exports = {
     run: function (creep) {
