@@ -1,13 +1,8 @@
 
 let creepBuildQueue = require("room.creepPopulation.buildQueue");
+let creepEnergyRequired = require("creep.energyRequired");
+let roomEnergyLevels = require("room.energyLevelMonitoring");
 
-//// a unique number is useful for performing a % operation to scatter the workers among limited resources like energy sources and energy containers 
-//let NewNumber = function () {
-//    let num = 0;
-//    return function () {
-//        return (num++);
-//    }
-//}();
 
 let ensureRoomEnergySourceRecordsExist = function (room) {
     if (!Memory.roomEnergySources) {
@@ -17,6 +12,29 @@ let ensureRoomEnergySourceRecordsExist = function (room) {
         Memory.roomEnergySources[room.name] = room.find(FIND_SOURCES);
     }
 }
+
+let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
+    let body = [];
+
+    if (roomPotentialEnergy >= 750) {
+        body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE];
+    }
+    else if (roomPotentialEnergy >= 600) {
+        body = [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
+    }
+    else if (roomPotentialEnergy >= 450) {
+        body = [WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    }
+    else if (roomPotentialEnergy >= 300) {
+        body = [WORK, WORK, CARRY, MOVE];
+    }
+    else {
+        // uh oh; not even 300 energy? 
+    }
+
+    return body;
+}
+
 
 
 // TODO: rename module to room.creepPopulation.miners
@@ -46,17 +64,26 @@ module.exports = {
             // ??check for unassigned energySourceId or ignore because it is set on creation??
         }
 
-        // max miners === num energy sources
-        for (let num = 0; num < numEnergySources; num++) {
+        let maxMiners = numEnergySources;
+        let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        for (let num = 0; num < maxMiners; num++) {
             if (!minerNumbers[num]) {
                 let newRole = "miner";
+                let newBody = workerBodyBasedOnAvailableEnergy(roomPotentialEnergy);
+
+                // Note: There will be exactly 1 miner for each energy source, and energy 
+                // sources will be a constant, so it is acceptable to mod the number of energy 
+                // sources by the miner number without checking which is bigger.  The number of 
+                // energy sources will always be the larger number except for the last miner.
+                let newEnergySourceId = Memory.roomEnergySources[room.name][numEnergySources % num].id;
                 let buildRequest = {
-                    body: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE],
-                    //body: [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE],
-                    name: newRole + num,
+                    body: newBody,
+                    name: room.name + newRole + num,
                     role: newRole,
                     number: num,
-                    energySourceId: Memory.roomEnergySources[room.name][num % numEnergySources].id
+                    energySourceId: newEnergySourceId, 
+                    originRoomName: room.name,
+                    energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 
                 //console.log("submitting miner creep build request: " + buildRequest.name);

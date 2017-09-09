@@ -17,14 +17,12 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 // TODO: modify job system to store jobs by ID; instead of using an array with push-pop
 
 
-let workerBodyBasedOnAvailableEnergy = function (room, roomPotentialEnergy) {
-    // TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
-    console.log(room.name + ": maximum supported energy " + roomPotentialEnergy);
-
-    //roomPotentialEnergy = room.energyCapacityAvailable;
+let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
-    // Note: As the RCL increases, each level allows 5 more extensions; assume that, if there are any extensions, 
+    if (roomPotentialEnergy >= 800) {
+        body = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+    }
     if (roomPotentialEnergy >= 650) {
         body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     }
@@ -68,20 +66,22 @@ module.exports = {
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
         for (let num = 0; num < maxWorkersPerRoom; num++) {
             if (!workerNumbers[num]) {
-                let body = [];
+                let newBody = [];
                 if (num === 0) {
                     // let this be the "emergency recovery" creep that can always be spawned if there is a spawn
-                    body = [WORK, CARRY, MOVE, MOVE];   // 250 energy
+                    newBody = [WORK, CARRY, MOVE, MOVE];   // 250 energy
                 }
                 else {
-                    body = workerBodyBasedOnAvailableEnergy(room, roomPotentialEnergy);
+                    newBody = workerBodyBasedOnAvailableEnergy(roomPotentialEnergy);
                 }
                 let newRole = "worker";
                 let buildRequest = {
-                    body: body,
+                    body: newBody,
                     name: newRole + num,
                     role: newRole,
                     number: num,
+                    originRoomName: room.name,
+                    energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 
                 //console.log("submitting worker creep build request: " + buildRequest.name + ", " + buildRequest.body);
