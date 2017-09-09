@@ -1,5 +1,4 @@
 
-let creepEnergyRequired = require("creep.energyRequired");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 
 
@@ -121,7 +120,6 @@ let printBuildQueue = function (room) {
     console.log("creep build queue for room '" + room.name + "': " + str);
 }
 
-// TODO: rename to room.creepPopulation.buildQueue
 module.exports = {
     // in the event of disaster and creeps can't be built
     clearQueues: function (room) {
@@ -131,9 +129,8 @@ module.exports = {
     constructNextCreepInQueue: function (spawn) {
         let room = spawn.room;
         ensureCreepBuildQueueExist(room);
-        //ensurespawnCurrentBuildRequestExist(spawn);
 
-        //// in case I'm curious
+        // in case I'm curious
         printBuildQueue(room);
 
         if (spawn.spawning) {
@@ -164,25 +161,16 @@ module.exports = {
     submit: function (buildThis, room) {
         ensureCreepBuildQueueExist(room);
 
-        //Memory.creepBuildQueues[room.name].length = 0;
-        //console.log("build request: " + buildThis.name);
         let result = checkForDuplicateBuildRequest(buildThis, room);
         if (result) {
-            // duplicate creep build request
             //console.log("duplicate creep build request: " + buildThis.name);
             return false;
         }
-        else {
-            console.log("new creep build request: " + buildThis.name);
-            printBuildQueue(room);
 
-            buildThis.originRoomName = room.name;
-            buildThis.energyRequired = creepEnergyRequired.bodyCost(buildThis.body);
-            Memory.creepBuildQueues[room.name].push(buildThis);
-            //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
-        }
+        console.log("new creep build request: " + buildThis.name);
+        printBuildQueue(room);
+        Memory.creepBuildQueues[room.name].push(buildThis);
 
-        //console.log("number of creep build requests in room '" + room.name + "': " + Memory.creepBuildQueues[room.name].length);
-        //return true;
+        return true;
     }
 }

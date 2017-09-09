@@ -18,9 +18,7 @@ module.exports = {
             return;
         }
 
-        //if (creep.name === "worker0") {
-        //    creepJobQueues.getRefillEnergyJobFor(creep);
-        //}
+        // ??how to draw a "fatigue halo" a la bonzAI's creep AI??
 
         //creep.moveTo(Game.spawns['Spawn1']);
         //return;
