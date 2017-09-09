@@ -50,6 +50,7 @@ module.exports = {
         else {
             // very useful for vizual indication of what the creep is doing
             // http://unicode.org/emoji/charts/emoji-style.txt
+            // or here: https://apps.timwhitlock.info/emoji/tables/unicode
             let haveRefillJob = (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined);
             let haveRepairJob = (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined);
             let haveConstructionJob = (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined);
@@ -57,6 +58,11 @@ module.exports = {
             if (haveRefillJob) {
                 // energy refill takes presendence so that the spawn and extensions are ready to 
                 // build and so that the turrets are ready to shoot
+                //while (!routineRefill.run(creep)) {
+                //    // already working on refills, the code got here, so you're not empty yet, so refill something else
+                //    //console.log(creep.name + ": getting another refill job");
+                //    creepJobQueues.getRefillEnergyJobFor(creep);
+                //}
                 if (!routineRefill.run(creep)) {
                     // already working on refills, the code got here, so you're not empty yet, so refill something else
                     //console.log(creep.name + ": getting another refill job");
@@ -65,10 +71,21 @@ module.exports = {
             }
             else if (haveRepairJob) {
                 // stop stuff from breaking down
-                routineRepair.run(creep);
+                //while (!routineRepair.run(creep)) {
+                //    // got a bad one (or maybe there were duplicates that built up in the job queue)
+                //    creepJobQueues.getRepairJobFor(creep);
+                //}
+                if (!routineRepair.run(creep)) {
+                    // got a bad one (or maybe there were duplicates that built up in the job queue)
+                    creepJobQueues.getRepairJobFor(creep);
+                }
             }
             else if (haveConstructionJob) {
                 // roads, bypasses (gotta build bypasses), whatever
+                //while (!routineBuild.run(creep)) {
+                //    // got a bad one (or maybe there were duplicates that built up in the job queue)
+                //    creepJobQueues.getConstructionJobFor(creep);
+                //}
                 routineBuild.run(creep);
             }
             else {

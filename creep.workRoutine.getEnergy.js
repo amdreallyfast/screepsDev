@@ -25,7 +25,7 @@ let pickupDroppedEnergy = function (creep) {
 
 let withdrawFromContainer = function (creep) {
     let container = Game.getObjectById(creep.memory.energySourceId);
-    let result = creep.withdraw(container);
+    let result = creep.withdraw(container, RESOURCE_ENERGY);
     if (result === OK) {
         creep.memory.energySourceId = null;
         creep.memory.energySourceType = null;

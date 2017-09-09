@@ -130,25 +130,32 @@ module.exports.loop = function () {
     //spawnBuildQueue.clearQueues(spawn.room);
     //creepJobQueues.clearJobs(spawn.room);
 
-    console.log("that time yet? " + (Game.time % 50));
-    let currentTick = Game.time;
-    if (currentTick % 50 === 0) {
+    let queueCreepJobsTickLimit = 100;
+    let spawnNewCreepsTickLimit = 50;
+    console.log("queue new creep jobs in " + (queueCreepJobsTickLimit - (Game.time % queueCreepJobsTickLimit)) + ", spawn new creeps in " + (spawnNewCreepsTickLimit - (Game.time % spawnNewCreepsTickLimit)));
+    //console.log("queue new creep jobs in " + (Game.time % 100) + ", spawn new creeps in " + (Game.time % 50));
+    if ((Game.time % queueCreepJobsTickLimit) === 0) {
+    //if ((Game.time % 100) === 0) {
         console.log(creepAges);
-        roomEnergyMonitoring.printEnergyTimeoutsForRoom(spawn.room);
         queueMinerCreeps.run(spawn.room);
         queueWorkerCreeps.run(spawn.room);
         queueRepairJobs.run(spawn.room);
         queueManualConstructionJobs.run(spawn.room);
+    }
 
+    if ((Game.time % spawnNewCreepsTickLimit) === 0) {
+    //if ((Game.time % 50) === 0) {
         // the energy is used upon spawning, but it isn't gone until the next tick
+        roomEnergyMonitoring.printEnergyTimeoutsForRoom(spawn.room);
         Memory.refillEnergy = true;
-
         spawnBuildQueue.constructNextCreepInQueue(spawn);
     }
     else if (Memory.refillEnergy) {
         queueFillEnergyJobs.run(spawn.room);
         Memory.refillEnergy = false;
     }
+
+    //spawnBuildQueue.constructNextCreepInQueue(spawn);
 
     for (let name in Game.rooms) {
         let room = Game.rooms[name];

@@ -14,6 +14,7 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 //      - set Memory.traffic[pos] = null to flag for cleanup
 // TODO: create jobs.baseBuilding
 //  - get a rouch idea of what a base should look like for different RCLs, plan building jobs accordingly
+// TODO: modify job system to store jobs by ID; instead of using an array with push-pop
 
 
 let workerBodyBasedOnAvailableEnergy = function (room) {
@@ -70,9 +71,17 @@ module.exports = {
         let maxWorkersPerRoom = 10;
         for (let num = 0; num < maxWorkersPerRoom; num++) {
             if (!workerNumbers[num]) {
+                let body = [];
+                if (num === 0) {
+                    // let this be the "emergency recovery" creep that can always be spawned if there is a spawn
+                    body = [WORK, CARRY, MOVE, MOVE];   // 250 energy
+                }
+                else {
+                    body = workerBodyBasedOnAvailableEnergy(room);
+                }
                 let newRole = "worker";
                 let buildRequest = {
-                    body: workerBodyBasedOnAvailableEnergy(room),
+                    body: body,
                     name: newRole + num,
                     role: newRole,
                     number: num,
