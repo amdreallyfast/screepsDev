@@ -18,6 +18,10 @@ let creepJobSystem = require("jobs.workQueue");
 
 
 module.exports.loop = function () {
+    //for (let key in Memory) {
+    //    console.log(key);
+    //}
+
     let creepAges = "creep ages (ticks remaining): ";
     for (var name in Game.creeps) {
 
