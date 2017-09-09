@@ -9,13 +9,8 @@ module.exports = {
 
         let constructionSite = Game.getObjectById(creep.memory.constructionJobId);
         if (!constructionSite) {
-            // construction site finished
-            // Note: The creep.build(...) function does not have a special return value if the 
-            // build completed.  The return value OK only says that creep.build(...) was 
-            // scheduled successfully.  If the construction site does not exist, then it either 
-            // (1) is a bad ID or 
-            // (2) construction completed.  
-            // Assume the latter unless this becomes a problem.
+            // construction site no longer exists (bad ID or was already finished and is now a structure)
+            console.log(creep.name + ": construction site doesn't exist (already built?)");
             creep.memory.constructionJobId = null;
             return false;
         }

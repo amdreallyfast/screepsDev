@@ -129,6 +129,8 @@ module.exports.loop = function () {
     //console.log(creepAges);
     //spawnBuildQueue.clearQueues(spawn.room);
     //creepJobQueues.clearJobs(spawn.room);
+    //creepJobQueues.printJobs(spawn.room);
+
 
     let queueCreepJobsTickLimit = 100;
     let spawnNewCreepsTickLimit = 50;
@@ -139,8 +141,10 @@ module.exports.loop = function () {
         console.log(creepAges);
         queueMinerCreeps.run(spawn.room);
         queueWorkerCreeps.run(spawn.room);
+
         queueRepairJobs.run(spawn.room);
         queueManualConstructionJobs.run(spawn.room);
+        creepJobQueues.printJobs(spawn.room);
     }
 
     if ((Game.time % spawnNewCreepsTickLimit) === 0) {
@@ -152,6 +156,7 @@ module.exports.loop = function () {
     }
     else if (Memory.refillEnergy) {
         queueFillEnergyJobs.run(spawn.room);
+        creepJobQueues.printJobs(spawn.room);
         Memory.refillEnergy = false;
     }
 

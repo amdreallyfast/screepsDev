@@ -18,6 +18,10 @@ module.exports = {
             return;
         }
 
+        //if (creep.name === "worker0") {
+        //    creepJobQueues.getRefillEnergyJobFor(creep);
+        //}
+
         //creep.moveTo(Game.spawns['Spawn1']);
         //return;
 

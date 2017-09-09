@@ -17,33 +17,29 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 // TODO: modify job system to store jobs by ID; instead of using an array with push-pop
 
 
-let workerBodyBasedOnAvailableEnergy = function (room) {
+let workerBodyBasedOnAvailableEnergy = function (room, roomPotentialEnergy) {
     // TODO: perhaps all your workers got destroyed and now there is the spawn and a number of extensions, but only the spawn automatically fills back up, so the maximum reliable energy capcity is only 300
-    let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
     console.log(room.name + ": maximum supported energy " + roomPotentialEnergy);
 
-    roomPotentialEnergy = room.energyCapacityAvailable;
+    //roomPotentialEnergy = room.energyCapacityAvailable;
     let body = [];
 
     // Note: As the RCL increases, each level allows 5 more extensions; assume that, if there are any extensions, 
-    if (roomPotentialEnergy === 300) {
-        // only have the spawn
-        body = [WORK, CARRY, MOVE];
-    }
-    else if (roomPotentialEnergy === 350) {
-        body = [WORK, CARRY, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy === 400) {
-        body = [WORK, WORK, CARRY, MOVE, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy === 550) {
-        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy >= 650) {
+    if (roomPotentialEnergy >= 650) {
         body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     }
+    else if (roomPotentialEnergy >= 550) {
+        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy >= 400) {
+        body = [WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy >= 250) {
+        // probably only have the spawn
+        body = [WORK, CARRY, MOVE, MOVE];
+    }
     else {
-        // uh oh
+        // uh oh; not even 300 energy? 
     }
 
     return body;
@@ -69,6 +65,7 @@ module.exports = {
 
         // TODO: ??change the number dynamically somehow? calculate per room based on available resources??
         let maxWorkersPerRoom = 10;
+        let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
         for (let num = 0; num < maxWorkersPerRoom; num++) {
             if (!workerNumbers[num]) {
                 let body = [];
@@ -77,7 +74,7 @@ module.exports = {
                     body = [WORK, CARRY, MOVE, MOVE];   // 250 energy
                 }
                 else {
-                    body = workerBodyBasedOnAvailableEnergy(room);
+                    body = workerBodyBasedOnAvailableEnergy(room, roomPotentialEnergy);
                 }
                 let newRole = "worker";
                 let buildRequest = {
