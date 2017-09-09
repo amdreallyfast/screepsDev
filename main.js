@@ -46,7 +46,7 @@ module.exports.loop = function () {
 
     //var buildTargets = spawn.room.find(FIND_CONSTRUCTION_SITES);
 
-    let creepAges = "";
+    let creepAges = "creep ages (ticks remaining): ";
     for (var name in Game.creeps) {
 
         var creep = Game.creeps[name];
@@ -139,7 +139,8 @@ module.exports.loop = function () {
         spawnBuildQueue.constructNextCreepInQueue(spawn);
         repairJobs.queueJobs(spawn.room);
 
-        creepJobSystem.printJobs(spawn.room);
+        spawnBuildQueue.print(spawn.room)
+        creepJobSystem.print(spawn.room);
         Memory.doSomethingNextTick = true;
     }
     else if (Memory.doSomethingNextTick) {

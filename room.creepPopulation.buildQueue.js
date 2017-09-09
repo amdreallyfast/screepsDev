@@ -112,26 +112,24 @@ let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
     return false;
 }
 
-let printBuildQueue = function (room) {
-    let str = "";
-    Memory.creepBuildQueues[room.name].forEach(function (buildRequest) {
-        str += (buildRequest.name + "; ");
-    });
-    console.log("creep build queue for room '" + room.name + "': " + str);
-}
-
 module.exports = {
     // in the event of disaster and creeps can't be built
     clearQueues: function (room) {
         Memory.creepBuildQueues[room.name].length = 0;
     },
 
+    print: function (room) {
+        let str = "";
+        let queue = Memory.creepBuildQueues[room.name];
+        queue.forEach(function (buildRequest) {
+            str += (buildRequest.name + "; ");
+        });
+        console.log("room " + room.name + " has " + queue.length + " creeps waiting to be built: " + str);
+    },
+
     constructNextCreepInQueue: function (spawn) {
         let room = spawn.room;
         ensureCreepBuildQueueExist(room);
-
-        // in case I'm curious
-        printBuildQueue(room);
 
         if (spawn.spawning) {
             console.log(spawn.name + " is busy spawning")
@@ -139,7 +137,7 @@ module.exports = {
         }
 
         if (!haveBuildRequest(room)) {
-            console.log("no build requests for creeps for " + room.name);
+            //console.log("no build requests for creeps for " + room.name);
             return;
         }
 
@@ -168,7 +166,6 @@ module.exports = {
         }
 
         console.log("new creep build request: " + buildThis.name);
-        printBuildQueue(room);
         Memory.creepBuildQueues[room.name].push(buildThis);
 
         return true;

@@ -86,7 +86,7 @@ module.exports = {
         delete Memory.creepJobs[room.name];
     },
 
-    printJobs: function(room) {
+    print: function(room) {
         ensureJobQueuesExist(room);
         printConstructionJobs(room);
         printRefillEnergyJobs(room);
@@ -119,7 +119,7 @@ module.exports = {
 
     getConstructionJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        printConstructionJobs(creep.room);
+        //printConstructionJobs(creep.room);
 
         let jobs = Memory.creepJobs[creep.room.name].construction;
         let needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
@@ -133,7 +133,7 @@ module.exports = {
 
     getRefillEnergyJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        printRefillEnergyJobs(creep.room);
+        //printRefillEnergyJobs(creep.room);
 
         let jobs = Memory.creepJobs[creep.room.name].refillEnergy;
         let needWork = (creep.memory.refillEnergyJobId === null || creep.memory.refillEnergyJobId === undefined);
@@ -147,7 +147,7 @@ module.exports = {
 
     getRepairJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
-        printRepairJobs(creep.room);
+        //printRepairJobs(creep.room);
 
         let jobs = Memory.creepJobs[creep.room.name].repair;
         let needWork = (creep.memory.repairJobId === null || creep.memory.repairJobId === undefined);

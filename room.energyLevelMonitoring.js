@@ -99,7 +99,7 @@ module.exports = {
             }
         }
 
-        console.log("max supported energy in room " + room.name + ": " + maxEnergy);
+        //console.log("max supported energy in room " + room.name + ": " + maxEnergy);
         return maxEnergy;
     }
 }
