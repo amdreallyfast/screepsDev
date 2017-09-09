@@ -1,14 +1,15 @@
 ﻿let roomEnergyMonitoring = require("room.energyLevelMonitoring");
 
 let spawnBuildQueue = require("room.creepPopulation.buildQueue");
-let queueMinerCreeps = require("room.creepPopulation.miners");
-let queueWorkerCreeps = require("room.creepPopulation.workers");
+let minerCreepPopulation = require("room.creepPopulation.miners");
+let workerCreepPopulation = require("room.creepPopulation.workers");
+let creepTraffic = require("room.trafficScan");
 let creepWorkRoutine = require("creep.workRoutine.work");
 
-let queueFillEnergyJobs = require("jobs.fillEnergy");
-let queueRepairJobs = require("jobs.repair");
-let queueManualConstructionJobs = require("jobs.manualConstruction");
-let creepJobQueues = require("jobs.workQueue");
+let energyRefillJobs = require("jobs.fillEnergy");
+let repairJobs = require("jobs.repair");
+let constructionJobs = require("jobs.construction");
+let creepJobSystem = require("jobs.workQueue");
 
 
 
@@ -52,6 +53,7 @@ module.exports.loop = function () {
         creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
 
         creepWorkRoutine.run(creep);
+        creepTraffic.scan(creep);
         //continue;
 
         if (creep.memory.role === "worker") {
@@ -121,52 +123,54 @@ module.exports.loop = function () {
     }
 
 
-
+    delete Memory.refillEnergy;
 
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
     var spawn = Game.spawns['Spawn1'];
 
-    //console.log(creepAges);
-    //spawnBuildQueue.clearQueues(spawn.room);
-    //creepJobQueues.clearJobs(spawn.room);
-    //creepJobQueues.printJobs(spawn.room);
-
-
-    let queueCreepJobsTickLimit = 100;
-    let spawnNewCreepsTickLimit = 50;
-    console.log("queue new creep jobs in " + (queueCreepJobsTickLimit - (Game.time % queueCreepJobsTickLimit)) + ", spawn new creeps in " + (spawnNewCreepsTickLimit - (Game.time % spawnNewCreepsTickLimit)));
-    //console.log("queue new creep jobs in " + (Game.time % 100) + ", spawn new creeps in " + (Game.time % 50));
-    if ((Game.time % queueCreepJobsTickLimit) === 0) {
-    //if ((Game.time % 100) === 0) {
+    let ticksBetweenBigStuff = 50;
+    // Note: Due to the nature of mod, the countdown will be on the range [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so subtrack 1.
+    let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
+    console.log("big stuff in " + countdown + " ticks");
+    if (countdown === 0) {
         console.log(creepAges);
-        queueMinerCreeps.run(spawn.room);
-        queueWorkerCreeps.run(spawn.room);
-
-        queueRepairJobs.run(spawn.room);
-        queueManualConstructionJobs.run(spawn.room);
-        creepJobQueues.printJobs(spawn.room);
-    }
-
-    if ((Game.time % spawnNewCreepsTickLimit) === 0) {
-    //if ((Game.time % 50) === 0) {
-        // the energy is used upon spawning, but it isn't gone until the next tick
-        roomEnergyMonitoring.printEnergyTimeoutsForRoom(spawn.room);
-        Memory.refillEnergy = true;
+        minerCreepPopulation.queueCreeps(spawn.room);
+        workerCreepPopulation.queueCreeps(spawn.room);
         spawnBuildQueue.constructNextCreepInQueue(spawn);
+        repairJobs.queueJobs(spawn.room);
+
+        creepJobSystem.printJobs(spawn.room);
+        Memory.doSomethingNextTick = true;
     }
-    else if (Memory.refillEnergy) {
-        queueFillEnergyJobs.run(spawn.room);
-        creepJobQueues.printJobs(spawn.room);
-        Memory.refillEnergy = false;
+    else if (Memory.doSomethingNextTick) {
+        // energy is removed the next tick after the spawn does something
+        energyRefillJobs.queueJobs(spawn.room);
+
+        // construction sites appear the next tick after they are created 
+        constructionJobs.queueJobs(spawn.room);
+        Memory.doSomethingNextTick = false;
     }
 
-    //spawnBuildQueue.constructNextCreepInQueue(spawn);
+    //if ((Game.time % spawnNewCreepsTickLimit) === 0) {
+    ////if ((Game.time % 50) === 0) {
+    //    // the energy is used upon spawning, but it isn't gone until the next tick
+    //    roomEnergyMonitoring.printEnergyTimeoutsForRoom(spawn.room);
+    //    Memory.refillEnergy = true;
+    //}
+    //else if (Memory.doSomethingNextTick) {
+    //    energyRefillJobs.run(spawn.room);
+    //    constructionJobs.run(spawn.room);
+    //    creepJobSystem.printJobs(spawn.room);
+    //    Memory.doSomethingNextTick = false;
+    //}
 
-    for (let name in Game.rooms) {
-        let room = Game.rooms[name];
-        roomEnergyMonitoring.update(room);
-        //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
-    }
+    ////spawnBuildQueue.constructNextCreepInQueue(spawn);
+
+    //for (let name in Game.rooms) {
+    //    let room = Game.rooms[name];
+    //    roomEnergyMonitoring.update(room);
+    //    //roomEnergyMonitoring.printEnergyTimeoutsForRoom(room);
+    //}
 
     //// refill the workers with any names that might have expired
     //var maxWorkers = 6;

@@ -2,7 +2,7 @@
 let creepJobQueues = require("jobs.workQueue");
 
 module.exports = {
-    run: function (room) {
+    queueJobs: function (room) {
         let energyRefillTargets = room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 // not counting containers or storage structures; those are meant to store excess and not to be filled, so there is no point in assigning them a refill job

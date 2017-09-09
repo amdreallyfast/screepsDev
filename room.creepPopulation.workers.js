@@ -46,7 +46,7 @@ let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
 // TODO: rename module to room.creepPopulation.workers
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room, not a spawn.
-    run: function (room) {
+    queueCreeps: function (room) {
         let workerCreeps = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
                 return (creep.memory.role === "worker");

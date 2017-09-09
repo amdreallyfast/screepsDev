@@ -2,7 +2,7 @@
 let creepJobQueues = require("jobs.workQueue");
 
 module.exports = {
-    run: function (room) {
+    queueJobs: function (room) {
         let repairTargets = room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.hits < structure.hitsMax);
