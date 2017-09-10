@@ -20,13 +20,13 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
-    //if (roomPotentialEnergy >= 950) {
-    //    body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-    //}
-    if (roomPotentialEnergy >= 800) {
+    if (roomPotentialEnergy >= 950) {
+        body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy >= 800) {
         body = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
     }
-    if (roomPotentialEnergy >= 650) {
+    else if (roomPotentialEnergy >= 650) {
         body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     }
     else if (roomPotentialEnergy >= 550) {
@@ -67,6 +67,7 @@ module.exports = {
         // TODO: ??change the number dynamically somehow? calculate per room based on available resources??
         let maxWorkersPerRoom = 10;
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < maxWorkersPerRoom; num++) {
             if (!workerNumbers[num]) {
                 let newBody = [];
@@ -80,7 +81,7 @@ module.exports = {
                 let newRole = "worker";
                 let buildRequest = {
                     body: newBody,
-                    name: newRole + num,
+                    name: room.name + newRole + num,
                     role: newRole,
                     number: num,
                     originRoomName: room.name,

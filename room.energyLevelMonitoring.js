@@ -19,7 +19,7 @@ let guaranteeEnergyLevelMonitoringExists = function (room) {
 }
 
 module.exports = {
-    printEnergyTimeoutsForRoom: function(room) {
+    print: function(room) {
         guaranteeEnergyLevelMonitoringExists(room);
 
         let energyTimeouts = Memory.energyTimeouts[room.name];

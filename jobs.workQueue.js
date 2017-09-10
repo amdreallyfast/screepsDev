@@ -14,7 +14,7 @@ let ensureJobQueuesExist = function (room) {
 
 let printConstructionJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].construction;
-    let str = "room " + room.name + " has " + Object.keys(jobs).length + " construction jobs: ";
+    let str = "{ ";
     for (let jobId in jobs) {
         let site = Game.getObjectById(jobId);
         if (!site) {
@@ -24,12 +24,13 @@ let printConstructionJobs = function (room) {
             str += (site.structureType + "(" + site.progress + "/" + site.progressTotal + "); ");
         }
     }
-    console.log(str);
+    str += "}";
+    console.log("room " + room.name + " has " + Object.keys(jobs).length + " construction jobs: " + str);
 }
 
 let printRefillEnergyJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].refillEnergy;
-    let str = "room " + room.name + " has " + Object.keys(jobs).length + " energy refill jobs: ";
+    let str = "{ ";
     for (let jobId in jobs) {
         let structure = Game.getObjectById(jobId);
         if (!structure) {
@@ -39,13 +40,13 @@ let printRefillEnergyJobs = function (room) {
             str += (structure.structureType + "(" + structure.energy + "/" + structure.energyCapacity + "); ");
         }
     }
-
-    console.log(str);
+    str += "}";
+    console.log("room " + room.name + " has " + Object.keys(jobs).length + " energy refill jobs: " + str);
 }
 
 let printRepairJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].repair;
-    let str = "room " + room.name + " has " + Object.keys(jobs).length + " repair jobs: ";
+    let str = "{ ";
     for (let jobId in jobs) {
         let structure = Game.getObjectById(jobId);
         if (!structure) {
@@ -55,8 +56,8 @@ let printRepairJobs = function (room) {
             str += (structure.structureType + "(" + structure.hits + "/" + structure.hitsMax + "); ");
         }
     }
-
-    console.log(str);
+    str += "}";
+    console.log("room " + room.name + " has " + Object.keys(jobs).length + " repair jobs: " + str);
 }
 
 let addJobTo = function (roomJobs, newJobId) {
@@ -68,14 +69,25 @@ let addJobTo = function (roomJobs, newJobId) {
 }
 
 let getJobFrom = function (roomJobs) {
-    let jobId = (Object.keys(roomJobs))[0];
-
-    // decrement the worker count
-    if (--roomJobs[jobId] === 0) {
-        delete roomJobs[jobId];
+    for (let jobId in roomJobs) {
+        let obj = Game.getObjectById(jobId);
+        if (obj === null || obj === undefined) {
+            // job must have completed
+            // Note: Construction sites can be completed when there is still a job for it.  In 
+            // such an event, remove the job.
+            console.log("null job; deleting")
+            delete roomJobs[jobId];
+        }
+        else {
+            // decrement the worker count
+            if (--roomJobs[jobId] === 0) {
+                delete roomJobs[jobId];
+            }
+            return jobId;
+        }
     }
 
-    return jobId;
+    return null;
 }
 
 module.exports = {
@@ -126,7 +138,13 @@ module.exports = {
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
-            console.log(creep.name + ": getting construction job for " + Game.getObjectById(newJobId).structureType);
+            let structure = Game.getObjectById(newJobId);
+            if (!structure) {
+                console.log(creep.name + ": getting construction job for " + structure);
+            }
+            else {
+                console.log(creep.name + ": getting construction job for " + Game.getObjectById(newJobId).structureType);
+            }
             creep.memory.constructionJobId = newJobId;
         }
     },
@@ -140,7 +158,13 @@ module.exports = {
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
-            console.log(creep.name + ": getting refill job for " + Game.getObjectById(newJobId).structureType);
+            let structure = Game.getObjectById(newJobId);
+            if (!structure) {
+                console.log(creep.name + ": getting refill job for " + structure);
+            }
+            else {
+                console.log(creep.name + ": getting refill job for " + Game.getObjectById(newJobId).structureType);
+            }
             creep.memory.refillEnergyJobId = newJobId;
         }
     },
@@ -154,7 +178,13 @@ module.exports = {
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
-            console.log(creep.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
+            let structure = Game.getObjectById(newJobId);
+            if (!structure) {
+                console.log(creep.name + ": getting repair job for " + structure);
+            }
+            else {
+                console.log(creep.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
+            }
             creep.memory.repairJobId = newJobId;
         }
     },

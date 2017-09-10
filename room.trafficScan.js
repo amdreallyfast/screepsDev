@@ -27,14 +27,12 @@ module.exports = {
 
         let thingsAlreadyHere = creep.pos.look();
         for (let index in thingsAlreadyHere) {
-            let lookType = thingsAlreadyHere[index];
-
+            let lookType = thingsAlreadyHere[index].type;
             // creeps can run on top of structures and construction sites 
             // Note: Roads are technically structures, as are ramparts, and creeps frequently 
             // move on top of them.  Creeps can also run on top of containers and construction 
             // sites, though they usually don't.
             if (lookType === LOOK_STRUCTURES || lookType === LOOK_CONSTRUCTION_SITES) {
-                //console.log("look type = " + lookType);
                 return false;
             }
         }

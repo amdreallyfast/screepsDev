@@ -119,7 +119,7 @@ module.exports = {
     },
 
     print: function (room) {
-        let str = "";
+        let str = "{ ";
         let queue = Memory.creepBuildQueues[room.name];
         queue.forEach(function (buildRequest) {
             str += (buildRequest.name + "; ");
@@ -138,7 +138,7 @@ module.exports = {
         }
 
         if (!haveBuildRequest(room)) {
-            //console.log("no build requests for creeps for " + room.name);
+            console.log("no build requests for creeps for " + room.name);
             return;
         }
 

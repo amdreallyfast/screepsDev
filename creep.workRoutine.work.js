@@ -37,9 +37,15 @@ module.exports = {
             // priority job popped up.  Creeps are not fast, so have them work until they run 
             // out of energy, get more energy, THEN look for more work.
             creep.memory.working = true;
-            creepJobQueues.getRefillEnergyJobFor(creep);
-            creepJobQueues.getRepairJobFor(creep);
-            creepJobQueues.getConstructionJobFor(creep);
+            if (creep.memory.number === 0) {
+                // worker 0 is the emergency refill guy; dedicate refiller
+                creepJobQueues.getRefillEnergyJobFor(creep);
+            }
+            else {
+                creepJobQueues.getRefillEnergyJobFor(creep);
+                creepJobQueues.getRepairJobFor(creep);
+                creepJobQueues.getConstructionJobFor(creep);
+            }
         }
 
 
@@ -71,7 +77,7 @@ module.exports = {
                     creepJobQueues.getRefillEnergyJobFor(creep);
                 }
             }
-            else if (haveRepairJob) {
+            else if (haveRepairJob && creep.memory.number > 0) {
                 // stop stuff from breaking down
                 //while (!routineRepair.run(creep)) {
                 //    // got a bad one (or maybe there were duplicates that built up in the job queue)
@@ -82,7 +88,7 @@ module.exports = {
                     creepJobQueues.getRepairJobFor(creep);
                 }
             }
-            else if (haveConstructionJob) {
+            else if (haveConstructionJob && creep.memory.number > 0) {
                 // roads, bypasses (gotta build bypasses), whatever
                 //while (!routineBuild.run(creep)) {
                 //    // got a bad one (or maybe there were duplicates that built up in the job queue)

@@ -64,6 +64,7 @@ module.exports = {
 
         // exactly 1 miner per energy source
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        console.log("spawning miners; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < numEnergySources; num++) {
             if (!minerNumbers[num]) {
                 let newRole = "miner";

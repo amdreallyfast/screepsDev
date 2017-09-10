@@ -16,7 +16,7 @@ module.exports = {
         }
         else if (structure.energy === structure.energyCapacity) {
             // already topped off
-            console.log(creep.name + ": target structure already full");
+            console.log(creep.name + ": " + structure.structureType + " refill finished");
             abortJob = true;
         }
 

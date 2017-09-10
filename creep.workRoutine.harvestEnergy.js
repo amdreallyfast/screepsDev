@@ -60,6 +60,9 @@ module.exports = {
                 creep.drop(RESOURCE_ENERGY);
             }
         }
+        else if (creep.ticksToLive === 1) {
+            creep.drop(RESOURCE_ENERGY);
+        }
         else {
             let source = Game.getObjectById(creep.memory.energySourceId);
 
