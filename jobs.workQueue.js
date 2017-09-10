@@ -14,14 +14,14 @@ let ensureJobQueuesExist = function (room) {
 
 let printConstructionJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].construction;
-    let str = "room " + room.name + " has " + Object.keys(jobs).length + " construction jobs:";
+    let str = "room " + room.name + " has " + Object.keys(jobs).length + " construction jobs: ";
     for (let jobId in jobs) {
         let site = Game.getObjectById(jobId);
         if (!site) {
             str += "null construction site; ";  // uh oh
         }
         else {
-            str += (site.structureType + "(" + site.pos.x + "," + site.pos.y + "); ");
+            str += (site.structureType + "(" + site.progress + "/" + site.progressTotal + "); ");
         }
     }
     console.log(str);

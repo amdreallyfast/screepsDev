@@ -35,8 +35,6 @@ let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     return body;
 }
 
-
-
 // TODO: rename module to room.creepPopulation.miners
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room ID, not a spawn ID.
@@ -64,9 +62,9 @@ module.exports = {
             // ??check for unassigned energySourceId or ignore because it is set on creation??
         }
 
-        let maxMiners = numEnergySources;
+        // exactly 1 miner per energy source
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
-        for (let num = 0; num < maxMiners; num++) {
+        for (let num = 0; num < numEnergySources; num++) {
             if (!minerNumbers[num]) {
                 let newRole = "miner";
                 let newBody = workerBodyBasedOnAvailableEnergy(roomPotentialEnergy);
@@ -76,8 +74,9 @@ module.exports = {
                 // sources by the miner number without checking which is bigger.  The number of 
                 // energy sources will always be the larger number except for the last miner.
                 // Also Note: The +1 is because num can be 0;
-                let energySourceIndex = numEnergySources % (num + 1);
-                let newEnergySourceId = Memory.roomEnergySources[room.name][energySourceIndex].id;
+                //let energySourceIndex = numEnergySources % (num + 1);
+                //let newEnergySourceId = Memory.roomEnergySources[room.name][energySourceIndex].id;
+                let newEnergySourceId = Memory.roomEnergySources[room.name][num].id;
                 let buildRequest = {
                     body: newBody,
                     name: room.name + newRole + num,

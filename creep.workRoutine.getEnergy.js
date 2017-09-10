@@ -133,7 +133,7 @@ module.exports = {
                 }
             }
 
-            console.log(energyPickupStatusStr);
+            //console.log(energyPickupStatusStr);
         }
         else {
             //console.log(creep.name + ": have energy pickup object (" + creep.memory.energySourceId + ")");
@@ -142,7 +142,7 @@ module.exports = {
         let obj = Game.getObjectById(creep.memory.energySourceId);
         if (!obj) {
             // not a valid game object (perhaps a dropped energy source that disappeared)
-            console.log(creep.name + ": not a valid energy pickup object (" + creep.memory.energySourceId + "): " + obj);
+            console.log(creep.name + ": not a valid energy pickup object ( id: " + creep.memory.energySourceId + ", obj: " + obj + " ): " + obj);
             creep.memory.energySourceId = null;
             creep.memory.energySourceType = null;
             return;

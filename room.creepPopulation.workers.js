@@ -20,6 +20,9 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
+    //if (roomPotentialEnergy >= 950) {
+    //    body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+    //}
     if (roomPotentialEnergy >= 800) {
         body = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
     }

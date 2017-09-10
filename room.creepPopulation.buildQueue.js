@@ -114,7 +114,7 @@ let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
 
 module.exports = {
     // in the event of disaster and creeps can't be built
-    clearQueues: function (room) {
+    clear: function (room) {
         Memory.creepBuildQueues[room.name].length = 0;
     },
 
@@ -124,6 +124,7 @@ module.exports = {
         queue.forEach(function (buildRequest) {
             str += (buildRequest.name + "; ");
         });
+        str += "}";
         console.log("room " + room.name + " has " + queue.length + " creeps waiting to be built: " + str);
     },
 
@@ -165,7 +166,11 @@ module.exports = {
             return false;
         }
 
-        console.log("new creep build request: " + buildThis.name);
+        let str = "new creep build request: {";
+        for (let key in buildThis) {
+            str += key + ": " + buildThis[key] + ", ";
+        }
+        console.log(str);
         Memory.creepBuildQueues[room.name].push(buildThis);
 
         return true;

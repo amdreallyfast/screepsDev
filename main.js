@@ -35,7 +35,7 @@ module.exports.loop = function () {
     // 50 ticks is long enough to build all my creeps right now (9-2-2017)
     var spawn = Game.spawns['Spawn1'];
 
-    let ticksBetweenBigStuff = 50;
+    let ticksBetweenBigStuff = 100;
     // Note: Due to the nature of mod, the countdown will be on the range [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so subtrack 1.
     let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
     console.log("big stuff in " + countdown + " ticks");
@@ -43,11 +43,12 @@ module.exports.loop = function () {
         console.log(creepAges);
         minerCreepPopulation.queueCreeps(spawn.room);
         workerCreepPopulation.queueCreeps(spawn.room);
+        spawnBuildQueue.print(spawn.room);
+        //creepTraffic.print(spawn.room);
+
         spawnBuildQueue.constructNextCreepInQueue(spawn);
         repairJobs.queueJobs(spawn.room);
 
-        spawnBuildQueue.print(spawn.room)
-        creepJobSystem.print(spawn.room);
         Memory.doSomethingNextTick = true;
     }
     else if (Memory.doSomethingNextTick) {
@@ -59,5 +60,8 @@ module.exports.loop = function () {
 
         // wait for the next big event
         Memory.doSomethingNextTick = false;
+
+        // wait for the construction jobs to finish queueing before printing the jobs
+        creepJobSystem.print(spawn.room);
     }
 }

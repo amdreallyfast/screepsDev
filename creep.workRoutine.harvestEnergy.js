@@ -71,9 +71,13 @@ module.exports = {
                 creep.say('📵');
                 creep.moveTo(source, { visualizePathStyle: { stroke: "#ffffff" } });
             }
+            else if (result === ERR_BUSY) {
+                // still being spawned; ignore
+            }
             else {
                 // uh oh; problem
-                creep.say("energy source❔");
+                creep.say("❔");
+                console.log(creep.name + " harvesting energy source " + source + ": result " + result);
             }
         }
 

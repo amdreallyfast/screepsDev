@@ -11,6 +11,16 @@ let ensureTrafficRecordsExist = function (room) {
 }
 
 module.exports = {
+    print: function (room) {
+        let roomTraffic = Memory.creepTrafficRecords[room.name];
+        let str = "creep traffic in room " + room.name + ": { ";
+        for (let key in roomTraffic) {
+            str += key + ": " + roomTraffic[key] + ", ";
+        }
+        str += "}";
+        console.log(str);
+    },
+
     scan: function (creep) {
         let room = creep.room;
         ensureTrafficRecordsExist(room);
@@ -24,20 +34,28 @@ module.exports = {
             // move on top of them.  Creeps can also run on top of containers and construction 
             // sites, though they usually don't.
             if (lookType === LOOK_STRUCTURES || lookType === LOOK_CONSTRUCTION_SITES) {
+                //console.log("look type = " + lookType);
                 return false;
             }
         }
 
         let creepPosStr = "" + creep.pos.x + creep.pos.y;
-        let positionTraffic = Memory.creepTrafficRecords[room.name][creepPosStr];
-        if (positionTraffic === null || positionTraffic === undefined) {
-            Memory.creepTrafficRecords[room.name][creepPosStr] = 1;
+
+        // Note: Use the room traffic object, not the traffic counter for the specific creep 
+        // position, because the traffic counter is a primitive (an integer, specifically), so 
+        // it will be copied.  I want a variable to make a shorthand for the object in memory, 
+        // so I need a reference, which only happens for a non-primitive object, like room 
+        // traffic object.
+        let roomTraffic = Memory.creepTrafficRecords[room.name];
+        if (roomTraffic[creepPosStr] === null || roomTraffic[creepPosStr] === undefined) {
+            roomTraffic[creepPosStr] = 1;
             return;
         }
 
         // ??Create a colored flag based on traffic??
-        positionTraffic++;
-        if (positionTraffic === 100) {
+        roomTraffic[creepPosStr]++;
+        //console.log(creep.pos + " traffic counter: " + Memory.creepTrafficRecords[room.name][creepPosStr]);
+        if (roomTraffic[creepPosStr] === 100) {
             // high traffic area
             // Note: The construction site will not appear until the next tick.  The jobs.
             // construction module should be isntructed to scan for it then.
