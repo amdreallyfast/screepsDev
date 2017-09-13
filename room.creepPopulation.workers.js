@@ -17,7 +17,7 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 // TODO: modify job system to store jobs by ID; instead of using an array with push-pop
 
 
-let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
+let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
     if (roomPotentialEnergy >= 950) {
@@ -76,7 +76,7 @@ module.exports = {
                     newBody = [WORK, CARRY, MOVE, MOVE];   // 250 energy
                 }
                 else {
-                    newBody = workerBodyBasedOnAvailableEnergy(roomPotentialEnergy);
+                    newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
                 }
                 let newRole = "worker";
                 let buildRequest = {

@@ -85,7 +85,7 @@ module.exports = {
                 //}
                 if (!routineRepair.run(creep)) {
                     // got a bad one (or maybe there were duplicates that built up in the job queue)
-                    creepJobQueues.getRepairJobFor(creep);
+                    //creepJobQueues.getRepairJobFor(creep);
                 }
             }
             else if (haveConstructionJob && creep.memory.number > 0) {
@@ -95,6 +95,10 @@ module.exports = {
                 //    creepJobQueues.getConstructionJobFor(creep);
                 //}
                 routineBuild.run(creep);
+            }
+            else if (creep.carry.energy < (0.5 * creep.carryCapacity)) {
+                // refill; don't bother running all the way to the RCL with less than half energy
+                creep.memory.working = false;
             }
             else {
                 // nothing else to do, so upgrade the controller

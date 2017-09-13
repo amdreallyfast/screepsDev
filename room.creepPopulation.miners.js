@@ -13,7 +13,7 @@ let ensureRoomEnergySourceRecordsExist = function (room) {
     }
 }
 
-let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
+let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
     if (roomPotentialEnergy >= 750) {
@@ -35,7 +35,6 @@ let workerBodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     return body;
 }
 
-// TODO: rename module to room.creepPopulation.miners
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room ID, not a spawn ID.
     queueCreeps: function (room) {
@@ -68,7 +67,7 @@ module.exports = {
         for (let num = 0; num < numEnergySources; num++) {
             if (!minerNumbers[num]) {
                 let newRole = "miner";
-                let newBody = workerBodyBasedOnAvailableEnergy(roomPotentialEnergy);
+                let newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
 
                 // Note: There will be exactly 1 miner for each energy source, and energy 
                 // sources will be a constant, so it is acceptable to mod the number of energy 
