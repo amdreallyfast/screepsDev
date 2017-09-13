@@ -50,9 +50,10 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room, not a spawn.
     queueCreeps: function (room) {
+        let creepRole = "worker";
         let workerCreeps = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
-                return (creep.memory.role === "worker");
+                return (creep.memory.role === creepRole);
             }
         });
 
@@ -64,11 +65,11 @@ module.exports = {
             // ??check for unassigned energySourceId or ignore because it is set on creation??
         }
 
-        // TODO: ??change the number dynamically somehow? calculate per room based on available resources??
-        let maxWorkersPerRoom = 10;
+        // let there be 5 workers per energy resource (adjust with experience; 9-12-2017)
+        let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
         console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
-        for (let num = 0; num < maxWorkersPerRoom; num++) {
+        for (let num = 0; num < (roomEnergySources * 5); num++) {
             if (!workerNumbers[num]) {
                 let newBody = [];
                 if (num === 0) {
@@ -78,13 +79,13 @@ module.exports = {
                 else {
                     newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
                 }
-                let newRole = "worker";
                 let buildRequest = {
                     body: newBody,
                     name: room.name + newRole + num,
                     role: newRole,
                     number: num,
                     originRoomName: room.name,
+                    roomName: room.name,
                     energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 

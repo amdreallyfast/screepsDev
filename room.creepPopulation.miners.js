@@ -40,18 +40,19 @@ module.exports = {
     queueCreeps: function (room) {
         ensureRoomEnergySourceRecordsExist(room);
 
+        let creepRole = "miner";
         let miners = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
-                return (creep.memory.role === 'miner');
+                return (creep.memory.role === creepRole);
             }
         });
 
-        // ??how to streamline this? there are usually only 1 or 2 energy sources in a room
-        let numEnergySources = Memory.roomEnergySources[room.name].length;
-        if (miners.length >= numEnergySources) {
-            // great
-            return;
-        }
+        //// ??how to streamline this? there are usually only 1 or 2 energy sources in a room
+        //let numEnergySources = Memory.roomEnergySources[room.name].length;
+        //if (miners.length >= numEnergySources) {
+        //    // great
+        //    return;
+        //}
 
         // recycle the miner numbers per room; easier to read and easier to dedect duplicate build requests
         let minerNumbers = [];
@@ -62,28 +63,21 @@ module.exports = {
         }
 
         // exactly 1 miner per energy source
-        let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        let roomEnergySources = room.find(FIND_SOURCES);
+        let roomPotentialEnergy = roomEnergyLevels.maxiumSupportedEnergy(room);
         console.log("spawning miners; room " + room.name + " potential energy: " + roomPotentialEnergy);
-        for (let num = 0; num < numEnergySources; num++) {
+        for (let num = 0; num < roomEnergySources.length; num++) {
             if (!minerNumbers[num]) {
-                let newRole = "miner";
                 let newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
-
-                // Note: There will be exactly 1 miner for each energy source, and energy 
-                // sources will be a constant, so it is acceptable to mod the number of energy 
-                // sources by the miner number without checking which is bigger.  The number of 
-                // energy sources will always be the larger number except for the last miner.
-                // Also Note: The +1 is because num can be 0;
-                //let energySourceIndex = numEnergySources % (num + 1);
-                //let newEnergySourceId = Memory.roomEnergySources[room.name][energySourceIndex].id;
-                let newEnergySourceId = Memory.roomEnergySources[room.name][num].id;
+                let newEnergySourceId = roomEnergySources[num].id;
                 let buildRequest = {
                     body: newBody,
-                    name: room.name + newRole + num,
-                    role: newRole,
+                    name: room.name + creepRole + num,
+                    role: creepRole,
                     number: num,
                     energySourceId: newEnergySourceId, 
                     originRoomName: room.name,
+                    roomName: room.name,
                     energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 
