@@ -2,6 +2,7 @@
 let creepBuildQueue = require("room.creepPopulation.buildQueue");
 let creepEnergyRequired = require("creep.energyRequired");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
+let myConstants = require("myConstants");
 
 
 let ensureRoomEnergySourceRecordsExist = function (room) {
@@ -41,23 +42,16 @@ module.exports = {
         ensureRoomEnergySourceRecordsExist(room);
 
         let creepRole = "miner";
-        let miners = room.find(FIND_MY_CREEPS, {
+        let currentMiners = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
                 return (creep.memory.role === creepRole);
             }
         });
 
-        //// ??how to streamline this? there are usually only 1 or 2 energy sources in a room
-        //let numEnergySources = Memory.roomEnergySources[room.name].length;
-        //if (miners.length >= numEnergySources) {
-        //    // great
-        //    return;
-        //}
-
         // recycle the miner numbers per room; easier to read and easier to dedect duplicate build requests
         let minerNumbers = [];
-        for (let index in miners) {
-            let minerCreep = miners[index];
+        for (let index in currentMiners) {
+            let minerCreep = currentMiners[index];
             minerNumbers[minerCreep.memory.number] = true;
             // ??check for unassigned energySourceId or ignore because it is set on creation??
         }
@@ -70,6 +64,13 @@ module.exports = {
             if (!minerNumbers[num]) {
                 let newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
                 let newEnergySourceId = roomEnergySources[num].id;
+
+                // really should have at least 1 miner
+                let buildPriority = myConstants.creepBuildPriorityLow;
+                if (currentMiners.length === 0) {
+                    buildPriority = myConstants.creepBuildPriorityHigh;
+                }
+
                 let buildRequest = {
                     body: newBody,
                     name: room.name + creepRole + num,
@@ -82,7 +83,7 @@ module.exports = {
                 }
 
                 //console.log("submitting miner creep build request: " + buildRequest.name);
-                creepBuildQueue.submit(buildRequest, room);
+                creepBuildQueue.submit(buildRequest, room, buildPriority);
             }
         }
     }

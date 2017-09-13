@@ -34,55 +34,68 @@ module.exports.loop = function () {
     console.log("big stuff in " + countdown + " ticks");
     let doTheBigStuff = (countdown === 0);
 
-    let creepAges = "creep ages (ticks remaining): ";
-    for (let name in Game.creeps) {
+    //// TODO: clear out existing creep memories and traffic and job queues and all that stuff; clean slate
+    //let str = "";
+    //for (let key in Memory) {
+    //    str += (key + "; ");
+    //    //delete Memory[key];
+    //}
+    //console.log("Memory keys: " + str);
 
-        let creep = Game.creeps[name];
-        creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
+    //let creepAges = "creep ages (ticks remaining): ";
+    //for (let name in Game.creeps) {
 
-        creepWorkRoutine.run(creep);
-        creepTraffic.scan(creep);
-    }
+    //    let creep = Game.creeps[name];
+    //    creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
 
-    // TODO: put all room-specific stuff in here
-    for (let roomName in Game.rooms) {
-        let room = Game.rooms[roomName];
+    //    creepWorkRoutine.run(creep);
+    //    creepTraffic.scan(creep);
+    //}
 
-        // energy level monitoring every tick
-        roomEnergyLevels.update(room);
+    //// TODO: put all room-specific stuff in here
+    //for (let roomName in Game.rooms) {
+    //    let room = Game.rooms[roomName];
 
-        // most things are a bit expensive, so do them only periodically
-        if (doTheBigStuff) {
-            console.log(creepAges);
-            maintainMinerPopulation.queueCreeps(room);
-            maintainWorkerPopulation.queueCreeps(room);
-            maintainEnergyHaulerPopulation.queueCreeps(room);
+    //    // energy level monitoring every tick
+    //    roomEnergyLevels.update(room);
+
+    //    // most things are a bit expensive, so do them only periodically
+    //    if (doTheBigStuff) {
+    //        console.log(creepAges);
+    //        maintainMinerPopulation.queueCreeps(room);
+    //        maintainWorkerPopulation.queueCreeps(room);
+    //        maintainEnergyHaulerPopulation.queueCreeps(room);
             
-            spawnBuildQueue.print(room);
-            creepTraffic.print(room);
-            roomEnergyLevels.print(room);
+    //        spawnBuildQueue.print(room);
+    //        creepTraffic.print(room);
+    //        roomEnergyLevels.print(room);
 
-            let roomSpawns = room.find(FIND_MY_SPAWNS);
-            roomSpawns.forEach(function(spawn) {
-                spawnBuildQueue.constructNextCreepInQueue(spawn);
-            });
+    //        let roomSpawns = room.find(FIND_MY_SPAWNS);
+    //        roomSpawns.forEach(function(spawn) {
+    //            spawnBuildQueue.constructNextCreepInQueue(spawn);
+    //        });
 
-            repairJobs.queueJobs;
-            Memory.doSomethingNextTick = true;
-        }
-        else if (Memory.doSomethingNextTick) {
-            Memory.doSomethingNextTick = false;
+    //        repairJobs.queueJobs;
+    //        Memory.doSomethingNextTick = true;
+    //    }
+    //    else if (Memory.doSomethingNextTick) {
+    //        Memory.doSomethingNextTick = false;
 
-            // energy is removed the next tick after the creep begins spawning
-            energyRefillJobs.queueJobs(room);
+    //        // energy is removed the next tick after the creep begins spawning
+    //        energyRefillJobs.queueJobs(room);
             
-            // construction sites appear the next tick after they are created
-            constructionJobs.queueJobs(room);
+    //        // construction sites appear the next tick after they are created
+    //        constructionJobs.queueJobs(room);
 
-            // wait for the construction jobs to finish queue before printing the job lists
-            creepJobSystem.print(room);
-        }
-    }
+    //        // wait for the construction jobs to finish queue before printing the job lists
+    //        creepJobSystem.print(room);
+    //    }
+    //}
+
+
+
+
+
 
     //// 50 ticks is long enough to build all my creeps right now (9-2-2017)
     //var spawn = Game.spawns['Spawn1'];

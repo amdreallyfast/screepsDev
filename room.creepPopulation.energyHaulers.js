@@ -27,7 +27,7 @@ module.exports = {
     // Also Note: The spawn room and the assigned room may be different if an energy hauler is intended to travel to an adjacent satellite room and bring back the energy to a container in the spawn room.
     queueCreeps: function (room) {
         let creepRole = "energyHauler";
-        let energyHaulers = room.find(FIND_MY_CREEPS, {
+        let currentEnergyHaulers = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
                 return (creep.memory.role === creepRole);
             }
@@ -35,8 +35,8 @@ module.exports = {
 
         // recycle the energy hauler numbers per room
         let haulerNumbers = [];
-        for (let index in energyHaulers) {
-            let haulerCreep = energyHaulers[index];
+        for (let index in currentEnergyHaulers) {
+            let haulerCreep = currentEnergyHaulers[index];
             haulerNumbers[haulerCreep.memory.number] = true;
         }
 
@@ -48,6 +48,13 @@ module.exports = {
             if (!haulerNumbers[num]) {
                 let newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
                 // unlike miners, an energy hauler is not assigned to any particular energy source
+
+                // really should have at least 1 hauler
+                let buildPriority = myConstants.creepBuildPriorityLow;
+                if (currentEnergyHaulers.length === 0) {
+                    buildPriority = myConstants.creepBuildPriorityHigh;
+                }
+
                 let buildRequest = {
                     body: newBody,
                     name: room.name + creepRole + num,
@@ -59,7 +66,7 @@ module.exports = {
                 }
 
                 //console.log("submitting energy hauler build request: " + buildRequest.name);
-                creepBuildQueue.submit(buildRequest, room);
+                creepBuildQueue.submit(buildRequest, room, buildPriority);
             }
         }
     }

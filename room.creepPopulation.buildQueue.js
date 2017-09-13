@@ -1,7 +1,6 @@
 
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 
-
 let ensureCreepBuildQueueExist = function (room) {
     if (!Memory.creepBuildQueues) {
         Memory.creepBuildQueues = {};
@@ -157,7 +156,7 @@ module.exports = {
     // - role: "..."
     // - name: "..."
     // - (additional arguments depend on the role)
-    submit: function (buildThis, room) {
+    submit: function (buildThis, room, priority) {
         ensureCreepBuildQueueExist(room);
 
         let result = checkForDuplicateBuildRequest(buildThis, room);
