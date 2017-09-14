@@ -7,6 +7,8 @@ let routineRefill = require("creep.workRoutine.refillEnergy");
 let routineRepair = require("creep.workRoutine.repair");
 let routineBuild = require("creep.workRoutine.build");
 let routineUpgrade = require("creep.workRoutine.upgrade");
+let myConstants = require("myConstants");
+
 
 // this is the high-level role control for all creeps
 module.exports = {
@@ -37,11 +39,16 @@ module.exports = {
             // priority job popped up.  Creeps are not fast, so have them work until they run 
             // out of energy, get more energy, THEN look for more work.
             creep.memory.working = true;
-            if (creep.memory.number === 0) {
+            let isBootstrapperCreep = (creep.memory.role === myConstants.creepRoleWorker) && (creep.memory.number === 0);
+            if (isBootstrapperCreep) {
                 // worker 0 is the emergency refill guy; dedicate refiller
                 creepJobQueues.getRefillEnergyJobFor(creep);
             }
+            else if (creep.memory.role === myConstants.creepRoleEnergyHauler) {
+                creepJobQueues.getRefillEnergyJobFor(creep);
+            }
             else {
+                // if the energy hauler hasn't already done this, help out a bit
                 creepJobQueues.getRefillEnergyJobFor(creep);
                 creepJobQueues.getRepairJobFor(creep);
                 creepJobQueues.getConstructionJobFor(creep);
@@ -72,7 +79,7 @@ module.exports = {
                 //    creepJobQueues.getRefillEnergyJobFor(creep);
                 //}
                 if (!routineRefill.run(creep)) {
-                    // already working on refills, the code got here, so you're not empty yet, so refill something else
+                    // refill something else
                     //console.log(creep.name + ": getting another refill job");
                     creepJobQueues.getRefillEnergyJobFor(creep);
                 }

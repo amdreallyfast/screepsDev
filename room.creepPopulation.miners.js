@@ -5,15 +5,6 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 let myConstants = require("myConstants");
 
 
-let ensureRoomEnergySourceRecordsExist = function (room) {
-    if (!Memory.roomEnergySources) {
-        Memory.roomEnergySources = {};
-    }
-    if (!Memory.roomEnergySources[room.name]) {
-        Memory.roomEnergySources[room.name] = room.find(FIND_SOURCES);
-    }
-}
-
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
@@ -39,12 +30,9 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room ID, not a spawn ID.
     queueCreeps: function (room) {
-        ensureRoomEnergySourceRecordsExist(room);
-
-        let creepRole = "miner";
         let currentMiners = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
-                return (creep.memory.role === creepRole);
+                return (creep.memory.role === myConstants.creepRoleMiner);
             }
         });
 
@@ -73,8 +61,8 @@ module.exports = {
 
                 let buildRequest = {
                     body: newBody,
-                    name: room.name + creepRole + num,
-                    role: creepRole,
+                    name: room.name + myConstants.creepRoleMiner + num,
+                    role: myConstants.creepRoleMiner,
                     number: num,
                     energySourceId: newEnergySourceId, 
                     originRoomName: room.name,

@@ -27,10 +27,9 @@ module.exports = {
     // Note: Energy haulers are creeps that specialize in "refill energy" jobs.  They cannot work.
     // Also Note: The spawn room and the assigned room may be different if an energy hauler is intended to travel to an adjacent satellite room and bring back the energy to a container in the spawn room.
     queueCreeps: function (room) {
-        let creepRole = "energyHauler";
         let currentEnergyHaulers = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
-                return (creep.memory.role === creepRole);
+                return (creep.memory.role === myConstants.creepRoleEnergyHauler);
             }
         });
 
@@ -58,8 +57,8 @@ module.exports = {
 
                 let buildRequest = {
                     body: newBody,
-                    name: room.name + creepRole + num,
-                    role: creepRole,
+                    name: room.name + myConstants.creepRoleEnergyHauler + num,
+                    role: myConstants.creepRoleEnergyHauler,
                     number: num,
                     originRoomName: room.name,
                     roomName: room.name,

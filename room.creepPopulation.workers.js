@@ -52,10 +52,9 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
 module.exports = {
     // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room, not a spawn.
     queueCreeps: function (room) {
-        let creepRole = "worker";
         let currentWorkers = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
-                return (creep.memory.role === creepRole);
+                return (creep.memory.role === myConstants.creepRoleWorker);
             }
         });
 
@@ -93,8 +92,8 @@ module.exports = {
 
                 let buildRequest = {
                     body: newBody,
-                    name: room.name + newRole + num,
-                    role: newRole,
+                    name: room.name + myConstants.creepRoleWorker + num,
+                    role: myConstants.creepRoleWorker,
                     number: num,
                     originRoomName: room.name,
                     roomName: room.name,

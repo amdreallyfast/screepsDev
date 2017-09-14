@@ -1,12 +1,23 @@
 
 let roomEnergyLevels = require("room.energyLevelMonitoring");
+let myConstants = require("myConstants");
 
 let ensureCreepBuildQueueExist = function (room) {
     if (!Memory.creepBuildQueues) {
         Memory.creepBuildQueues = {};
     }
     if (!Memory.creepBuildQueues[room.name]) {
-        Memory.creepBuildQueues[room.name] = [];
+        //Memory.creepBuildQueues[room.name] = {};
+        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityLow] = [];
+        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityMed] = [];
+        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityHigh] = [];
+        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityCritical] = [];
+        Memory.creepBuildQueues[room.name] = {
+            lowPriority: [],
+            medPriority: [],
+            highPriority: [],
+            criticalPriority: []
+        };
     }
 };
 
@@ -118,13 +129,42 @@ module.exports = {
     },
 
     print: function (room) {
-        let str = "{ ";
-        let queue = Memory.creepBuildQueues[room.name];
+        let queue = [];
+
+        queue = Memory.creepBuildQueues[room.name].criticalPriority;
+        let criticalPriorityQueueStr = "critical: (" + queue.length + ") { ";
+        //let criticalPriorityQueue = Memory.creepBuildQueues[room.name].criticalPriority;
         queue.forEach(function (buildRequest) {
-            str += (buildRequest.name + "; ");
+            criticalPriorityQueueStr += (buildRequest.name + "; ");
         });
-        str += "}";
-        console.log("room " + room.name + " has " + queue.length + " creeps waiting to be built: " + str);
+
+        queue = Memory.creepBuildQueues[room.name].highPriority;
+        let highPriorityQueueStr = "high: (" + queue.length + ") { ";
+        //let highPriorityQueue = Memory.creepBuildQueues[room.name].highPriority;
+        queue.forEach(function (buildRequest) {
+            highPriorityQueueStr += (buildRequest.name + "; ");
+        });
+
+        queue = Memory.creepBuildQueues[room.name].medPriority;
+        let medPriorityQueueStr = "med: (" + queue.length + ") { ";
+        //let medPriorityQueue = Memory.creepBuildQueues[room.name].medPriority;
+        queue.forEach(function (buildRequest) {
+            medPriorityQueueStr += (buildRequest.name + "; ");
+        });
+
+        queue = Memory.creepBuildQueues[room.name].highPriority;
+        let lowPriorityQueueStr = "low: (" + queue.length + ") { ";
+        //let lowPriorityQueue = Memory.creepBuildQueues[room.name].highPriority;
+        queue.forEach(function (buildRequest) {
+            lowPriorityQueueStr += (buildRequest.name + "; ");
+        });
+
+        //console.log("room " + room.name + " build queues: has " + queue.length + " creeps waiting to be built: " + str);
+        console.log("room " + room.name + " build queues: \n\t" +
+            criticalPriorityQueueStr + "\n\t" +
+            highPriorityQueueStr + "\n\t" + 
+            medPriorityQueueStr + "\n\t" +
+            lowPriorityQueueStr + "\n\t");
     },
 
     constructNextCreepInQueue: function (spawn) {
@@ -165,12 +205,26 @@ module.exports = {
             return false;
         }
 
-        let str = "new creep build request: {";
+        let str = "new creep build request of priority " + priority +": {";
         for (let key in buildThis) {
             str += key + ": " + buildThis[key] + ", ";
         }
         console.log(str);
-        Memory.creepBuildQueues[room.name].push(buildThis);
+        if (priority === myConstants.creepBuildPriorityLow) {
+            Memory.creepBuildQueues[room.name].lowPriority.push(buildThis);
+        }
+        else if (priority === myConstants.creepBuildPriorityMed) {
+            Memory.creepBuildQueues[room.name].medPriority.push(buildThis);
+        }
+        else if (priority === myConstants.creepBuildPriorityHigh) {
+            Memory.creepBuildQueues[room.name].highPriority.push(buildThis);
+        }
+        else if (priority === myConstants.creepBuildPriorityCritical) {
+            Memory.creepBuildQueues[room.name].criticalPriority.push(buildThis);
+        }
+        else {
+            console.log("unknown build priority '" + priority + "'; discarding creep build request");
+        }
 
         return true;
     }
