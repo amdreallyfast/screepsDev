@@ -71,7 +71,7 @@ module.exports = {
         //let alreadySubmittedOne = false;
         //let buildPriority = myConstants.creepBuildPriorityLow;
         //if (currentWorkers.length === 0) {
-        //    buildPriority = myConstants.creepBuildPriorityHigh;
+        //    buildPriority = myConstants.creepBuildPriorityMed;
         //}
 
         // let there be 5 workers per energy resource (adjust with experience; 9-12-2017)
@@ -84,7 +84,7 @@ module.exports = {
                 let buildPriority = myConstants.creepBuildPriorityLow;
                 if (num === 0) {
                     // let this be the "emergency recovery" creep that can always be spawned if there is a spawn
-                    buildPriority = myConstants.creepBuildPriorityCritical;
+                    buildPriority = myConstants.creepBuildPriorityHigh;
                     newBody = [WORK, CARRY, MOVE, MOVE];   // 250 energy
                 }
                 else {

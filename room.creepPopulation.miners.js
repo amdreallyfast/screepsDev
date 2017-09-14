@@ -65,7 +65,7 @@ module.exports = {
                 let newBody = bodyBasedOnAvailableEnergy(roomPotentialEnergy);
                 let newEnergySourceId = roomEnergySources[num].id;
 
-                // really should have at least 1 miner
+                // really need at least 1 miner, and that before the energy hauler
                 let buildPriority = myConstants.creepBuildPriorityLow;
                 if (currentMiners.length === 0) {
                     buildPriority = myConstants.creepBuildPriorityHigh;

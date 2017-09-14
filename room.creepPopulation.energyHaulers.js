@@ -13,7 +13,8 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
         body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
     }
     else if (roomPotentialEnergy >= 300) {
-        body = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]
+        // early creeps don't have the benefit of roads
+        body = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
     }
     else {
         // uh oh; not even 300 energy?
@@ -52,7 +53,7 @@ module.exports = {
                 // really should have at least 1 hauler
                 let buildPriority = myConstants.creepBuildPriorityLow;
                 if (currentEnergyHaulers.length === 0) {
-                    buildPriority = myConstants.creepBuildPriorityHigh;
+                    buildPriority = myConstants.creepBuildPriorityMed;
                 }
 
                 let buildRequest = {
