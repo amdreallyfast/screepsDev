@@ -1,6 +1,9 @@
 ﻿
 let creepBuildQueue = require("room.creepPopulation.buildQueue");
+let creepEnergyRequired = require("creep.energyRequired");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
+let myConstants = require("myConstants");
+
 
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
@@ -61,7 +64,6 @@ module.exports = {
                     role: myConstants.creepRoleEnergyHauler,
                     number: num,
                     originRoomName: room.name,
-                    roomName: room.name,
                     energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 

@@ -46,7 +46,7 @@ module.exports = {
 
         // exactly 1 miner per energy source
         let roomEnergySources = room.find(FIND_SOURCES);
-        let roomPotentialEnergy = roomEnergyLevels.maxiumSupportedEnergy(room);
+        let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
         console.log("spawning miners; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < roomEnergySources.length; num++) {
             if (!minerNumbers[num]) {
@@ -66,7 +66,6 @@ module.exports = {
                     number: num,
                     energySourceId: newEnergySourceId, 
                     originRoomName: room.name,
-                    roomName: room.name,
                     energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 

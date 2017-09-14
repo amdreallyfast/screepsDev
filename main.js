@@ -16,24 +16,7 @@ let creepWorkRoutine = require("creep.workRoutine.work");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 
 
-
-// TODO: go through all keys in Memory and see what you don't need; delete those that you don't
-
-
-
 module.exports.loop = function () {
-    //for (let key in Memory) {
-    //    console.log(key);
-    //}
-
-    // Note: Due to the nature of mod, the countdown will be on the range 
-    // [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so 
-    // subtrack 1.
-    let ticksBetweenBigStuff = 75;
-    let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
-    console.log("big stuff in " + countdown + " ticks");
-    let doTheBigStuff = (countdown === 0);
-
     //// TODO: clear out existing creep memories and traffic and job queues and all that stuff; clean slate
     //let str = "";
     //for (let key in Memory) {
@@ -42,55 +25,67 @@ module.exports.loop = function () {
     //}
     //console.log("Memory keys: " + str);
 
-    //let creepAges = "creep ages (ticks remaining): ";
-    //for (let name in Game.creeps) {
 
-    //    let creep = Game.creeps[name];
-    //    creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
+    // Note: Due to the nature of mod, the countdown will be on the range 
+    // [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so 
+    // subtrack 1.
+    let ticksBetweenBigStuff = 75;
+    let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
+    console.log("big stuff in " + countdown + " ticks");
+    let doTheBigStuff = (countdown === 0);
+    //let doTheBigStuff = false;
+    //let doTheBigStuff = true;
 
-    //    creepWorkRoutine.run(creep);
-    //    creepTraffic.scan(creep);
-    //}
+    // TODO: update with a module that takes into account all rooms
+    let creepAges = "creep ages (ticks remaining): ";
+    for (let name in Game.creeps) {
 
-    //// TODO: put all room-specific stuff in here
-    //for (let roomName in Game.rooms) {
-    //    let room = Game.rooms[roomName];
+        let creep = Game.creeps[name];
+        creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
 
-    //    // energy level monitoring every tick
-    //    roomEnergyLevels.update(room);
+        creepWorkRoutine.run(creep);
+        creepTraffic.scan(creep);
+    }
 
-    //    // most things are a bit expensive, so do them only periodically
-    //    if (doTheBigStuff) {
-    //        console.log(creepAges);
-    //        maintainMinerPopulation.queueCreeps(room);
-    //        maintainWorkerPopulation.queueCreeps(room);
-    //        maintainEnergyHaulerPopulation.queueCreeps(room);
+    // TODO: put all room-specific stuff in here
+    for (let roomName in Game.rooms) {
+        let room = Game.rooms[roomName];
+
+        // energy level monitoring every tick
+        roomEnergyLevels.update(room);
+
+        // most things are a bit expensive, so do them only periodically
+        if (doTheBigStuff) {
+            console.log(creepAges);
+            maintainMinerPopulation.queueCreeps(room);
+            maintainWorkerPopulation.queueCreeps(room);
+            maintainEnergyHaulerPopulation.queueCreeps(room);
             
-    //        spawnBuildQueue.print(room);
-    //        creepTraffic.print(room);
-    //        roomEnergyLevels.print(room);
+            spawnBuildQueue.print(room);
+            creepTraffic.print(room);
+            roomEnergyLevels.print(room);
 
-    //        let roomSpawns = room.find(FIND_MY_SPAWNS);
-    //        roomSpawns.forEach(function(spawn) {
-    //            spawnBuildQueue.constructNextCreepInQueue(spawn);
-    //        });
+            let roomSpawns = room.find(FIND_MY_SPAWNS);
+            roomSpawns.forEach(function(spawn) {
+                spawnBuildQueue.constructNextCreepInQueue(spawn);
+            });
 
-    //        repairJobs.queueJobs;
-    //        Memory.doSomethingNextTick = true;
-    //    }
-    //    else if (Memory.doSomethingNextTick) {
-    //        Memory.doSomethingNextTick = false;
+            repairJobs.queueJobs(room);
+            Memory.doSomethingNextTick = true;
+        }
+        else if (Memory.doSomethingNextTick) {
+            Memory.doSomethingNextTick = false;
 
-    //        // energy is removed the next tick after the creep begins spawning
-    //        energyRefillJobs.queueJobs(room);
+            // energy is removed the next tick after the creep begins spawning
+            energyRefillJobs.queueJobs(room);
             
-    //        // construction sites appear the next tick after they are created
-    //        constructionJobs.queueJobs(room);
+            // construction sites appear the next tick after they are created
+            constructionJobs.queueJobs(room);
 
-    //        // wait for the construction jobs to finish queue before printing the job lists
-    //        creepJobSystem.print(room);
-    //    }
-    //}
+            // wait for the construction jobs to finish queue before printing the job lists
+            creepJobSystem.print(room);
+        }
+    }
 
 
 

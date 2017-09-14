@@ -7,34 +7,32 @@ let ensureCreepBuildQueueExist = function (room) {
         Memory.creepBuildQueues = {};
     }
     if (!Memory.creepBuildQueues[room.name]) {
-        //Memory.creepBuildQueues[room.name] = {};
-        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityLow] = [];
-        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityMed] = [];
-        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityHigh] = [];
-        //Memory.creepBuildQueues[room.name][myConstants.creepBuildPriorityCritical] = [];
         Memory.creepBuildQueues[room.name] = {
             lowPriority: [],
             medPriority: [],
             highPriority: [],
             criticalPriority: []
+            //lowPriority: {},
+            //medPriority: {},
+            //highPriority: {},
+            //criticalPriority: {}
         };
     }
 };
 
 let haveBuildRequest = function (room) {
-    return (Memory.creepBuildQueues[room.name].length > 0);
+    let roomBuildQueues = Memory.creepBuildQueues[room.name];
+    if (roomBuildQueues.criticalPriority.length > 0 ||
+        roomBuildQueues.highPriority.length > 0 ||
+        roomBuildQueues.medPriority.length > 0 ||
+        roomBuildQueues.lowPriority.length > 0) {
+        return true;
+    }
+
+    return false;
 };
 
-let canCreateNextCreep = function (spawn) {
-    let buildQueue = Memory.creepBuildQueues[spawn.room.name];
-    if (buildQueue.length === 0) {
-        return false;
-    }
-
-    if (spawn.spawning) {
-        return false
-    }
-
+let canCreateCreepWithErrorChecking = function (spawn, queue) {
     // Note: Cost of canCreateCreep(...) is AVERAGE, so try not to use it every tick.
     while (buildQueue.length > 0) {
         let nextCreep = buildQueue[0];
@@ -46,7 +44,7 @@ let canCreateNextCreep = function (spawn) {
         else if (result === ERR_NAME_EXISTS) {
             // delete duplicates 
             // Note: Duplicates can slip in if the spawn is creating a creep.  The function 
-            // checkForDuplicateBuildRequest(...) could conceivably look through all game spawns and 
+            // duplicateBuildRequest(...) could conceivably look through all game spawns and 
             // isolate the ones in that room and then check some special memory that is recording 
             // which build requests are active, but it is easier to remove duplicates than to 
             // prevent them.
@@ -84,14 +82,47 @@ let canCreateNextCreep = function (spawn) {
     return false;
 }
 
-let getNextBuildRequest = function (room) {
-    let buildQueue = Memory.creepBuildQueues[room.name];
-    if (buildQueue.length === 0) {
-        return 0;
-    }
 
-    // array.pop() removes the last element, but I want a FIFO queue
-    return buildQueue.shift();
+let canCreateNextCreep = function (spawn) {
+    // Note: Unlike duplicateBuildRequest(...), which is just looking for a duplicate in any of the queues, the "next creep" must take into the queue priorities.
+    let roomBuildQueues = Memory.creepBuildQueues[spawn.room.name];
+    if (roomBuildQueues.criticalPriority.length > 0) {
+        return canCreateCreepWithErrorChecking(spawn, roomBuildQueues.criticalPriority);
+    }
+    else if (roomBuildQueues.highPriority.length > 0) {
+        return canCreateCreepWithErrorChecking(spawn, roomBuildQueues.highPriority);
+    }
+    else if (roomBuildQueues.medPriority.length > 0) {
+        return canCreateCreepWithErrorChecking(spawn, roomBuildQueues.medPriority);
+    }
+    else if (roomBuildQueues.lowPriority.length > 0) {
+        return canCreateCreepWithErrorChecking(spawn, roomBuildQueues.lowPriority);
+    }
+    else {
+        // all empty
+        return false;
+    }
+}
+
+let getNextBuildRequest = function (room) {
+    // Note: Array.pop() removes the last element, but I want a FIFO queue
+    let roomBuildQueues = Memory.creepBuildQueues[room.name];
+    if (roomBuildQueues.criticalPriority.length > 0) {
+        return roomBuildQueues.criticalPriority.shift();
+    }
+    else if (roomBuildQueues.highPriority.length > 0) {
+        return roomBuildQueues.highPriority.shift();
+    }
+    else if (roomBuildQueues.medPriority.length > 0) {
+        return roomBuildQueues.medPriority.shift();
+    }
+    else if (roomBuildQueues.lowPriority.length > 0) {
+        return roomBuildQueues.lowPriority.shift();
+    }
+    else {
+        // all empty
+        return null;
+    }
 }
 
 let parseForAdditionalArguments = function (buildRequest) {
@@ -105,30 +136,42 @@ let parseForAdditionalArguments = function (buildRequest) {
     return optionalArguments;
 }
 
-let sameBuildRequest = function (buildRequestA, buildRequestB) {
-    return (
-        buildRequestA.role === buildRequestB.role &&
-        buildRequestA.name === buildRequestB.name);
-}
-
-let checkForDuplicateBuildRequest = function (newBuildRequest, room) {
-    let creepBuildQueue = Memory.creepBuildQueues[room.name];
-    for (let index in Memory.creepBuildQueues[room.name]) {
-        let existingBuildRequest = creepBuildQueue[index];
-        if (sameBuildRequest(existingBuildRequest, newBuildRequest)) {
-            return true;
+let duplicateBuildRequest = function (newBuildRequest, room) {
+    // there are not very many creeps per room, so this function is not very expensive despite 
+    // the nested loop 
+    // Note: This is also a little easier to use than an object with creep names as hashed keys 
+    // because of the built-in FIFO mechanism via push-pop.
+    let roomBuildQueues = Memory.creepBuildQueues[room.name];
+    for (let key in roomBuildQueues) {
+        let queue = roomBuildQueues[key];
+        for (let index in queue) {
+            let existingBuildRequest = queue[index];
+            if (newBuildRequest.role === existingBuildRequest.role &&
+                newBuildRequest.name === existingBuildRequest.name) {
+                return true;
+            }
         }
     }
+    //let roomBuildQueues = Memory.creepBuildQueues[room.name];
+    //for (let key in roomBuildQueues) {
+    //    let queue = roomBuildQueues[key];
+    //    let existingBuildRequest = queue[newBuildRequest.name];
+    //    if (existingBuildRequest !== null && existingBuildRequest !== undefined) {
+    //        return true;
+    //    }
+    //}
+
     return false;
 }
 
 module.exports = {
     // in the event of disaster and creeps can't be built
     clear: function (room) {
-        Memory.creepBuildQueues[room.name].length = 0;
+        delete Memory.creepBuildQueues[room.name];
     },
 
     print: function (room) {
+        ensureCreepBuildQueueExist(room);
         let queue = [];
 
         queue = Memory.creepBuildQueues[room.name].criticalPriority;
@@ -152,7 +195,7 @@ module.exports = {
             medPriorityQueueStr += (buildRequest.name + "; ");
         });
 
-        queue = Memory.creepBuildQueues[room.name].highPriority;
+        queue = Memory.creepBuildQueues[room.name].lowPriority;
         let lowPriorityQueueStr = "low: (" + queue.length + ") { ";
         //let lowPriorityQueue = Memory.creepBuildQueues[room.name].highPriority;
         queue.forEach(function (buildRequest) {
@@ -164,7 +207,7 @@ module.exports = {
             criticalPriorityQueueStr + "\n\t" +
             highPriorityQueueStr + "\n\t" + 
             medPriorityQueueStr + "\n\t" +
-            lowPriorityQueueStr + "\n\t");
+            lowPriorityQueueStr);
     },
 
     constructNextCreepInQueue: function (spawn) {
@@ -199,9 +242,9 @@ module.exports = {
     submit: function (buildThis, room, priority) {
         ensureCreepBuildQueueExist(room);
 
-        let result = checkForDuplicateBuildRequest(buildThis, room);
+        let result = duplicateBuildRequest(buildThis, room);
         if (result) {
-            //console.log("duplicate creep build request: " + buildThis.name);
+            console.log("duplicate creep build request: " + buildThis.name);
             return false;
         }
 

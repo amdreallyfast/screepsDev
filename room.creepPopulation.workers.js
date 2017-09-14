@@ -66,24 +66,17 @@ module.exports = {
             // ??check for unassigned energySourceId or ignore because it is set on creation??
         }
         
-        //// if there are 0 miners, boost the build request priority
-        //let alreadySubmittedOne = false;
-        //let buildPriority = myConstants.creepBuildPriorityLow;
-        //if (currentWorkers.length === 0) {
-        //    buildPriority = myConstants.creepBuildPriorityMed;
-        //}
-
         // let there be 5 workers per energy resource (adjust with experience; 9-12-2017)
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
         //console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
-        for (let num = 0; num < (roomEnergySources * 5); num++) {
+        for (let num = 0; num < (roomEnergySources.length * 5); num++) {
             if (!workerNumbers[num]) {
                 let newBody = [];
                 let buildPriority = myConstants.creepBuildPriorityLow;
                 if (num === 0) {
                     // let this be the "emergency recovery" creep that can always be spawned if there is a spawn
-                    buildPriority = myConstants.creepBuildPriorityHigh;
+                    buildPriority = myConstants.creepBuildPriorityCritical;
                     newBody = [WORK, CARRY, MOVE, MOVE];   // 250 energy
                 }
                 else {
@@ -95,13 +88,14 @@ module.exports = {
                     name: room.name + myConstants.creepRoleWorker + num,
                     role: myConstants.creepRoleWorker,
                     number: num,
-                    originRoomName: room.name,
-                    roomName: room.name,
                     energyRequired: creepEnergyRequired.bodyCost(newBody),
                 }
 
                 //console.log("submitting worker creep build request: " + buildRequest.name + ", " + buildRequest.body);
                 creepBuildQueue.submit(buildRequest, room, buildPriority);
+            }
+            else {
+                console.log("worker " + num + " already exists");
             }
         }
     }

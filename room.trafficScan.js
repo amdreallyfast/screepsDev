@@ -12,6 +12,7 @@ let ensureTrafficRecordsExist = function (room) {
 
 module.exports = {
     print: function (room) {
+        ensureTrafficRecordsExist(room);
         let roomTraffic = Memory.creepTrafficRecords[room.name];
         let str = "creep traffic in room " + room.name + ": { ";
         for (let key in roomTraffic) {
