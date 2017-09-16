@@ -1,9 +1,8 @@
 ﻿
 module.exports = {
     run: function (creep) {
-        let notMyJob = (creep.memory.role !== "worker");
         let noJob = (!creep.memory.refillEnergyJobId);
-        if (notMyJob || noJob) {
+        if (noJob) {
             return false;
         }
 

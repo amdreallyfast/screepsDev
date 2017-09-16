@@ -17,11 +17,11 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     else if (roomPotentialEnergy >= 450) {
         body = [WORK, WORK, WORK, CARRY, CARRY, MOVE];
     }
-    else if (roomPotentialEnergy >= 300) {
-        body = [WORK, WORK, CARRY, MOVE];
+    else if (roomPotentialEnergy >= 350) {
+        body = [WORK, WORK, WORK, MOVE];
     }
     else {
-        // uh oh; not even 300 energy? 
+        body = [WORK, WORK, MOVE];
     }
 
     return body;
@@ -47,6 +47,7 @@ module.exports = {
         // exactly 1 miner per energy source
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        let alreadySubmitted = false;
         console.log("spawning miners; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < roomEnergySources.length; num++) {
             if (!minerNumbers[num]) {
@@ -55,7 +56,7 @@ module.exports = {
 
                 // really need at least 1 miner, and that before the energy hauler
                 let buildPriority = myConstants.creepBuildPriorityLow;
-                if (currentMiners.length === 0) {
+                if (!alreadySubmitted && currentMiners.length === 0) {
                     buildPriority = myConstants.creepBuildPriorityHigh;
                 }
 
@@ -71,6 +72,7 @@ module.exports = {
 
                 //console.log("submitting miner creep build request: " + buildRequest.name);
                 creepBuildQueue.submit(buildRequest, room, buildPriority);
+                alreadySubmitted = true;
             }
         }
     }

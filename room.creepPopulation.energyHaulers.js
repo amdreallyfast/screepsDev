@@ -15,12 +15,9 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     if (roomPotentialEnergy >= 450) {
         body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
     }
-    else if (roomPotentialEnergy >= 300) {
+    else {
         // early creeps don't have the benefit of roads
         body = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
-    }
-    else {
-        // uh oh; not even 300 energy?
     }
 
     return body;
@@ -46,6 +43,7 @@ module.exports = {
         // just like the miners, exactly 1 miner per energy source
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        let alreadySubmitted = false;
         console.log("spawning energy haulers; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < roomEnergySources.length; num++) {
             if (!haulerNumbers[num]) {
@@ -54,7 +52,7 @@ module.exports = {
 
                 // really should have at least 1 hauler
                 let buildPriority = myConstants.creepBuildPriorityLow;
-                if (currentEnergyHaulers.length === 0) {
+                if (!alreadySubmitted && currentEnergyHaulers.length === 0) {
                     buildPriority = myConstants.creepBuildPriorityMed;
                 }
 
@@ -69,6 +67,7 @@ module.exports = {
 
                 //console.log("submitting energy hauler build request: " + buildRequest.name);
                 creepBuildQueue.submit(buildRequest, room, buildPriority);
+                alreadySubmitted = true;
             }
         }
     }

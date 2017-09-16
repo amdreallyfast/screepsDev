@@ -20,7 +20,12 @@ module.exports = {
             return;
         }
 
+        //console.log(creep.name + ": role is " + creep.memory.role + "; working? " + creep.memory.working);
+
         // ??how to draw a "fatigue halo" a la bonzAI's creep AI??
+        //if (creep.memory.role === myConstants.creepRoleEnergyHauler) {
+        //    creep.memory.working = false;
+        //}
 
         //creep.moveTo(Game.spawns['Spawn1']);
         //return;
@@ -33,6 +38,8 @@ module.exports = {
             creep.memory.working = false;
         }
         else if (!working && energyFull) {
+            //console.log(creep.name + ": role is " + creep.memory.role + "; working? " + creep.memory.working);
+
             // get to work
             // Note: Only switch jobs after getting more energy so that a creep doesn't try to 
             // run all the way across the room when it was already busy just because a higher 
@@ -41,14 +48,15 @@ module.exports = {
             creep.memory.working = true;
             let isBootstrapperCreep = (creep.memory.role === myConstants.creepRoleWorker) && (creep.memory.number === 0);
             if (isBootstrapperCreep) {
-                // worker 0 is the emergency refill guy; dedicate refiller
+                // worker 0 is the emergency refill guy; dedicate refiller (and upgrader when spawn is full)
                 creepJobQueues.getRefillEnergyJobFor(creep);
             }
             else if (creep.memory.role === myConstants.creepRoleEnergyHauler) {
                 creepJobQueues.getRefillEnergyJobFor(creep);
+                //console.log(creep.name + ": refill job is " + creep.memory.refillEnergyJobId);
             }
             else {
-                // if the energy hauler hasn't already done this, help out a bit
+                // if the energy haulers haven't already refilled everything, help out a bit
                 creepJobQueues.getRefillEnergyJobFor(creep);
                 creepJobQueues.getRepairJobFor(creep);
                 creepJobQueues.getConstructionJobFor(creep);
@@ -70,46 +78,59 @@ module.exports = {
             let haveRepairJob = (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined);
             let haveConstructionJob = (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined);
 
-            if (haveRefillJob) {
-                // energy refill takes presendence so that the spawn and extensions are ready to 
-                // build and so that the turrets are ready to shoot
-                //while (!routineRefill.run(creep)) {
-                //    // already working on refills, the code got here, so you're not empty yet, so refill something else
-                //    //console.log(creep.name + ": getting another refill job");
-                //    creepJobQueues.getRefillEnergyJobFor(creep);
-                //}
-                if (!routineRefill.run(creep)) {
-                    // refill something else
+            if (creep.memory.role === myConstants.creepRoleEnergyHauler) {
+                //console.log(creep.name + ": have refill job?" + haveRefillJob + " - " + creep.memory.refillEnergyJobId);
+                if (haveRefillJob) {
+                    //console.log(creep.name + ": refilling");
+                    routineRefill.run(creep);
+                }
+                if (!haveRefillJob) {
                     //console.log(creep.name + ": getting another refill job");
                     creepJobQueues.getRefillEnergyJobFor(creep);
                 }
             }
-            else if (haveRepairJob && creep.memory.number > 0) {
-                // stop stuff from breaking down
-                //while (!routineRepair.run(creep)) {
-                //    // got a bad one (or maybe there were duplicates that built up in the job queue)
-                //    creepJobQueues.getRepairJobFor(creep);
-                //}
-                if (!routineRepair.run(creep)) {
-                    // got a bad one (or maybe there were duplicates that built up in the job queue)
-                    //creepJobQueues.getRepairJobFor(creep);
-                }
-            }
-            else if (haveConstructionJob && creep.memory.number > 0) {
-                // roads, bypasses (gotta build bypasses), whatever
-                //while (!routineBuild.run(creep)) {
-                //    // got a bad one (or maybe there were duplicates that built up in the job queue)
-                //    creepJobQueues.getConstructionJobFor(creep);
-                //}
-                routineBuild.run(creep);
-            }
-            else if (creep.carry.energy < (0.5 * creep.carryCapacity)) {
-                // refill; don't bother running all the way to the RCL with less than half energy
-                creep.memory.working = false;
-            }
             else {
-                // nothing else to do, so upgrade the controller
-                routineUpgrade.run(creep);
+                if (haveRefillJob) {
+                    // energy refill takes presendence so that the spawn and extensions are ready to 
+                    // build and so that the turrets are ready to shoot
+                    //while (!routineRefill.run(creep)) {
+                    //    // already working on refills, the code got here, so you're not empty yet, so refill something else
+                    //    //console.log(creep.name + ": getting another refill job");
+                    //    creepJobQueues.getRefillEnergyJobFor(creep);
+                    //}
+                    if (!routineRefill.run(creep)) {
+                        // refill something else
+                        //console.log(creep.name + ": getting another refill job");
+                        creepJobQueues.getRefillEnergyJobFor(creep);
+                    }
+                }
+                else if (haveRepairJob && creep.memory.number > 0) {
+                    // stop stuff from breaking down
+                    //while (!routineRepair.run(creep)) {
+                    //    // got a bad one (or maybe there were duplicates that built up in the job queue)
+                    //    creepJobQueues.getRepairJobFor(creep);
+                    //}
+                    if (!routineRepair.run(creep)) {
+                        // got a bad one (or maybe there were duplicates that built up in the job queue)
+                        //creepJobQueues.getRepairJobFor(creep);
+                    }
+                }
+                else if (haveConstructionJob && creep.memory.number > 0) {
+                    // roads, bypasses (gotta build bypasses), whatever
+                    //while (!routineBuild.run(creep)) {
+                    //    // got a bad one (or maybe there were duplicates that built up in the job queue)
+                    //    creepJobQueues.getConstructionJobFor(creep);
+                    //}
+                    routineBuild.run(creep);
+                }
+                else if (creep.carry.energy < (0.5 * creep.carryCapacity)) {
+                    // refill; don't bother running all the way to the RCL with less than half energy
+                    creep.memory.working = false;
+                }
+                else {
+                    // nothing else to do, so upgrade the controller
+                    routineUpgrade.run(creep);
+                }
             }
         }
     }

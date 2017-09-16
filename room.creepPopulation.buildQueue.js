@@ -34,8 +34,8 @@ let haveBuildRequest = function (room) {
 
 let canCreateCreepWithErrorChecking = function (spawn, queue) {
     // Note: Cost of canCreateCreep(...) is AVERAGE, so try not to use it every tick.
-    while (buildQueue.length > 0) {
-        let nextCreep = buildQueue[0];
+    while (queue.length > 0) {
+        let nextCreep = queue[0];
         let result = spawn.canCreateCreep(nextCreep.body, nextCreep.name);
 
         if (result === OK) {
@@ -49,15 +49,15 @@ let canCreateCreepWithErrorChecking = function (spawn, queue) {
             // which build requests are active, but it is easier to remove duplicates than to 
             // prevent them.
             console.log(spawn.name + ": creep " + nextCreep.name + " already exists; dumping spawn request");
-            buildQueue.shift();
+            queue.shift();
             // next
         }
         else if (result === ERR_NOT_ENOUGH_ENERGY) {
             // keep waiting
             console.log(spawn.name + ": not enough energy available to build next creep");
             if (!roomEnergyLevels.canAffordEnergyLevel(spawn.room, nextCreep.energyRequired)) {
-                console.log("room has " + spawn.room.energyAvailable + " energy; unable to afford " + nextCreep.energyRequired + " energy");
-                buildQueue.shift();
+                console.log("room will not have " + nextCreep.energyRequired + " energy in the foreseeable future; dumping spawn request");
+                queue.shift();
             }
             else {
                 console.log("waiting for room to afford " + nextCreep.energyRequired + " energy")
@@ -65,13 +65,13 @@ let canCreateCreepWithErrorChecking = function (spawn, queue) {
             break;
         }
         else if (result === ERR_INVALID_ARGS) {
-            console.log(spawn.name + ": invalid arguments attempting to create creep '" + nextCreep.name + "'");
-            buildQueue.shift();
+            console.log(spawn.name + ": invalid arguments attempting to create creep '" + nextCreep.name + "'; dumping spawn request");
+            queue.shift();
             // next
         }
         else if (result === ERR_RCL_NOT_ENOUGH) {
-            console.log(spawn.name + ": creep build request submitted (" + nextCreep.name + " [" + nextCreep.body + "]), but RCL is not high enough");
-            buildQueue.shift();
+            console.log(spawn.name + ": creep build request submitted (" + nextCreep.name + " [" + nextCreep.body + "]), but RCL is not high enough; dumping spawn request");
+            queue.shift();
             // next
         }
         else {

@@ -29,12 +29,12 @@ module.exports.loop = function () {
     // Note: Due to the nature of mod, the countdown will be on the range 
     // [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so 
     // subtrack 1.
-    let ticksBetweenBigStuff = 75;
+    let ticksBetweenBigStuff = 30;
     let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
     console.log("big stuff in " + countdown + " ticks");
     let doTheBigStuff = (countdown === 0);
-    //let doTheBigStuff = false;
-    //let doTheBigStuff = true;
+    //doTheBigStuff = false;
+    //doTheBigStuff = true;
 
     // TODO: update with a module that takes into account all rooms
     let creepAges = "creep ages (ticks remaining): ";
@@ -47,7 +47,6 @@ module.exports.loop = function () {
         creepTraffic.scan(creep);
     }
 
-    // TODO: put all room-specific stuff in here
     for (let roomName in Game.rooms) {
         let room = Game.rooms[roomName];
 
@@ -58,11 +57,11 @@ module.exports.loop = function () {
         if (doTheBigStuff) {
             console.log(creepAges);
             maintainMinerPopulation.queueCreeps(room);
-            maintainWorkerPopulation.queueCreeps(room);
             maintainEnergyHaulerPopulation.queueCreeps(room);
-            
+            maintainWorkerPopulation.queueCreeps(room);
+
             spawnBuildQueue.print(room);
-            creepTraffic.print(room);
+            //creepTraffic.print(room);
             roomEnergyLevels.print(room);
 
             let roomSpawns = room.find(FIND_MY_SPAWNS);
@@ -86,7 +85,6 @@ module.exports.loop = function () {
             creepJobSystem.print(room);
         }
     }
-
 
 
 

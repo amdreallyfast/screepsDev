@@ -156,6 +156,10 @@ module.exports = {
         let jobs = Memory.creepJobs[creep.room.name].refillEnergy;
         let needWork = (creep.memory.refillEnergyJobId === null || creep.memory.refillEnergyJobId === undefined);
         let haveWork = (Object.keys(jobs).length > 0);
+
+        //console.log(creep.name + ": need work? " + needWork + "; have work? " + haveWork);
+        //console.log(creep.name + ": current refill job: " + creep.memory.refillEnergyJobId);
+
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
             let structure = Game.getObjectById(newJobId);

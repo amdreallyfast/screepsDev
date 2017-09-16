@@ -83,7 +83,7 @@ module.exports = {
 
         // the queue for miner creeps should have already defined this
         //var energySources = creep.room.find(FIND_SOURCES);
-        let energySources = Memory.roomEnergySources[creep.room.name];
+        //let energySources = Memory.roomEnergySources[creep.room.name];
         creep.say("📵");
         if (!creep.memory.energySourceId) {
             // find something
@@ -118,6 +118,7 @@ module.exports = {
                 else {
                     // no dropped energy and no containers with energy; do I have do everything myself?
                     // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
+                    let energySources = creep.room.find(FIND_SOURCES);
                     creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
                     creep.memory.energySourceType = "harvest";
                     energyPickupStatusStr += ("harvesting from energy source " + creep.memory.energySourceId);

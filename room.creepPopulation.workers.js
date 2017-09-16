@@ -37,12 +37,8 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     else if (roomPotentialEnergy >= 400) {
         body = [WORK, WORK, CARRY, MOVE, MOVE, MOVE];
     }
-    else if (roomPotentialEnergy >= 250) {
-        // probably only have the spawn
-        body = [WORK, CARRY, MOVE, MOVE];
-    }
     else {
-        // uh oh; not even 300 energy? 
+        body = [WORK, CARRY, MOVE, MOVE];
     }
 
     return body;
@@ -69,7 +65,7 @@ module.exports = {
         // let there be 5 workers per energy resource (adjust with experience; 9-12-2017)
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
-        //console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
+        console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < (roomEnergySources.length * 5); num++) {
             if (!workerNumbers[num]) {
                 let newBody = [];
