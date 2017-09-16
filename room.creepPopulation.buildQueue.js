@@ -2,6 +2,7 @@
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 let myConstants = require("myConstants");
 
+
 let ensureCreepBuildQueueExist = function (room) {
     if (!Memory.creepBuildQueues) {
         Memory.creepBuildQueues = {};

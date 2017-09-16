@@ -105,7 +105,7 @@ module.exports = {
                 creepBuildQueue.submit(buildRequest, room, buildPriority);
             }
             else {
-                console.log("worker " + num + " already exists");
+                //console.log("worker " + num + " already exists");
             }
         }
     }

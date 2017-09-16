@@ -1,4 +1,7 @@
 ﻿
+let myConstants = require("myConstants");
+
+
 let biggerModSmaller = function (array, num) {
     let bigger = (array.length > num) ? array.length : num;
     let smaller = (array.length > num) ? num : array.length;
@@ -166,63 +169,72 @@ module.exports = {
         if (!creep.memory.energySourceId) {
             // find something
             let energyPickupStatusStr = (creep.name + ": finding energy pickup; ");
-            //let havePickup = getFromContainer(creep, energyPickupStatusStr);
-            //if (!havePickup) {
-            //    havePickup = getFromStorage(creep, energyPickupStatusStr);
-            //}
-            //if (!havePickup) {
-            //    havePickup = getFromEnergyDrop(creep, energyPickupStatusStr);
-            //}
-            //if (!havePickup) {
-            //    havePickup = getFromHarvest(creep, energyPickupStatusStr);
-            //}
-
-            let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
-            if (droppedEnergy.length > 0) {
-                energyPickupStatusStr += "found energy drop";
-                creep.memory.energySourceId = droppedEnergy[biggerModSmaller(droppedEnergy, creep.memory.number)].id;
-                if (!Game.getObjectById(creep.memory.energySourceId)) {
-                    console.log(droppedEnergy)
-                }
-                creep.memory.energySourceType = "dropped";
+            if (creep.memory.role === myConstants.creepRoleEnergyHauler) {
+                // energy haulers' entire job is to move energy from mining sources to storage, 
+                // and they have no WORK parts, so their only option is energy drops
+                let havePickup = getFromEnergyDrop(creep, energyPickupStatusStr);
             }
             else {
-                // no dropped energy, so check containers
-                let energyContainers = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        if (structure.structureType === STRUCTURE_CONTAINER) {
-                            if (structure.store[RESOURCE_ENERGY] > 0) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                });
-                if (energyContainers.length > 0) {
-                    let goToThis = energyContainers[0];
-                    creep.memory.energySourceId = goToThis.id;
-                    creep.memory.energySourceType = "container";
-                    energyPickupStatusStr += ("found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
+                let havePickup = getFromContainer(creep, energyPickupStatusStr);
+                if (!havePickup) {
+                    havePickup = getFromStorage(creep, energyPickupStatusStr);
                 }
-                else if (creep.getActiveBodyparts(WORK) > 0) {
-                    // no dropped energy and no containers with energy; do I have do everything myself?
-                    // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
-                    // Also Note: Energy haulers cannot mine.  They can only pick up.
-                    let energySources = creep.room.find(FIND_SOURCES);
-                    creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
-                    creep.memory.energySourceType = "harvest";
-                    energyPickupStatusStr += ("harvesting from energy source " + creep.memory.energySourceId);
-
-                    // Note: Harvesting requires multiple ticks, while energy pickup only needs 
-                    // one.  If, in the course of events, a creep is trying to harvest but there 
-                    // is someone in the way (perhaps a new miner creep has come in to provide 
-                    // dedidcated energy mining and is hogging the mining spot) for a sufficient 
-                    // amount of time, reset the energy pickup ID and look for a new energy 
-                    // source.  Perhaps an energy drop is now available.  Or maybe it is just a 
-                    // traffic jam and this loop will begin again.
-                    creep.memory.energyPickupTimeout = 0;
+                if (!havePickup) {
+                    havePickup = getFromEnergyDrop(creep, energyPickupStatusStr);
+                }
+                if (!havePickup) {
+                    havePickup = getFromHarvest(creep, energyPickupStatusStr);
                 }
             }
+            
+
+
+            //let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+            //if (droppedEnergy.length > 0) {
+            //    energyPickupStatusStr += "found energy drop";
+            //    creep.memory.energySourceId = droppedEnergy[biggerModSmaller(droppedEnergy, creep.memory.number)].id;
+            //    if (!Game.getObjectById(creep.memory.energySourceId)) {
+            //        console.log(droppedEnergy)
+            //    }
+            //    creep.memory.energySourceType = "dropped";
+            //}
+            //else {
+            //    // no dropped energy, so check containers
+            //    let energyContainers = creep.room.find(FIND_STRUCTURES, {
+            //        filter: (structure) => {
+            //            if (structure.structureType === STRUCTURE_CONTAINER) {
+            //                if (structure.store[RESOURCE_ENERGY] > 0) {
+            //                    return true;
+            //                }
+            //            }
+            //            return false;
+            //        }
+            //    });
+            //    if (energyContainers.length > 0) {
+            //        let goToThis = energyContainers[0];
+            //        creep.memory.energySourceId = goToThis.id;
+            //        creep.memory.energySourceType = "container";
+            //        energyPickupStatusStr += ("found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
+            //    }
+            //    else if (creep.getActiveBodyparts(WORK) > 0) {
+            //        // no dropped energy and no containers with energy; do I have do everything myself?
+            //        // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
+            //        // Also Note: Energy haulers cannot mine.  They can only pick up.
+            //        let energySources = creep.room.find(FIND_SOURCES);
+            //        creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
+            //        creep.memory.energySourceType = "harvest";
+            //        energyPickupStatusStr += ("harvesting from energy source " + creep.memory.energySourceId);
+
+            //        // Note: Harvesting requires multiple ticks, while energy pickup only needs 
+            //        // one.  If, in the course of events, a creep is trying to harvest but there 
+            //        // is someone in the way (perhaps a new miner creep has come in to provide 
+            //        // dedidcated energy mining and is hogging the mining spot) for a sufficient 
+            //        // amount of time, reset the energy pickup ID and look for a new energy 
+            //        // source.  Perhaps an energy drop is now available.  Or maybe it is just a 
+            //        // traffic jam and this loop will begin again.
+            //        creep.memory.energyPickupTimeout = 0;
+            //    }
+            //}
 
             //console.log(energyPickupStatusStr);
         }
