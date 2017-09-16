@@ -57,7 +57,7 @@ module.exports = {
             }
             else {
                 // if the energy haulers haven't already refilled everything, help out a bit
-                creepJobQueues.getRefillEnergyJobFor(creep);
+                //creepJobQueues.getRefillEnergyJobFor(creep);
                 creepJobQueues.getRepairJobFor(creep);
                 creepJobQueues.getConstructionJobFor(creep);
             }

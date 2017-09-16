@@ -6,7 +6,10 @@ let ensureJobQueuesExist = function (room) {
     }
     if (!Memory.creepJobs[room.name]) {
         Memory.creepJobs[room.name] = {};
-        Memory.creepJobs[room.name].construction = {};
+        Memory.creepJobs[room.name].construction = {
+            everythingElse: {},
+            roads: {}
+        };
         Memory.creepJobs[room.name].refillEnergy = {};
         Memory.creepJobs[room.name].repair = {};
     }
@@ -14,18 +17,35 @@ let ensureJobQueuesExist = function (room) {
 
 let printConstructionJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].construction;
-    let str = "{ ";
-    for (let jobId in jobs) {
+    let numImportandConstructionJobs = 0;
+    let everythingElseStr = "{ ";
+    for (let jobId in jobs.everythingElse) {
+        numImportandConstructionJobs++;
         let site = Game.getObjectById(jobId);
         if (!site) {
-            str += "null construction site; ";  // uh oh
+            everythingElseStr += "null; ";  // uh oh
         }
         else {
-            str += (site.structureType + "(" + site.progress + "/" + site.progressTotal + "); ");
+            everythingElseStr += (site.structureType + "(" + site.progress + "/" + site.progressTotal + "); ");
         }
     }
-    str += "}";
-    console.log("room " + room.name + " has " + Object.keys(jobs).length + " construction jobs: " + str);
+    everythingElseStr += "}";
+
+    let numRoadConstructionJobs = 0;
+    let roadsStr = "{ ";
+    for (let jobId in jobs.roads) {
+        numRoadConstructionJobs++;
+        let site = Game.getObjectById(jobId);
+        if (!site) {
+            roadsStr += "null; ";  // uh oh
+        }
+        else {
+            roadsStr += (site.structureType + "(" + site.progress + "/" + site.progressTotal + "); ");
+        }
+    }
+    roadsStr += "}";
+
+    console.log("room " + room.name + " construction jobs: \n\t" + "important(" + numImportandConstructionJobs + "): " + everythingElseStr + "\n\t" + "roads(" + numRoadConstructionJobs + "): " + roadsStr);
 }
 
 let printRefillEnergyJobs = function (room) {
@@ -110,7 +130,12 @@ module.exports = {
         let room = constructionSite.room;
         ensureJobQueuesExist(room);
         let jobs = Memory.creepJobs[room.name].construction;
-        let numConstructionJobs = addJobTo(jobs, constructionSite.id)
+        if (constructionSite.structureType === STRUCTURE_ROAD) {
+            addJobTo(jobs.roads, constructionSite.id);
+        }
+        else {
+            addJobTo(jobs.everythingElse, constructionSite.id);
+        }
     },
 
     /** @param {thing} any object that can store energy (technically can be a creep, but I'd advise against having creeps submit "refill" jobs because they can move and then you have one creep chasing another **/
@@ -137,8 +162,22 @@ module.exports = {
         let needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
-            let newJobId = getJobFrom(jobs);
+            console.log(creep.name + " getting construction job");
+            let newJobId = getJobFrom(jobs.everythingElse);
+            console.log(creep.name + " construction job ID is " + newJobId);
+            if (newJobId === null || newJobId === undefined) {
+                console.log(creep.name + " no important construction jobs; checking roads");
+                // nothing important needs to be built, so go for roads
+                newJobId = getJobFrom(jobs.roads);
+            }
+            if (newJobId === null || newJobId === undefined) {
+                console.log(creep.name + " no road construction jobs either");
+                // no construction jobs
+                return;
+            }
+
             let structure = Game.getObjectById(newJobId);
+
             if (!structure) {
                 console.log(creep.name + ": getting construction job for " + structure);
             }
@@ -156,9 +195,6 @@ module.exports = {
         let jobs = Memory.creepJobs[creep.room.name].refillEnergy;
         let needWork = (creep.memory.refillEnergyJobId === null || creep.memory.refillEnergyJobId === undefined);
         let haveWork = (Object.keys(jobs).length > 0);
-
-        //console.log(creep.name + ": need work? " + needWork + "; have work? " + haveWork);
-        //console.log(creep.name + ": current refill job: " + creep.memory.refillEnergyJobId);
 
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);

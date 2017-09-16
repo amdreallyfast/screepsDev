@@ -29,7 +29,7 @@ module.exports.loop = function () {
     // Note: Due to the nature of mod, the countdown will be on the range 
     // [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so 
     // subtrack 1.
-    let ticksBetweenBigStuff = 30;
+    let ticksBetweenBigStuff = 75;
     let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
     console.log("big stuff in " + countdown + " ticks");
     let doTheBigStuff = (countdown === 0);
@@ -45,6 +45,11 @@ module.exports.loop = function () {
 
         creepWorkRoutine.run(creep);
         creepTraffic.scan(creep);
+
+        //delete creep.memory.constructionJobId;
+        //if (creep.memory.constructionJobId) {
+        //    console.log(creep.name + ": construction job is " + Game.getObjectById(creep.memory.constructionJobId).structureType);
+        //}
     }
 
     for (let roomName in Game.rooms) {
