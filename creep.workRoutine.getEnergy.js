@@ -35,7 +35,7 @@ let pickupDroppedEnergy = function (creep) {
         creep.memory.energySourceType = null;
     }
     else if (result === ERR_NOT_IN_RANGE) {
-        result = creep.moveTo(droppedEnergyObj, { visualizePathStyle: { stroke: "#123123" } });
+        result = creep.moveTo(droppedEnergyObj, { visualizePathStyle: { stroke: "#ffffff" } });
     }
     else {
         console.log("creepRoutine.getEnergy, pickupDroppedEnergy(...) for " + creep.name + ": unknown error " + result);
@@ -58,7 +58,7 @@ let withdrawFromContainer = function (creep) {
         creep.memory.energySourceType = null;
     }
     else if (result === ERR_NOT_IN_RANGE) {
-        result = creep.moveTo(container, { visualizePathStyle: { stroke: "#456456" } });
+        result = creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
     }
     else if (result === ERR_NOT_ENOUGH_RESOURCES) {
         // must have been a race condition to a container with very little energy and it was emptied before you got there; get a new energy pickup
@@ -89,7 +89,7 @@ let harvestFromSource = function (creep) {
         }
     }
     else if (result === ERR_NOT_IN_RANGE) {
-        creep.moveTo(source, { visualizePathStyle: { stroke: "#789789" } });
+        creep.moveTo(source, { visualizePathStyle: { stroke: "#ffffff" } });
         if (creep.memory.energyPickupTimeout++ > 50) {
             creep.memory.energySourceId = null;
             creep.memory.energySourceType = null;

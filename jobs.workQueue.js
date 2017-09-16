@@ -225,19 +225,17 @@ module.exports = {
                 // nothing important needs to be built, so go for roads
                 newJobId = getJobFrom(jobs.roads);
             }
-            if (newJobId === null || newJobId === undefined) {
-                // no construction jobs
-                return;
-            }
 
-            let structure = Game.getObjectById(newJobId);
+            // if no construction jobs either, then the creep will ask for construction jobs 
+            // again later; no big deal
 
-            if (!structure) {
-                console.log(creep.name + ": getting construction job for " + structure);
-            }
-            else {
-                console.log(creep.name + ": getting construction job for " + Game.getObjectById(newJobId).structureType);
-            }
+            //let structure = Game.getObjectById(newJobId);
+            //if (!structure) {
+            //    console.log(creep.name + ": getting construction job for " + structure);
+            //}
+            //else {
+            //    console.log(creep.name + ": getting construction job for " + Game.getObjectById(newJobId).structureType);
+            //}
             creep.memory.constructionJobId = newJobId;
         }
     },
@@ -257,13 +255,13 @@ module.exports = {
 
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
-            let structure = Game.getObjectById(newJobId);
-            if (!structure) {
-                console.log(creep.name + ": getting refill job for " + structure);
-            }
-            else {
-                console.log(creep.name + ": getting refill job for " + Game.getObjectById(newJobId).structureType);
-            }
+            //let structure = Game.getObjectById(newJobId);
+            //if (!structure) {
+            //    console.log(creep.name + ": getting refill job for " + structure);
+            //}
+            //else {
+            //    console.log(creep.name + ": getting refill job for " + Game.getObjectById(newJobId).structureType);
+            //}
             creep.memory.refillEnergyJobId = newJobId;
         }
     },
@@ -271,25 +269,30 @@ module.exports = {
     /*--------------------------------------------------------------------------------------------
 	Description:
         Self-explanatory.
+
+        Note: The argument is "thing" and not a creep because towers can also repair.  They'll 
+        just piggyback on the creeps' job system.
 	Creator:    John Cox, 9/2017
 	--------------------------------------------------------------------------------------------*/
-    getRepairJobFor: function (creep) {
-        ensureJobQueuesExist(creep.room);
-        //printRepairJobs(creep.room);
+    getRepairJobFor: function (thing) {
+        ensureJobQueuesExist(thing.room);
+        //printRepairJobs(thing.room);
 
-        let jobs = Memory.creepJobs[creep.room.name].repair;
-        let needWork = (creep.memory.repairJobId === null || creep.memory.repairJobId === undefined);
+        let jobs = Memory.creepJobs[thing.room.name].repair;
+        let needWork = (thing.memory.repairJobId === null || thing.memory.repairJobId === undefined);
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
             let structure = Game.getObjectById(newJobId);
-            if (!structure) {
-                console.log(creep.name + ": getting repair job for " + structure);
-            }
-            else {
-                console.log(creep.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
-            }
-            creep.memory.repairJobId = newJobId;
+
+            // turrets do not have names, so do not attempt to print out an identified
+            //if (!structure) {
+            //    console.log(thing.name + ": getting repair job for " + structure);
+            //}
+            //else {
+            //    console.log(thing.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
+            //}
+            thing.memory.repairJobId = newJobId;
         }
     },
 }

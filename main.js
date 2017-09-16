@@ -12,7 +12,7 @@ let constructionJobs = require("jobs.construction");
 let creepJobSystem = require("jobs.workQueue");
 
 // for printing and debugging
-let creepWorkRoutine = require("creep.workRoutine.work");
+let creepWorkRoutine = require("creep.work");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 
 
