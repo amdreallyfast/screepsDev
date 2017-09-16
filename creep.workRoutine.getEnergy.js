@@ -72,6 +72,82 @@ let harvestFromSource = function (creep) {
     return result;
 }
 
+let getFromContainer = function (creep, statusStr) {
+    // no dropped energy, so check containers
+    let energyContainers = creep.room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            if (structure.structureType === STRUCTURE_CONTAINER) {
+                if (structure.store[RESOURCE_ENERGY] > creep.carryCapacity) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    });
+    if (energyContainers.length > 0) {
+        let goToThis = energyContainers[0];
+        creep.memory.energySourceId = goToThis.id;
+        creep.memory.energySourceType = "container";
+        statusStr += ("found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
+        return true;
+    }
+    return false;
+}
+
+let getFromStorage = function (creep, statusStr) {
+    let getFromContainer = function (creep, statusStr) {
+        // no dropped energy, so check containers
+        let storage = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                if (structure.structureType === STRUCTURE_STORAGE) {
+                    if (structure.store[RESOURCE_ENERGY] > creep.carryCapacity) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        if (storage.length > 0) {
+            let goToThis = storage[0];
+            creep.memory.energySourceId = goToThis.id;
+            creep.memory.energySourceType = "storage";
+            statusStr += ("found storage with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
+            return true;
+        }
+        return false;
+    }
+}
+
+let getFromEnergyDrop = function (creep, statusStr) {
+    let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+    if (droppedEnergy.length > 0) {
+        statusStr += "found energy drop";
+        creep.memory.energySourceId = droppedEnergy[biggerModSmaller(droppedEnergy, creep.memory.number)].id;
+        if (!Game.getObjectById(creep.memory.energySourceId)) {
+            console.log(droppedEnergy)
+        }
+        creep.memory.energySourceType = "dropped";
+        return true;
+    }
+    return false;
+}
+
+let getFromHarvest = function (creep, statusStr) {
+    // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
+    let energySources = creep.room.find(FIND_SOURCES);
+    creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
+    creep.memory.energySourceType = "harvest";
+    statusStr += ("harvesting from energy source " + creep.memory.energySourceId);
+
+    // Note: Harvesting requires multiple ticks, while energy pickup only needs one.  If, in the 
+    // course of events, a creep is trying to harvest but there is someone in the way for a 
+    // sufficient amount of time (perhaps a new miner creep has come in to provide dedicated 
+    // energy mining and is hogging the mining spot), reset the energy pickup ID and look for a 
+    // new energy source.  Perhaps an energy drop is now available.  Or maybe it is just a 
+    // traffic jam and this loop will begin again.
+    creep.memory.energyPickupTimeout = 0;
+}
+
 module.exports = {
     run: function (creep) {
         if (creep.spawning) {
@@ -90,6 +166,17 @@ module.exports = {
         if (!creep.memory.energySourceId) {
             // find something
             let energyPickupStatusStr = (creep.name + ": finding energy pickup; ");
+            //let havePickup = getFromContainer(creep, energyPickupStatusStr);
+            //if (!havePickup) {
+            //    havePickup = getFromStorage(creep, energyPickupStatusStr);
+            //}
+            //if (!havePickup) {
+            //    havePickup = getFromEnergyDrop(creep, energyPickupStatusStr);
+            //}
+            //if (!havePickup) {
+            //    havePickup = getFromHarvest(creep, energyPickupStatusStr);
+            //}
+
             let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
             if (droppedEnergy.length > 0) {
                 energyPickupStatusStr += "found energy drop";

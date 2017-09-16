@@ -26,6 +26,10 @@ module.exports = {
 
     scan: function (creep) {
         let room = creep.room;
+        if (room.controller.level < 3) {
+            // don't even bother; the creeps are still small, can't carry much energy, and can't work fast
+        }
+
         ensureTrafficRecordsExist(room);
 
         let doNotBuildHere = false;

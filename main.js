@@ -39,7 +39,6 @@ module.exports.loop = function () {
     // TODO: update with a module that takes into account all rooms
     let creepAges = "creep ages (ticks remaining): ";
     for (let name in Game.creeps) {
-
         let creep = Game.creeps[name];
         creepAges += (creep.name + "(" + creep.ticksToLive + "); ");
 

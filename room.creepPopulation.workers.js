@@ -63,8 +63,24 @@ module.exports = {
         // let the worker population be based on available energy sources (adjust with experience; 9-12-2017)
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
+        let workersPerEnergySource = 0;
+        let controllerLevel = room.controller.level;
+        if (controllerLevel === 1) {
+            // can't harvest much
+            workersPerEnergySource = 2;
+        }
+        else if (controllerLevel === 2) {
+            workersPerEnergySource = 3;
+        }
+        else if (controllerLevel === 3) {
+            workersPerEnergySource = 4;
+        }
+        else if (controllerLevel >= 4) {
+            workersPerEnergySource = 5;
+        }
+
         console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
-        for (let num = 0; num < (roomEnergySources.length * myConstants.workersPerEnergySource) ; num++) {
+        for (let num = 0; num < (roomEnergySources.length * workersPerEnergySource) ; num++) {
             if (!workerNumbers[num]) {
                 let newBody = [];
                 let buildPriority = myConstants.creepBuildPriorityLow;

@@ -1,21 +1,23 @@
+﻿
+let creepJobQueues = require("jobs.workQueue");
+let routineHarvest = require("creep.workRoutine.harvestEnergy");
+let myConstants = require("myConstants");
 
-// TODO: remove
 
-// TODO: rename to creep.routine.harvestEnergy
+/*------------------------------------------------------------------------------------------------
+Description:
+    Previously there was high level control for all creeps, but as I came to understand the game 
+    better I realized the need for specialty creeps, such as miners and energy haulers and not 
+    just generic drones.  Bees and ants figured this out long ago.  So here we are.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 module.exports = {
     run: function (creep) {
-        if (creep.memory.role !== "miner") {
+        if (creep.memory.role !== myConstants.creepRoleMiner) {
             return;
         }
 
-        //console.log(creep.name + " heading to energy source " + creep.memory.energySourceId);
-
-        //creep.moveTo(RoomPosition(7, 42, creep.room.name));
-        //creep.moveTo(Game.spawns['Spawn1']);
-        //return;
-
         // if miner is full, dump at nearest container (hopefully right next to it)
-        let result = OK;
         let dropIt = false;
         let canHaul = (creep.carryCapacity > 0);
         let amFull = (creep.carry.energy === creep.carryCapacity);
@@ -49,7 +51,7 @@ module.exports = {
             }
 
             // have container in the same room
-            result = creep.transfer(container, RESOURCE_ENERGY);
+            let result = creep.transfer(container, RESOURCE_ENERGY);
             if (result === ERR_FULL) {
                 // whatever; drop it next to it
                 dropIt = true;
@@ -68,7 +70,7 @@ module.exports = {
         else {
             let source = Game.getObjectById(creep.memory.energySourceId);
 
-            result = creep.harvest(source);
+            let result = creep.harvest(source);
             if (result === OK) {
                 creep.say("⛏️");
             }
@@ -85,7 +87,6 @@ module.exports = {
                 console.log(creep.name + " harvesting energy source " + source + ": result " + result);
             }
         }
-
-        return result;
     }
 }
+
