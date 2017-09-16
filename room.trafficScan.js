@@ -1,5 +1,7 @@
 ﻿
 let creepJobSystem = require("jobs.workQueue");
+let myConstants = require("myConstants");
+
 
 let ensureTrafficRecordsExist = function (room) {
     if (!Memory.creepTrafficRecords) {
@@ -26,6 +28,7 @@ module.exports = {
         let room = creep.room;
         ensureTrafficRecordsExist(room);
 
+        let doNotBuildHere = false;
         let thingsAlreadyHere = creep.pos.look();
         for (let index in thingsAlreadyHere) {
             let lookType = thingsAlreadyHere[index].type;
@@ -34,8 +37,18 @@ module.exports = {
             // move on top of them.  Creeps can also run on top of containers and construction 
             // sites, though they usually don't.
             if (lookType === LOOK_STRUCTURES || lookType === LOOK_CONSTRUCTION_SITES) {
-                return false;
+                doNotBuildHere = true;
             }
+            else if (lookType === LOOK_CREEPS) {
+                // miners stay in one place
+                if (thingsAlreadyHere[index].creep.memory.role === myConstants.creepRoleMiner) {
+                    doNotBuildHere = true;
+                }
+            }
+        }
+        if (doNotBuildHere) {
+            // traffic monitoring is for the sake of building things; if a road shouldn't be built here, don't scan it
+            return;
         }
 
         let creepPosStr = "" + creep.pos.x + creep.pos.y;

@@ -76,6 +76,10 @@ module.exports = {
             return;
         }
 
+        if (creep.getActiveBodyparts(WORK) === 0) {
+            return;
+        }
+
         //delete creep.energySourceId;
         //delete creep.energySourceType;
         //delete creep.memory.energySourceId;
@@ -115,9 +119,10 @@ module.exports = {
                     creep.memory.energySourceType = "container";
                     energyPickupStatusStr += ("found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
                 }
-                else {
+                else if (creep.getActiveBodyparts(WORK) > 0) {
                     // no dropped energy and no containers with energy; do I have do everything myself?
                     // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
+                    // Also Note: Energy haulers cannot mine.  They can only pick up.
                     let energySources = creep.room.find(FIND_SOURCES);
                     creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
                     creep.memory.energySourceType = "harvest";

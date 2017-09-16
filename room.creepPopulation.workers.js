@@ -22,22 +22,20 @@ let myConstants = require("myConstants");
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
-    if (roomPotentialEnergy >= 950) {
-        body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+    if (roomPotentialEnergy >= 900) {
+        body = [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
     else if (roomPotentialEnergy >= 800) {
-        body = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+        body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
     else if (roomPotentialEnergy >= 650) {
-        body = [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
+        body = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
     }
-    else if (roomPotentialEnergy >= 550) {
-        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
-    }
-    else if (roomPotentialEnergy >= 400) {
-        body = [WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+    else if (roomPotentialEnergy >= 450) {
+        body = [WORK, WORK, WORK, CARRY, MOVE, MOVE];
     }
     else {
+        // early workers do not have the benefit of roads
         body = [WORK, CARRY, MOVE, MOVE];
     }
 
