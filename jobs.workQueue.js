@@ -1,5 +1,9 @@
 
-/** makes sure that each room has the necessary queue objects **/
+/*------------------------------------------------------------------------------------------------
+Description:
+    Ensures that memory is defined before attempting to access it.  
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let ensureJobQueuesExist = function (room) {
     if (!Memory.creepJobs) {
         Memory.creepJobs = {};
@@ -15,6 +19,12 @@ let ensureJobQueuesExist = function (room) {
     }
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Generates a nicely formatted string of all the construction jobs and prints them to the 
+    console.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let printConstructionJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].construction;
     let numImportandConstructionJobs = 0;
@@ -48,6 +58,12 @@ let printConstructionJobs = function (room) {
     console.log("room " + room.name + " construction jobs: \n\t" + "important(" + numImportandConstructionJobs + "): " + everythingElseStr + "\n\t" + "roads(" + numRoadConstructionJobs + "): " + roadsStr);
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Generates a nicely formatted string of all the energy refill jobs and prints them to the 
+    console.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let printRefillEnergyJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].refillEnergy;
     let str = "{ ";
@@ -64,6 +80,11 @@ let printRefillEnergyJobs = function (room) {
     console.log("room " + room.name + " has " + Object.keys(jobs).length + " energy refill jobs: " + str);
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Generates a nicely formatted string of all the repair jobs and prints them to the console.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let printRepairJobs = function (room) {
     let jobs = Memory.creepJobs[room.name].repair;
     let str = "{ ";
@@ -80,28 +101,39 @@ let printRepairJobs = function (room) {
     console.log("room " + room.name + " has " + Object.keys(jobs).length + " repair jobs: " + str);
 }
 
-let addJobTo = function (roomJobs, newJobId) {
-    if (roomJobs[newJobId] === null || roomJobs[newJobId] === undefined) {
-        roomJobs[newJobId] = 1; // 1 worker for new job
+/*------------------------------------------------------------------------------------------------
+Description:
+    If the job has already been submitted to the specified queue, then it is ignored, otherwise 
+    it is submitted to the queue.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
+let addJobTo = function (jobQueue, newJobId) {
+    if (jobQueue[newJobId] === null || jobQueue[newJobId] === undefined) {
+        jobQueue[newJobId] = 1; // 1 worker for new job
     }
 
-    return Object.keys(roomJobs).length;
+    return Object.keys(jobQueue).length;
 }
 
-let getJobFrom = function (roomJobs) {
-    for (let jobId in roomJobs) {
+/*------------------------------------------------------------------------------------------------
+Description:
+    Pulls the next valid job from the specified queue
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
+let getJobFrom = function (jobQueue) {
+    for (let jobId in jobQueue) {
         let obj = Game.getObjectById(jobId);
         if (obj === null || obj === undefined) {
             // job must have completed
             // Note: Construction sites can be completed when there is still a job for it.  In 
             // such an event, remove the job.
             console.log("null job; deleting")
-            delete roomJobs[jobId];
+            delete jobQueue[jobId];
         }
         else {
             // decrement the worker count
-            if (--roomJobs[jobId] === 0) {
-                delete roomJobs[jobId];
+            if (--jobQueue[jobId] === 0) {
+                delete jobQueue[jobId];
             }
             return jobId;
         }
@@ -111,21 +143,24 @@ let getJobFrom = function (roomJobs) {
 }
 
 module.exports = {
-
-    // in the event of disaster and jobs have built up to no end
-    clearJobs: function(room) {
-        //delete Memory.creepJobs;
-        delete Memory.creepJobs[room.name];
-    },
-
-    print: function(room) {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Calls the printing functions for each of the job queues.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
+    print: function (room) {
         ensureJobQueuesExist(room);
         printConstructionJobs(room);
         printRefillEnergyJobs(room);
         printRepairJobs(room);
     },
 
-    /** @param {constructionSiteId} self-explanatory **/
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        If the construction job is a road, then it is submitted to the low priority road queue.  
+        Otherwise it is submitted to the queue for all other construction jobs.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     submitConstructionJob: function (constructionSite) {
         let room = constructionSite.room;
         ensureJobQueuesExist(room);
@@ -138,7 +173,15 @@ module.exports = {
         }
     },
 
-    /** @param {thing} any object that can store energy (technically can be a creep, but I'd advise against having creeps submit "refill" jobs because they can move and then you have one creep chasing another **/
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Self-explanatory.
+
+        Note: The argument is expected to be any object that can store energy (technically can 
+        be a creep, but I'd advise against having creeps submit "refill" jobs because they can 
+        move and then you have one creep chasing another.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     submitRefillEnergyJob: function (thing) {
         let room = thing.room;
         ensureJobQueuesExist(room);
@@ -146,7 +189,14 @@ module.exports = {
         let numRefillJobs = addJobTo(jobs, thing.id);
     },
 
-    /** @param {thing} any damaged structure that needs repair (spawn, containers, ramparts, roads, turrets, etc.) **/
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Self-explanatory.
+
+        Note: The argument is expected to be any damaged structure that needs repair (spawn, 
+        containers, ramparts, roads, turrets, etc.).
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     submitRepairJob: function (thing) {
         let room = thing.room;
         ensureJobQueuesExist(room);
@@ -154,6 +204,14 @@ module.exports = {
         let numRepairJobs = addJobTo(jobs, thing.id);
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        If there is a construction job and the creep doesn't already have one, then the creep is 
+        given a new one, first from the regular construction queue, and if nothing is there then 
+        it gets a road construction job. If there is still nothing, then the creep doesn't get a 
+        construction job.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     getConstructionJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
         //printConstructionJobs(creep.room);
@@ -184,6 +242,11 @@ module.exports = {
         }
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Self-explanatory.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     getRefillEnergyJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
         //printRefillEnergyJobs(creep.room);
@@ -205,6 +268,11 @@ module.exports = {
         }
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Self-explanatory.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     getRepairJobFor: function (creep) {
         ensureJobQueuesExist(creep.room);
         //printRepairJobs(creep.room);

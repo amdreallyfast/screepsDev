@@ -19,7 +19,13 @@ let guaranteeEnergyLevelMonitoringExists = function (room) {
 }
 
 module.exports = {
-    print: function(room) {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Prints a nicely formatted string of the various tracked energy levels and the the number 
+        of ticks until that energy "times out".
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
+    print: function (room) {
         guaranteeEnergyLevelMonitoringExists(room);
 
         let energyTimeouts = Memory.energyTimeouts[room.name];
@@ -32,6 +38,15 @@ module.exports = {
         console.log(str);
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        This is a vital module in keeping the creep build requests at a reasonable expense.  If 
+        the room's effective energy capacity drops, such as if a bunch of creeps are destroyed 
+        and energy stops being obtained, then there needs to be a way to know that this energy 
+        hasn't been available in a while and anything that depends on that energy capacity 
+        should be dismissed.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     update: function (room) {
         guaranteeEnergyLevelMonitoringExists(room);
 
@@ -65,6 +80,13 @@ module.exports = {
         }
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Better than room.energyCapacityAvailable because, even if the capacity is technically 
+        there, it may have not been reached in a while (ex: creeps are destroyed and stop 
+        refilling).
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     canAffordEnergyLevel: function (room, desiredEnergy) {
         let energyTimeouts = Memory.energyTimeouts[room.name];
 
@@ -88,6 +110,11 @@ module.exports = {
         return false;
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Convenience.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     maximumSupportedEnergy: function (room) {
         let energyTimeouts = Memory.energyTimeouts[room.name];
 

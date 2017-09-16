@@ -1,5 +1,10 @@
 ﻿
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Transfer energy from the creep to the structure specified by the refill job ID.
+    Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
         let noJob = (!creep.memory.refillEnergyJobId);
         if (noJob) {

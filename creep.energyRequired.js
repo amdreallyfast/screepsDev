@@ -1,6 +1,12 @@
 ﻿
 
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Used by the creep population maintenance routines to easily figure out if a room can 
+        afford to build a creep.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     bodyCost: function (bodyParts) {
         let energyRequired = 0;
         bodyParts.forEach(function (part) {

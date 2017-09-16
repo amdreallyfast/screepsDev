@@ -1,5 +1,10 @@
 ﻿
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Encapsulates the upgrading of the room controller.  There isn't much to say here.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
         let notMyJob = (creep.memory.role !== "worker");
         if (notMyJob) {

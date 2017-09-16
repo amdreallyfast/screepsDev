@@ -1,5 +1,10 @@
 ﻿
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Encapsulates the repairing of an object.  Discards the creep's repair job if it is done.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
         let notMyJob = (creep.memory.role !== "worker");
         let noJob = (!creep.memory.repairJobId);

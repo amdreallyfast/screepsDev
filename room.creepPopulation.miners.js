@@ -5,6 +5,11 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 let myConstants = require("myConstants");
 
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Self-explanatory
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
@@ -28,7 +33,19 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
 }
 
 module.exports = {
-    // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room ID, not a spawn ID.
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Scans the room for all miner creeps and submits creep build requests for any 
+        that have expired.  Like the worker population, this uses a standard naming scheme to 
+        reuse creep names.
+
+        Note: There shall be 1 miner per energy resource, and each miner will be assigned to a 
+        specific resource.
+
+        Also Note: Miners are high priority.  The only thing higher priority is the 
+        "bootstrapper" creep.
+    Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     queueCreeps: function (room) {
         let currentMiners = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {

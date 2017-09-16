@@ -5,6 +5,11 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 let myConstants = require("myConstants");
 
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Self-explanatory
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
@@ -24,8 +29,20 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
 }
 
 module.exports = {
-    // Note: Energy haulers are creeps that specialize in "refill energy" jobs.  They cannot work.
-    // Also Note: The spawn room and the assigned room may be different if an energy hauler is intended to travel to an adjacent satellite room and bring back the energy to a container in the spawn room.
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Scans the room for all energy hauler creeps and submits creep build requests for any 
+        that have expired.  Like the worker population, this uses a standard naming scheme to 
+        reuse creep names.
+
+        Note: There shall be 1 energy hauler per energy resource.  Seems about right.
+
+        Also Note: Energy haulers are higher priority than workers and are important for 
+        allowing workers to do their repair/construct/upgrade thing and not having to worry 
+        about energy refills.  They cannot harvest energy though, so they are lower priority 
+        than miners.
+    Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     queueCreeps: function (room) {
         let currentEnergyHaulers = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {

@@ -8,14 +8,15 @@ let routineUpgrade = require("creep.workRoutine.upgrade");
 let myConstants = require("myConstants");
 
 
-/*------------------------------------------------------------------------------------------------
-Description:
-    Previously there was high level control for all creeps, but as I came to understand the game 
-    better I realized the need for specialty creeps, such as miners and energy haulers and not 
-    just generic drones.  Bees and ants figured this out long ago.  So here we are.
-Creator:    John Cox, 9/2017
-------------------------------------------------------------------------------------------------*/
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Governs when a creep should perform a particular work routine and when it should get 
+        energy.  A worker creep have multiple jobs on its plate,e ach with different priorities.  
+        This routine creeps the creep move around efficiently and not running from low priority 
+        work like upgrading the RCL to a refill job just because higher priority work popped up.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
         if (creep.memory.role !== myConstants.creepRoleWorker) {
             return;

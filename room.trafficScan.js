@@ -3,6 +3,11 @@ let creepJobSystem = require("jobs.workQueue");
 let myConstants = require("myConstants");
 
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Ensures that memory is defined before attempting to access it.  
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let ensureTrafficRecordsExist = function (room) {
     if (!Memory.creepTrafficRecords) {
         Memory.creepTrafficRecords = {};
@@ -13,6 +18,14 @@ let ensureTrafficRecordsExist = function (room) {
 }
 
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Prints a nicely formatted string to the console of all the positions in the room that 
+        creeps have gone over.
+
+        I do NOT recommend printing this frequently.  The list can be long.
+    Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     print: function (room) {
         ensureTrafficRecordsExist(room);
         let roomTraffic = Memory.creepTrafficRecords[room.name];
@@ -24,6 +37,14 @@ module.exports = {
         console.log(str);
     },
 
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Wherever the creep is, and if there isn't already a road there, increment a counter there.
+
+        If the counter for a position reaches a threshold, then this is considered a 
+        "high traffic area".  Create a road there.
+    Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     scan: function (creep) {
         let room = creep.room;
         if (room.controller.level < 3) {
@@ -44,7 +65,7 @@ module.exports = {
                 doNotBuildHere = true;
             }
             else if (lookType === LOOK_CREEPS) {
-                // miners stay in one place
+                // miners stay in one place, so this shouldn't be considered "high traffic"
                 if (thingsAlreadyHere[index].creep.memory.role === myConstants.creepRoleMiner) {
                     doNotBuildHere = true;
                 }

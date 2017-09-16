@@ -6,9 +6,7 @@ let myConstants = require("myConstants");
 module.exports = {
     /*--------------------------------------------------------------------------------------------
 	Description:
-        Previously there was high level control for all creeps, but as I came to understand the 
-        game better I realized the need for specialty creeps, such as miners and energy haulers 
-        and not just generic drones.  Bees and ants figured this out long ago.  So here we are.
+        A miner is a simple creep.  It mines energy and drops it on the ground.
 	Creator:    John Cox, 9/2017
 	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
@@ -16,54 +14,55 @@ module.exports = {
             return;
         }
 
-        // if miner is full, dump at nearest container (hopefully right next to it)
-        let dropIt = false;
-        let canHaul = (creep.carryCapacity > 0);
-        let amFull = (creep.carry.energy === creep.carryCapacity);
-        if (canHaul && amFull) {
-            if (!creep.memory.dropOffContainerId) {
-                // this "find" operation can be expensive, so store the result in memory
-                let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType === STRUCTURE_CONTAINER);
-                    }
-                });
-                if (!container) {
-                    // no containers anywhere
-                    dropIt = true;
-                }
-                else if (container.room.id !== creep.room.id) {
-                    // not in the same roome
-                    dropIt = true;
-                }
-                else {
-                    // have container in the same room
-                    creep.memory.dropOffContainerId = container.id;
-                }
-            }
+        //// if miner is full, dump at nearest container (hopefully right next to it)
+        //let dropIt = false;
+        //let canHaul = (creep.carryCapacity > 0);
+        //let amFull = (creep.carry.energy === creep.carryCapacity);
+        //if (canHaul && amFull) {
+        //    if (!creep.memory.dropOffContainerId) {
+        //        // this "find" operation can be expensive, so store the result in memory
+        //        let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+        //            filter: (structure) => {
+        //                return (structure.structureType === STRUCTURE_CONTAINER);
+        //            }
+        //        });
+        //        if (!container) {
+        //            // no containers anywhere
+        //            dropIt = true;
+        //        }
+        //        else if (container.room.id !== creep.room.id) {
+        //            // not in the same roome
+        //            dropIt = true;
+        //        }
+        //        else {
+        //            // have container in the same room
+        //            creep.memory.dropOffContainerId = container.id;
+        //        }
+        //    }
 
-            let container = Game.getObjectById(creep.memory.dropOffContainerId);
-            if (!container) {
-                // huh; doesn't exist anymore
-                creep.memory.dropOffContainerId = null;
-                dropIt = true;
-            }
+        //    let container = Game.getObjectById(creep.memory.dropOffContainerId);
+        //    if (!container) {
+        //        // huh; doesn't exist anymore
+        //        creep.memory.dropOffContainerId = null;
+        //        dropIt = true;
+        //    }
 
-            // have container in the same room
-            let result = creep.transfer(container, RESOURCE_ENERGY);
-            if (result === ERR_FULL) {
-                // whatever; drop it next to it
-                dropIt = true;
-            }
-            else if (result === ERR_NOT_IN_RANGE) {
-                creep.moveTo(container);
-            }
+        //    // have container in the same room
+        //    let result = creep.transfer(container, RESOURCE_ENERGY);
+        //    if (result === ERR_FULL) {
+        //        // whatever; drop it next to it
+        //        dropIt = true;
+        //    }
+        //    else if (result === ERR_NOT_IN_RANGE) {
+        //        creep.moveTo(container);
+        //    }
 
-            if (dropIt) {
-                creep.drop(RESOURCE_ENERGY);
-            }
-        }
-        else if (creep.ticksToLive === 1) {
+        //    if (dropIt) {
+        //        creep.drop(RESOURCE_ENERGY);
+        //    }
+        //}
+        //else if (creep.ticksToLive === 1) {
+        if (creep.ticksToLive === 1) {
             creep.drop(RESOURCE_ENERGY);
         }
         else {

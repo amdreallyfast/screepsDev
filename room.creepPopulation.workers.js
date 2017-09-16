@@ -5,20 +5,11 @@ let roomEnergyLevels = require("room.energyLevelMonitoring");
 let myConstants = require("myConstants");
 
 
-// TODO: create creep specifically for refilling spawns, extensions, towers (and if nothing else, a container in the center of the base; if that's full, then try to find a storage container and dump it there so that the energy never goes to waste)
-//  - justification: lots of WORK parts are needed for building, repairing, and upgrading, but only CARRY parts are needed for refilling, and time spent refilling is time not spent building, repairing, or upgrading
-//  - use creepRoutine.refillEnergy and jobs.fillEnergy to tell it what to do
-//  - create room.queueHaulers to create 1 for each energy source
-// TODO: in jobs.roads
-//  - every tick: look at every creep's position and determine if it is undeveloped land; if so, increment a Memory.traffic[pos] counter by 1
-//  - every 100 ticks: if a traffic counter for a position is > 100,
-//      - create construction site there for a road
-//      - set Memory.traffic[pos] = null to flag for cleanup
-// TODO: create jobs.baseBuilding
-//  - get a rouch idea of what a base should look like for different RCLs, plan building jobs accordingly
-// TODO: modify job system to store jobs by ID; instead of using an array with push-pop
-
-
+/*------------------------------------------------------------------------------------------------
+Description:
+    Self-explanatory
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
@@ -42,9 +33,30 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     return body;
 }
 
-// TODO: rename module to room.creepPopulation.workers
 module.exports = {
-    // Note: Multiple spawns can be created in a room as the RCL rises, but the number of workers is dependent on the number of energy sources in the room, which is a constant.  So take a room, not a spawn.
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Scans the room for all worker creeps and submits creep build requests for any that have 
+        expired.  Uses a standard naming scheme to reuse creep names and thus avoid having to 
+        periodically have to go through the global Memory object and clean out unused creep 
+        names.
+
+        Note: The number of workers is dependent on the number of energy sources in the room and 
+        the room controller level.  It was discovered during some testing that having many 
+        creeps that have very few WORK parts during the early stages overwhelmed the miners and 
+        energy sources, so the number of workers is low during early stages and increases to a 
+        maximum as the room matures.
+
+        Also Note: Workers have two priorities:
+        - The "bootstrapper" creep is a simple creep that can be afforded by a lone spawn, can 
+            harvest energy, can refill the spawn, and can upgrade the room controller.  It's a 
+            "do everything" creep that is critical to the early stages of a room (or when 
+            something bad happens and the energy and spawn capability of the room is reduced to 
+            the level of a new room).
+        - All other workers are low build priority.  They are vital to the long-term 
+        improvement of the room, but they are not vital for energy acquisition.
+    Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     queueCreeps: function (room) {
         let currentWorkers = room.find(FIND_MY_CREEPS, {
             filter: (creep) => {
