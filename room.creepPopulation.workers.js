@@ -60,11 +60,11 @@ module.exports = {
             // ??check for unassigned energySourceId or ignore because it is set on creation??
         }
         
-        // let there be 5 workers per energy resource (adjust with experience; 9-12-2017)
+        // let the worker population be based on available energy sources (adjust with experience; 9-12-2017)
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
         console.log("spawning workers; room " + room.name + " potential energy: " + roomPotentialEnergy);
-        for (let num = 0; num < (roomEnergySources.length * 5); num++) {
+        for (let num = 0; num < (roomEnergySources.length * myConstants.workersPerEnergySource) ; num++) {
             if (!workerNumbers[num]) {
                 let newBody = [];
                 let buildPriority = myConstants.creepBuildPriorityLow;

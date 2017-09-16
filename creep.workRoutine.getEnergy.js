@@ -64,7 +64,9 @@ let harvestFromSource = function (creep) {
         }
     }
     else {
-        console.log("creepRoutine.getEnergy, harvestFromSource(...) for " + creep.name + ": unknown error " + result);
+        console.log(creep.name + ": creepRoutine.getEnergy, harvestFromSource(...): unknown error " + result);
+        creep.memory.energySourceId = null;
+        creep.memory.energySourceType = null;
     }
 
     return result;
@@ -73,10 +75,6 @@ let harvestFromSource = function (creep) {
 module.exports = {
     run: function (creep) {
         if (creep.spawning) {
-            return;
-        }
-
-        if (creep.getActiveBodyparts(WORK) === 0) {
             return;
         }
 
@@ -148,7 +146,7 @@ module.exports = {
         let obj = Game.getObjectById(creep.memory.energySourceId);
         if (!obj) {
             // not a valid game object (perhaps a dropped energy source that disappeared)
-            console.log(creep.name + ": not a valid energy pickup object ( id: " + creep.memory.energySourceId + ", obj: " + obj + " ): " + obj);
+            //console.log(creep.name + ": not a valid energy pickup object ( id: " + creep.memory.energySourceId + ", obj: " + obj + " ): " + obj);
             creep.memory.energySourceId = null;
             creep.memory.energySourceType = null;
             return;

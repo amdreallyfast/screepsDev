@@ -176,33 +176,32 @@ module.exports = {
 
         queue = Memory.creepBuildQueues[room.name].criticalPriority;
         let criticalPriorityQueueStr = "critical: (" + queue.length + ") { ";
-        //let criticalPriorityQueue = Memory.creepBuildQueues[room.name].criticalPriority;
         queue.forEach(function (buildRequest) {
             criticalPriorityQueueStr += (buildRequest.name + "; ");
         });
+        criticalPriorityQueueStr += "}";
 
         queue = Memory.creepBuildQueues[room.name].highPriority;
         let highPriorityQueueStr = "high: (" + queue.length + ") { ";
-        //let highPriorityQueue = Memory.creepBuildQueues[room.name].highPriority;
         queue.forEach(function (buildRequest) {
             highPriorityQueueStr += (buildRequest.name + "; ");
         });
+        highPriorityQueueStr += "}";
 
         queue = Memory.creepBuildQueues[room.name].medPriority;
         let medPriorityQueueStr = "med: (" + queue.length + ") { ";
-        //let medPriorityQueue = Memory.creepBuildQueues[room.name].medPriority;
         queue.forEach(function (buildRequest) {
             medPriorityQueueStr += (buildRequest.name + "; ");
         });
+        medPriorityQueueStr += "}";
 
         queue = Memory.creepBuildQueues[room.name].lowPriority;
         let lowPriorityQueueStr = "low: (" + queue.length + ") { ";
-        //let lowPriorityQueue = Memory.creepBuildQueues[room.name].highPriority;
         queue.forEach(function (buildRequest) {
             lowPriorityQueueStr += (buildRequest.name + "; ");
         });
+        lowPriorityQueueStr += "}";
 
-        //console.log("room " + room.name + " build queues: has " + queue.length + " creeps waiting to be built: " + str);
         console.log("room " + room.name + " build queues: \n\t" +
             criticalPriorityQueueStr + "\n\t" +
             highPriorityQueueStr + "\n\t" + 
