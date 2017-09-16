@@ -1,17 +1,16 @@
 ﻿
 let creepJobQueues = require("jobs.workQueue");
-let routineHarvest = require("creep.workRoutine.harvestEnergy");
 let myConstants = require("myConstants");
 
 
-/*------------------------------------------------------------------------------------------------
-Description:
-    Previously there was high level control for all creeps, but as I came to understand the game 
-    better I realized the need for specialty creeps, such as miners and energy haulers and not 
-    just generic drones.  Bees and ants figured this out long ago.  So here we are.
-Creator:    John Cox, 9/2017
-------------------------------------------------------------------------------------------------*/
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Previously there was high level control for all creeps, but as I came to understand the 
+        game better I realized the need for specialty creeps, such as miners and energy haulers 
+        and not just generic drones.  Bees and ants figured this out long ago.  So here we are.
+	Creator:    John Cox, 9/2017
+	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
         if (creep.memory.role !== myConstants.creepRoleMiner) {
             return;

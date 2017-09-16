@@ -16,6 +16,23 @@ let creepWorkRoutine = require("creep.workRoutine.work");
 let roomEnergyLevels = require("room.energyLevelMonitoring");
 
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Effectively "main".
+
+    On every tick:
+    - Each creep is sent through the work routine corresponding to its role
+    - The room's available energy in spanws and extensions is monitored and the available energy 
+        level "timeout" counters are updated.
+    - Creep traffic is updated and road construction sites are created for high-traffic areas.
+
+    Periodically, room-specific functions are also run:
+    - Requesting new creeps to replace expired ones
+    - Spawning new creeps
+    - Scanning for spawns and containers that need to be filled
+    - Scanning for construction sites and submitting them to the creep job system
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 module.exports.loop = function () {
     //// TODO: clear out existing creep memories and traffic and job queues and all that stuff; clean slate
     //let str = "";
@@ -44,11 +61,6 @@ module.exports.loop = function () {
 
         creepWorkRoutine.run(creep);
         creepTraffic.scan(creep);
-
-        //delete creep.memory.constructionJobId;
-        //if (creep.memory.constructionJobId) {
-        //    console.log(creep.name + ": construction job is " + Game.getObjectById(creep.memory.constructionJobId).structureType);
-        //}
     }
 
     for (let roomName in Game.rooms) {
@@ -89,52 +101,4 @@ module.exports.loop = function () {
             creepJobSystem.print(room);
         }
     }
-
-
-
-
-
-    //// 50 ticks is long enough to build all my creeps right now (9-2-2017)
-    //var spawn = Game.spawns['Spawn1'];
-
-    //let ticksBetweenBigStuff = 75;
-    //// Note: Due to the nature of mod, the countdown will be on the range [ticksBetweenBigStuff, 1], and never 0.  I like a countdown reaching 0 though, so subtrack 1.
-    //let countdown = (ticksBetweenBigStuff - (Game.time % ticksBetweenBigStuff)) - 1;
-    //console.log("big stuff in " + countdown + " ticks");
-    //if (countdown === 0) {
-    //    console.log(creepAges);
-    //    maintainMinerPopulation.queueCreeps(spawn.room);
-    //    maintainWorkerPopulation.queueCreeps(spawn.room);
-    //    spawnBuildQueue.print(spawn.room);
-    //    //creepTraffic.print(spawn.room);
-    //    roomEnergyLevels.print(spawn.room);
-
-    //    spawnBuildQueue.constructNextCreepInQueue(spawn);
-    //    repairJobs.queueJobs(spawn.room);
-
-    //    Memory.doSomethingNextTick = true;
-    //}
-    //else if (Memory.doSomethingNextTick) {
-    //    // energy is removed the next tick after the spawn does something
-    //    energyRefillJobs.queueJobs(spawn.room);
-
-    //    // construction sites appear the next tick after they are created 
-    //    constructionJobs.queueJobs(spawn.room);
-
-    //    // wait for the next big event
-    //    Memory.doSomethingNextTick = false;
-
-    //    // wait for the construction jobs to finish queueing before printing the jobs
-    //    creepJobSystem.print(spawn.room);
-    //}
-
-    //spawnBuildQueue.clear(spawn.room);
-    //maintainMinerPopulation.queueCreeps(spawn.room);
-    //maintainWorkerPopulation.queueCreeps(spawn.room);
-
-
-    //spawnBuildQueue.constructNextCreepInQueue(spawn);
-
-    //constructionJobs.queueJobs(spawn.room);
-    //roomEnergyLevels.print(spawn.room);
 }

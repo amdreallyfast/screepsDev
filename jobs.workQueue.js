@@ -162,16 +162,12 @@ module.exports = {
         let needWork = (creep.memory.constructionJobId === null || creep.memory.constructionJobId === undefined);
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
-            console.log(creep.name + " getting construction job");
             let newJobId = getJobFrom(jobs.everythingElse);
-            console.log(creep.name + " construction job ID is " + newJobId);
             if (newJobId === null || newJobId === undefined) {
-                console.log(creep.name + " no important construction jobs; checking roads");
                 // nothing important needs to be built, so go for roads
                 newJobId = getJobFrom(jobs.roads);
             }
             if (newJobId === null || newJobId === undefined) {
-                console.log(creep.name + " no road construction jobs either");
                 // no construction jobs
                 return;
             }

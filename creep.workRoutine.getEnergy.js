@@ -2,13 +2,31 @@
 let myConstants = require("myConstants");
 
 
-let biggerModSmaller = function (array, num) {
-    let bigger = (array.length > num) ? array.length : num;
-    let smaller = (array.length > num) ? num : array.length;
-    smaller = (smaller <= 0) ? 1 : smaller;
-    return (bigger % smaller);
+/*------------------------------------------------------------------------------------------------
+Description:
+    A convenience function for distributing workers amongst energy drops and energy sources.
+Creator:    John Cox, 8/2017
+------------------------------------------------------------------------------------------------*/
+let biggerModSmaller = function (A, B) {
+    if (A > B) {
+        if (B === 0) {
+            return A % (B + 1);
+        }
+        return A % B;
+    }
+    else {
+        if (A === 0) {
+            return B % (A + 1);
+        }
+        return B % A;
+    }
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Cleans up run(...).  
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let pickupDroppedEnergy = function (creep) {
     let droppedEnergyObj = Game.getObjectById(creep.memory.energySourceId);
     let result = creep.pickup(droppedEnergyObj);
@@ -17,7 +35,7 @@ let pickupDroppedEnergy = function (creep) {
         creep.memory.energySourceType = null;
     }
     else if (result === ERR_NOT_IN_RANGE) {
-        result = creep.moveTo(droppedEnergyObj, { visualizePathStyle: { stroke: "#ffffff" } });
+        result = creep.moveTo(droppedEnergyObj, { visualizePathStyle: { stroke: "#123123" } });
     }
     else {
         console.log("creepRoutine.getEnergy, pickupDroppedEnergy(...) for " + creep.name + ": unknown error " + result);
@@ -26,6 +44,12 @@ let pickupDroppedEnergy = function (creep) {
     return result;
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Cleans up run(...).  Encapsulates the withdrawing of energy from a container or storage 
+    structure.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let withdrawFromContainer = function (creep) {
     let container = Game.getObjectById(creep.memory.energySourceId);
     let result = creep.withdraw(container, RESOURCE_ENERGY);
@@ -34,7 +58,7 @@ let withdrawFromContainer = function (creep) {
         creep.memory.energySourceType = null;
     }
     else if (result === ERR_NOT_IN_RANGE) {
-        result = creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
+        result = creep.moveTo(container, { visualizePathStyle: { stroke: "#456456" } });
     }
     else if (result === ERR_NOT_ENOUGH_RESOURCES) {
         // must have been a race condition to a container with very little energy and it was emptied before you got there; get a new energy pickup
@@ -48,6 +72,11 @@ let withdrawFromContainer = function (creep) {
     return result;
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Cleans up run(...).  
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let harvestFromSource = function (creep) {
     // do as the miners do
     let source = Game.getObjectById(creep.memory.energySourceId);
@@ -60,7 +89,7 @@ let harvestFromSource = function (creep) {
         }
     }
     else if (result === ERR_NOT_IN_RANGE) {
-        creep.moveTo(source, { visualizePathStyle: { stroke: "#ffffff" } });
+        creep.moveTo(source, { visualizePathStyle: { stroke: "#789789" } });
         if (creep.memory.energyPickupTimeout++ > 50) {
             creep.memory.energySourceId = null;
             creep.memory.energySourceType = null;
@@ -75,6 +104,13 @@ let harvestFromSource = function (creep) {
     return result;
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Cleans up run(...).  Almost identical to getFromStorage(...), but I wanted this to be 
+    container-specific so that the container withdrawl and storage withdrawn could be given 
+    different priorities.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let getFromContainer = function (creep, statusStr) {
     // no dropped energy, so check containers
     let energyContainers = creep.room.find(FIND_STRUCTURES, {
@@ -97,6 +133,11 @@ let getFromContainer = function (creep, statusStr) {
     return false;
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Cleans up run(...).  
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let getFromStorage = function (creep, statusStr) {
     let getFromContainer = function (creep, statusStr) {
         // no dropped energy, so check containers
@@ -121,11 +162,17 @@ let getFromStorage = function (creep, statusStr) {
     }
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    Cleans up run(...).  
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let getFromEnergyDrop = function (creep, statusStr) {
     let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
     if (droppedEnergy.length > 0) {
         statusStr += "found energy drop";
-        creep.memory.energySourceId = droppedEnergy[biggerModSmaller(droppedEnergy, creep.memory.number)].id;
+        let index = biggerModSmaller(droppedEnergy.length, creep.memory.number);
+        creep.memory.energySourceId = droppedEnergy[index].id;
         if (!Game.getObjectById(creep.memory.energySourceId)) {
             console.log(droppedEnergy)
         }
@@ -135,10 +182,18 @@ let getFromEnergyDrop = function (creep, statusStr) {
     return false;
 }
 
+/*------------------------------------------------------------------------------------------------
+Description:
+    If there is no other option, run this to identify an energy source in the room.  The worker 
+    will harvest from it.  This is common when a room is still young and there are no containers 
+    yet or the ones that are present are empty.
+Creator:    John Cox, 9/2017
+------------------------------------------------------------------------------------------------*/
 let getFromHarvest = function (creep, statusStr) {
     // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
     let energySources = creep.room.find(FIND_SOURCES);
-    creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
+    let index = biggerModSmaller(energySources.length, creep.memory.number);
+    creep.memory.energySourceId = energySources[index].id;
     creep.memory.energySourceType = "harvest";
     statusStr += ("harvesting from energy source " + creep.memory.energySourceId);
 
@@ -152,27 +207,36 @@ let getFromHarvest = function (creep, statusStr) {
 }
 
 module.exports = {
+    /*--------------------------------------------------------------------------------------------
+	Description:
+        Runs high-level logic for determining energy acquisition priorities, then runs the 
+        routines to obtain the energy from that source.
+
+        The logic is split into "identify pickup" and "obtain from pickup".  The creep will very 
+        likely spend time moving to the energy pickup location, so it should only identify when 
+        it begins to move.
+	Creator:    John Cox, 8/2017
+	--------------------------------------------------------------------------------------------*/
     run: function (creep) {
         if (creep.spawning) {
             return;
         }
 
-        //delete creep.energySourceId;
-        //delete creep.energySourceType;
-        //delete creep.memory.energySourceId;
-        //delete creep.memory.energySourceType;
-
-        // the queue for miner creeps should have already defined this
-        //var energySources = creep.room.find(FIND_SOURCES);
-        //let energySources = Memory.roomEnergySources[creep.room.name];
         creep.say("📵");
         if (!creep.memory.energySourceId) {
             // find something
             let energyPickupStatusStr = (creep.name + ": finding energy pickup; ");
             if (creep.memory.role === myConstants.creepRoleEnergyHauler) {
-                // energy haulers' entire job is to move energy from mining sources to storage, 
-                // and they have no WORK parts, so their only option is energy drops
+                // Note: Energy haulers' job is to refill spawns and extensions, then take any 
+                // excess and move it to a container or storage structure.  IF there is nothing 
+                // dropped, then go to an energy storing structure and pull from there.
                 let havePickup = getFromEnergyDrop(creep, energyPickupStatusStr);
+                if (!havePickup) {
+                    havePickup = getFromContainer(creep, energyPickupStatusStr);
+                }
+                if (!havePickup) {
+                    havePickup = getFromStorage(creep, energyPickupStatusStr);
+                }
             }
             else {
                 let havePickup = getFromContainer(creep, energyPickupStatusStr);
@@ -187,55 +251,6 @@ module.exports = {
                 }
             }
             
-
-
-            //let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
-            //if (droppedEnergy.length > 0) {
-            //    energyPickupStatusStr += "found energy drop";
-            //    creep.memory.energySourceId = droppedEnergy[biggerModSmaller(droppedEnergy, creep.memory.number)].id;
-            //    if (!Game.getObjectById(creep.memory.energySourceId)) {
-            //        console.log(droppedEnergy)
-            //    }
-            //    creep.memory.energySourceType = "dropped";
-            //}
-            //else {
-            //    // no dropped energy, so check containers
-            //    let energyContainers = creep.room.find(FIND_STRUCTURES, {
-            //        filter: (structure) => {
-            //            if (structure.structureType === STRUCTURE_CONTAINER) {
-            //                if (structure.store[RESOURCE_ENERGY] > 0) {
-            //                    return true;
-            //                }
-            //            }
-            //            return false;
-            //        }
-            //    });
-            //    if (energyContainers.length > 0) {
-            //        let goToThis = energyContainers[0];
-            //        creep.memory.energySourceId = goToThis.id;
-            //        creep.memory.energySourceType = "container";
-            //        energyPickupStatusStr += ("found container with '" + goToThis.store[RESOURCE_ENERGY] + "' energy in it");
-            //    }
-            //    else if (creep.getActiveBodyparts(WORK) > 0) {
-            //        // no dropped energy and no containers with energy; do I have do everything myself?
-            //        // Note: Space out the harvesting requests using a mod (%) operator so that there isn't a traffic jam.
-            //        // Also Note: Energy haulers cannot mine.  They can only pick up.
-            //        let energySources = creep.room.find(FIND_SOURCES);
-            //        creep.memory.energySourceId = energySources[biggerModSmaller(energySources, creep.memory.number)].id;
-            //        creep.memory.energySourceType = "harvest";
-            //        energyPickupStatusStr += ("harvesting from energy source " + creep.memory.energySourceId);
-
-            //        // Note: Harvesting requires multiple ticks, while energy pickup only needs 
-            //        // one.  If, in the course of events, a creep is trying to harvest but there 
-            //        // is someone in the way (perhaps a new miner creep has come in to provide 
-            //        // dedidcated energy mining and is hogging the mining spot) for a sufficient 
-            //        // amount of time, reset the energy pickup ID and look for a new energy 
-            //        // source.  Perhaps an energy drop is now available.  Or maybe it is just a 
-            //        // traffic jam and this loop will begin again.
-            //        creep.memory.energyPickupTimeout = 0;
-            //    }
-            //}
-
             //console.log(energyPickupStatusStr);
         }
         else {
