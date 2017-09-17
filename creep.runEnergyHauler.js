@@ -3,6 +3,7 @@ let creepJobQueues = require("jobs.workQueue");
 let routineGetEnergy = require("creep.workRoutine.getEnergy");
 let routineRefill = require("creep.workRoutine.refillEnergy");
 let myConstants = require("myConstants");
+let isDefined = require("utilityFunctions.isDefined");
 
 
 module.exports = {
@@ -26,7 +27,6 @@ module.exports = {
         else if (!working && energyFull) {
             // get to work
             creep.memory.working = true;
-            creepJobQueues.getRefillEnergyJobForCreep(creep);
         }
 
         if (!creep.memory.working) {
@@ -38,15 +38,15 @@ module.exports = {
             // or here: https://apps.timwhitlock.info/emoji/tables/unicode
             //console.log(creep.name + ": have refill job?" + haveRefillJob + " - " + creep.memory.refillEnergyJobId);
             if (!routineRefill.run(creep)) {
-                creepJobQueues.getRefillEnergyJobForCreep(creep);
+                creep.memory.refillEnergyJobId = creepJobQueues.getRefillEnergyJob(creep.room);
             }
 
-            let haveRefillJob = (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined);
-            if (haveRefillJob) {
+            if (isDefined(creep.memory.refillEnergyJobId)) {
                 // carry on
                 return;
             }
 
+            // no refill job, so go drop it off somewhere
             if (creep.carry.energy < (0.3 * creep.carryCapacity)) {
                 // go fill up; don't run all the way to a container with only a partial load
                 creep.memory.working = false;

@@ -41,19 +41,19 @@ module.exports = {
             }
         }
 
-        //// the tower will be quite useful for repairing all the roads that are constantly 
-        //// decaying, letting the workers deal with more important matters like room controller 
-        //// upgrading
-        //if (towerMemory.repairJobId === null || towerMemory.repairJobId === undefined) {
-        //    console.log("tower getting repair job");
-        //    jobQueues.getRepairJobForCreep(tower);
-        //    if (isDefined(towerMemory.repairJobId)) {
-        //        console.log("tower has repair job for " + Game.getObjectById(towerMemory.repairJobId));
-        //    }
-        //    else {
-        //        console.log("tower has no repair job");
-        //    }
-        //}
+        // the tower will be quite useful for repairing all the roads that are constantly 
+        // decaying, letting the workers deal with more important matters like room controller 
+        // upgrading
+        if (!isDefined(towerMemory.repairJobId)) {
+            towerMemory.repairJobId = jobQueues.getRepairJob(tower.room);
+            if (isDefined(towerMemory.repairJobId)) {
+                console.log("tower now has repair job for " + Game.getObjectById(towerMemory.repairJobId));
+            }
+            else {
+                console.log("tower has bad repair job: " + towerMemory.repairJobId);
+            }
+            
+        }
 
         //let haveAttackTarget = isDefined((towerMemory.attackTargetId !== null && towerMemory.attackTargetId !== undefined);
         //let haveHealTarget = (towerMemory.healTargetId !== null && towerMemory.healTargetId !== undefined);
@@ -72,27 +72,33 @@ module.exports = {
             }
         }
 
-        //if (haveHealTarget) {
-        //    let creep = Game.getObjectById(towerMemory.healTargetId);
-        //    if (creep === null || creep === undefined) {
-        //        // creep destroyed
-        //        towerMemory.healTargetId = null;
-        //    }
-        //    else {
-        //        tower.heal(creep);
-        //        return;
-        //    }
-        //}
+        if (isDefined(towerMemory.healTargetId)) {
+            let creep = Game.getObjectById(towerMemory.healTargetId);
+            if (creep === null || creep === undefined) {
+                // creep destroyed
+                towerMemory.healTargetId = null;
+            }
+            else {
+                tower.heal(creep);
+                return;
+            }
+        }
 
-        //if (haveRepairJob) {
-        //    let structure = Game.getObjectById(towerMemory.repairJobId);
-        //    if (structure === null || structure == undefined) {
-        //        // uh oh; structure destroyed (or decayed) before you could get to it
-        //        towerMemory.repairJobId;
-        //    }
-        //    else {
-        //        tower.repair(structure);
-        //    }
-        //}
+        if (isDefined(towerMemory.repairJobId)) {
+            let structure = Game.getObjectById(towerMemory.repairJobId);
+            if (isDefined(structure)) {
+                if (structure.hits < structure.hitsMax) {
+                    console.log("tower repairing")
+                    tower.repair(structure);
+                }
+                else {
+                    towerMemory.repairJobId = null;
+                }
+            }
+            else {
+                // uh oh; structure destroyed (or decayed) before you could get to it
+                towerMemory.repairJobId = null;
+            }
+        }
     }
 }

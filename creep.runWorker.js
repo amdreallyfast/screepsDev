@@ -6,6 +6,7 @@ let routineRepair = require("creep.workRoutine.repair");
 let routineBuild = require("creep.workRoutine.build");
 let routineUpgrade = require("creep.workRoutine.upgrade");
 let myConstants = require("myConstants");
+let isDefined = require("utilityFunctions.isDefined");
 
 
 module.exports = {
@@ -32,13 +33,21 @@ module.exports = {
             // get to work
             creep.memory.working = true;
 
-            // TODO: only turn on when some kind of "protocol" is activated that requires all hands on deck to refill the spawns
-            if (creep.room.energyCapacityAvailable >= 1000) {
-                // have a number of things that need refilling, so perhaps the workers should help out
-                creepJobQueues.getRefillEnergyJobForCreep(creep);
+            if (creep.memory.number === 0) {
+                // bootstrapper only refills and upgrades
+                if (!isDefined(creep.memory.refillEnergyJobId)) {
+                    creep.memory.refillEnergyJobId = creepJobQueues.getRefillEnergyJob(creep.room);
+                }
             }
-            creepJobQueues.getRepairJobForCreep(creep);
-            creepJobQueues.getConstructionJobForCreep(creep);
+            else {
+                // the other workers let the energy haulers do the refilling while they concentrate on repairing, building, and upgrading
+                if (!isDefined(creep.memory.repairJobId)) {
+                    creep.memory.repairJobId = creepJobQueues.getRepairJob(creep.room);
+                }
+                if (!isDefined(creep.memory.constructionJobId)) {
+                    creep.memory.constructionJobId = creepJobQueues.getConstructionJob(creep.room);
+                }
+            }
 
             //console.log(creep.name + ": refill job is " + creep.memory.refillEnergyJobId);
         }
@@ -59,21 +68,21 @@ module.exports = {
             // nothing that needs refilling, it will also upgrade the controller (or at least 
             // stall its decay timer).  This is why there are "creep.memory.number" checks for 
             // repair and construction.
-            if (haveRefillJob) {
+            if (isDefined(creep.memory.refillEnergyJobId)) {
                 // energy refill takes presendence so that the spawn and extensions are ready to 
                 if (!routineRefill.run(creep)) {
                     // refill something else
                     //console.log(creep.name + ": getting another refill job");
-                    creepJobQueues.getRefillEnergyJobForCreep(creep);
+                    creep.memory.refillEnergyJobId = creepJobQueues.getRefillEnergyJob(creep.room);
                 }
             }
-            else if (haveRepairJob && creep.memory.number > 0) {
+            else if (isDefined(creep.memory.repairJobId) && creep.memory.number > 0) {
                 // stop stuff from breaking down
                 if (!routineRepair.run(creep)) {
-                    creepJobQueues.getRepairJobForCreep(creep);
+                    creep.memory.repairJobId = creepJobQueues.getRepairJob(creep.room);
                 }
             }
-            else if (haveConstructionJob && creep.memory.number > 0) {
+            else if (isDefined(creep.memory.constructionJobId) && creep.memory.number > 0) {
                 // roads, bypasses (gotta build bypasses), whatever
                 routineBuild.run(creep);
             }
