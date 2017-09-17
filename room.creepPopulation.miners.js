@@ -13,14 +13,14 @@ Creator:    John Cox, 9/2017
 let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
-    if (roomPotentialEnergy >= 750) {
-        body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE];
+    if (roomPotentialEnergy >= 700) {
+        body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE];
     }
     else if (roomPotentialEnergy >= 600) {
-        body = [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
+        body = [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE];
     }
-    else if (roomPotentialEnergy >= 450) {
-        body = [WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    else if (roomPotentialEnergy >= 500) {
+        body = [WORK, WORK, WORK, WORK, CARRY, MOVE];
     }
     else if (roomPotentialEnergy >= 350) {
         body = [WORK, WORK, WORK, MOVE];
@@ -64,7 +64,7 @@ module.exports = {
         // exactly 1 miner per energy source
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
-        let alreadySubmitted = false;
+        //let alreadySubmitted = false;
         console.log("spawning miners; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < roomEnergySources.length; num++) {
             if (!minerNumbers[num]) {
@@ -72,10 +72,11 @@ module.exports = {
                 let newEnergySourceId = roomEnergySources[num].id;
 
                 // really need at least 1 miner, and that before the energy hauler
-                let buildPriority = myConstants.creepBuildPriorityLow;
-                if (!alreadySubmitted && currentMiners.length === 0) {
-                    buildPriority = myConstants.creepBuildPriorityHigh;
-                }
+                //let buildPriority = myConstants.creepBuildPriorityLow;
+                let buildPriority = myConstants.creepBuildPriorityHigh;
+                //if (!alreadySubmitted && currentMiners.length === 0) {
+                //    buildPriority = myConstants.creepBuildPriorityHigh;
+                //}
 
                 let buildRequest = {
                     body: newBody,
@@ -89,7 +90,7 @@ module.exports = {
 
                 //console.log("submitting miner creep build request: " + buildRequest.name);
                 creepBuildQueue.submit(buildRequest, room, buildPriority);
-                alreadySubmitted = true;
+                //alreadySubmitted = true;
             }
         }
     }

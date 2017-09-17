@@ -234,7 +234,7 @@ module.exports = {
         });
         lowPriorityQueueStr += "}";
 
-        console.log("room " + room.name + " build queues: \n\t" +
+        console.log("room " + room.name + " creep build queues: \n\t" +
             criticalPriorityQueueStr + "\n\t" +
             highPriorityQueueStr + "\n\t" + 
             medPriorityQueueStr + "\n\t" +
@@ -285,7 +285,7 @@ module.exports = {
 
         let result = duplicateBuildRequest(buildThis, room);
         if (result) {
-            console.log("duplicate creep build request: " + buildThis.name);
+            //console.log("duplicate creep build request: " + buildThis.name);
             return false;
         }
 

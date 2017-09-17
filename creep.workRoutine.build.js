@@ -23,7 +23,7 @@ module.exports = {
 
         creep.say("🔨");
         if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(constructionSite, { visualizePathStyle: { stroke: "#ffffff" } });
+            creep.moveTo(constructionSite, { visualizePathStyle: { stroke: "orange" } });
         }
 
         return true;

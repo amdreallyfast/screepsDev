@@ -47,7 +47,7 @@ module.exports = {
 	--------------------------------------------------------------------------------------------*/
     scan: function (creep) {
         let room = creep.room;
-        if (room.controller.level < 3) {
+        if (room.controller.level < 2) {
             // don't even bother; the creeps are still small, can't carry much energy, and can't work fast
         }
 

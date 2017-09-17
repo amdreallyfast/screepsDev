@@ -69,7 +69,9 @@ module.exports = {
             }
             else if (haveRepairJob && creep.memory.number > 0) {
                 // stop stuff from breaking down
-                routineRepair.run(creep)
+                if (!routineRepair.run(creep)) {
+                    creepJobQueues.getRepairJobFor(creep);
+                }
             }
             else if (haveConstructionJob && creep.memory.number > 0) {
                 // roads, bypasses (gotta build bypasses), whatever

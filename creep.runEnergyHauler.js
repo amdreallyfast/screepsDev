@@ -47,6 +47,11 @@ module.exports = {
                 return;
             }
 
+            if (creep.carry.energy < (0.3 * creep.carryCapacity)) {
+                // go fill up; don't run all the way to a container with only a partial load
+                creep.memory.working = false;
+            }
+
             // have energy but still don't have a job; find somewhere to dump it
             let containers = creep.room.find(FIND_STRUCTURES, {
                 filter: function (structure) {
@@ -62,7 +67,7 @@ module.exports = {
                 let refillObject = containers[0];
                 let result = creep.transfer(refillObject, RESOURCE_ENERGY);
                 if (result === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(refillObject, { visualizePathStyle: { stroke: "#111111" } });
+                    creep.moveTo(refillObject, { visualizePathStyle: { stroke: "yellow" } });
                 }
                 return;
             }
@@ -81,7 +86,7 @@ module.exports = {
                 let refillObject = storage[0];
                 let result = creep.transfer(refillObject, RESOURCE_ENERGY);
                 if (result == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(refillObject, { visualizePathStyle: { stroke: "#222222" } });
+                    creep.moveTo(refillObject, { visualizePathStyle: { stroke: "yellow" } });
                 }
             }
 

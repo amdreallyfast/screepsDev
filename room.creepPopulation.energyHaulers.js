@@ -60,7 +60,7 @@ module.exports = {
         // just like the miners, exactly 1 miner per energy source
         let roomEnergySources = room.find(FIND_SOURCES);
         let roomPotentialEnergy = roomEnergyLevels.maximumSupportedEnergy(room);
-        let alreadySubmitted = false;
+        //let alreadySubmitted = false;
         console.log("spawning energy haulers; room " + room.name + " potential energy: " + roomPotentialEnergy);
         for (let num = 0; num < roomEnergySources.length; num++) {
             if (!haulerNumbers[num]) {
@@ -68,10 +68,11 @@ module.exports = {
                 // unlike miners, an energy hauler is not assigned to any particular energy source
 
                 // really should have at least 1 hauler
-                let buildPriority = myConstants.creepBuildPriorityLow;
-                if (!alreadySubmitted && currentEnergyHaulers.length === 0) {
-                    buildPriority = myConstants.creepBuildPriorityMed;
-                }
+                //let buildPriority = myConstants.creepBuildPriorityLow;
+                let buildPriority = myConstants.creepBuildPriorityMed;
+                //if (!alreadySubmitted && currentEnergyHaulers.length === 0) {
+                //    buildPriority = myConstants.creepBuildPriorityMed;
+                //}
 
                 let buildRequest = {
                     body: newBody,
@@ -84,7 +85,7 @@ module.exports = {
 
                 //console.log("submitting energy hauler build request: " + buildRequest.name);
                 creepBuildQueue.submit(buildRequest, room, buildPriority);
-                alreadySubmitted = true;
+                //alreadySubmitted = true;
             }
         }
     }

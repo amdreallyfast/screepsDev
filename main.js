@@ -64,6 +64,8 @@ module.exports.loop = function () {
 
     for (let roomName in Game.rooms) {
         let room = Game.rooms[roomName];
+        //delete Memory.creepBuildQueues[room.name];
+
 
         // energy level monitoring every tick
         roomEnergyLevels.update(room);

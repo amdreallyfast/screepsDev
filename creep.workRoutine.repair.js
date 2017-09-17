@@ -22,7 +22,7 @@ module.exports = {
         creep.say("🔧");
         //console.log(creep.name + ": repairing " + structure.structureType + " with " + structure.hits + "/" + structure.hitsMax);
         if (creep.repair(structure) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(structure, { visualizePathStyle: { stroke: "#ffffff" } });
+            creep.moveTo(structure, { visualizePathStyle: { stroke: "orange" } });
         }
 
         return true;
