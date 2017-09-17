@@ -117,7 +117,12 @@ let addJobTo = function (jobQueue, newJobId) {
 
 /*------------------------------------------------------------------------------------------------
 Description:
-    Pulls the next valid job from the specified queue
+    Pulls the next valid job from the specified queue.
+
+    TODO: 
+    - remove this function
+    - in the individual get*Job(creep) functions, perform creep.pos.findClosestByPath(queue) (??wouldn't I have to go through all the IDs and create an array of objects that can be searched over? isn't that expensive? and how will I identify which one it was so that it can be removed from the queue??
+
 Creator:    John Cox, 9/2017
 ------------------------------------------------------------------------------------------------*/
 let getJobFrom = function (jobQueue) {

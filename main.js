@@ -1,11 +1,14 @@
 ﻿let roomEnergyMonitoring = require("room.energyLevelMonitoring");
 
+let commonSearches = require("room.commonSearches");
+let towerRoutine = require("tower.run");
 let spawnBuildQueue = require("room.creepPopulation.buildQueue");
 let maintainMinerPopulation = require("room.creepPopulation.miners");
 let maintainWorkerPopulation = require("room.creepPopulation.workers");
 let maintainEnergyHaulerPopulation = require("room.creepPopulation.energyHaulers");
 let creepTraffic = require("room.trafficScan");
 
+// creep jobs
 let energyRefillJobs = require("jobs.fillEnergy");
 let repairJobs = require("jobs.repair");
 let constructionJobs = require("jobs.construction");
@@ -64,8 +67,12 @@ module.exports.loop = function () {
 
     for (let roomName in Game.rooms) {
         let room = Game.rooms[roomName];
-        //delete Memory.creepBuildQueues[room.name];
 
+        commonSearches.run(room);
+        Memory.commonSearches[room.name].myTowers.forEach(function (tower) {
+            console.log("hi there; this is tower");
+            towerRoutine.run(tower);
+        })
 
         // energy level monitoring every tick
         roomEnergyLevels.update(room);

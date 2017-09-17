@@ -124,6 +124,7 @@ let getFromContainer = function (creep) {
         }
     });
     if (energyContainers.length > 0) {
+        //let goToThis = cree
         let goToThis = energyContainers[0];
         creep.memory.energySourceId = goToThis.id;
         creep.memory.energySourceType = "container";
