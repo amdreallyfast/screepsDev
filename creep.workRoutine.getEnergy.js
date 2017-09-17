@@ -124,8 +124,7 @@ let getFromContainer = function (creep) {
         }
     });
     if (energyContainers.length > 0) {
-        //let goToThis = cree
-        let goToThis = energyContainers[0];
+        let goToThis = creep.pos.findClosestByPath(energyContainers);
         creep.memory.energySourceId = goToThis.id;
         creep.memory.energySourceType = "container";
         return true;
@@ -151,6 +150,7 @@ let getFromStorage = function (creep) {
         }
     });
     if (storage.length > 0) {
+        // there is only one storage structure allowed per room
         let goToThis = storage[0];
         creep.memory.energySourceId = goToThis.id;
         creep.memory.energySourceType = "storage";
@@ -167,8 +167,8 @@ Creator:    John Cox, 9/2017
 let getFromEnergyDrop = function (creep) {
     let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
     if (droppedEnergy.length > 0) {
-        let index = biggerModSmaller(droppedEnergy.length, creep.memory.number);
-        creep.memory.energySourceId = droppedEnergy[index].id;
+        let pickup = creep.pos.findClosestByPath(droppedEnergy);
+        creep.memory.energySourceId = pickup.id;
         if (!Game.getObjectById(creep.memory.energySourceId)) {
             console.log(droppedEnergy)
         }

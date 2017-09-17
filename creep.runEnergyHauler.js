@@ -64,7 +64,8 @@ module.exports = {
                 }
             });
             if (containers.length > 0) {
-                let refillObject = containers[0];
+                //let refillObject = containers[0];
+                let refillObject = creep.pos.findClosestByPath(containers);
                 let result = creep.transfer(refillObject, RESOURCE_ENERGY);
                 if (result === ERR_NOT_IN_RANGE) {
                     creep.moveTo(refillObject, { visualizePathStyle: { stroke: "yellow" } });

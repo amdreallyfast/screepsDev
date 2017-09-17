@@ -68,11 +68,11 @@ module.exports.loop = function () {
     for (let roomName in Game.rooms) {
         let room = Game.rooms[roomName];
 
-        commonSearches.run(room);
-        Memory.commonSearches[room.name].myTowers.forEach(function (tower) {
-            console.log("hi there; this is tower");
-            towerRoutine.run(tower);
-        })
+        //commonSearches.run(room);
+        //Memory.commonSearches[room.name].myTowers.forEach(function (tower) {
+        //    console.log("hi there; this is tower");
+        //    towerRoutine.run(tower);
+        //})
 
         // energy level monitoring every tick
         roomEnergyLevels.update(room);
