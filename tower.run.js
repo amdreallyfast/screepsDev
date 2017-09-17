@@ -46,19 +46,8 @@ module.exports = {
         // upgrading
         if (!isDefined(towerMemory.repairJobId)) {
             towerMemory.repairJobId = jobQueues.getRepairJob(tower.room);
-            if (isDefined(towerMemory.repairJobId)) {
-                console.log("tower now has repair job for " + Game.getObjectById(towerMemory.repairJobId));
-            }
-            else {
-                console.log("tower has bad repair job: " + towerMemory.repairJobId);
-            }
-            
         }
 
-        //let haveAttackTarget = isDefined((towerMemory.attackTargetId !== null && towerMemory.attackTargetId !== undefined);
-        //let haveHealTarget = (towerMemory.healTargetId !== null && towerMemory.healTargetId !== undefined);
-        //let haveRepairJob = (towerMemory.repairJobId !== null && towerMemory.repairJobId !== undefined);
-        
         if (isDefined(towerMemory.attackTargetId)) {
             // SHOOT HIM!
             let target = Game.getObjectById(towerMemory.attackTargetId);
@@ -88,7 +77,6 @@ module.exports = {
             let structure = Game.getObjectById(towerMemory.repairJobId);
             if (isDefined(structure)) {
                 if (structure.hits < structure.hitsMax) {
-                    console.log("tower repairing")
                     tower.repair(structure);
                 }
                 else {
