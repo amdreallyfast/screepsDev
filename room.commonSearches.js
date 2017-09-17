@@ -49,8 +49,18 @@ module.exports = {
         //    }
         //})
 
+        roomSearches.creepsThatNeedHealing = room.find(FIND_MY_CREEPS, {
+            filter: function (creep) {
+                return (creep.hits < creep.hitsMax);
+            }
+        })
+
+        roomSearches.hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
+
+
         roomSearches.myTowers = room.find(FIND_STRUCTURES, {
             filter: { structureType: STRUCTURE_TOWER }
         });
+
     }
 }

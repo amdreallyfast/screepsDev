@@ -35,10 +35,10 @@ module.exports = {
             // TODO: only turn on when some kind of "protocol" is activated that requires all hands on deck to refill the spawns
             if (creep.room.energyCapacityAvailable >= 1000) {
                 // have a number of things that need refilling, so perhaps the workers should help out
-                creepJobQueues.getRefillEnergyJobFor(creep);
+                creepJobQueues.getRefillEnergyJobForCreep(creep);
             }
-            creepJobQueues.getRepairJobFor(creep);
-            creepJobQueues.getConstructionJobFor(creep);
+            creepJobQueues.getRepairJobForCreep(creep);
+            creepJobQueues.getConstructionJobForCreep(creep);
 
             //console.log(creep.name + ": refill job is " + creep.memory.refillEnergyJobId);
         }
@@ -64,13 +64,13 @@ module.exports = {
                 if (!routineRefill.run(creep)) {
                     // refill something else
                     //console.log(creep.name + ": getting another refill job");
-                    creepJobQueues.getRefillEnergyJobFor(creep);
+                    creepJobQueues.getRefillEnergyJobForCreep(creep);
                 }
             }
             else if (haveRepairJob && creep.memory.number > 0) {
                 // stop stuff from breaking down
                 if (!routineRepair.run(creep)) {
-                    creepJobQueues.getRepairJobFor(creep);
+                    creepJobQueues.getRepairJobForCreep(creep);
                 }
             }
             else if (haveConstructionJob && creep.memory.number > 0) {

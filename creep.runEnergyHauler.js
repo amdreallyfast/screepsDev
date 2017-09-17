@@ -26,7 +26,7 @@ module.exports = {
         else if (!working && energyFull) {
             // get to work
             creep.memory.working = true;
-            creepJobQueues.getRefillEnergyJobFor(creep);
+            creepJobQueues.getRefillEnergyJobForCreep(creep);
         }
 
         if (!creep.memory.working) {
@@ -38,7 +38,7 @@ module.exports = {
             // or here: https://apps.timwhitlock.info/emoji/tables/unicode
             //console.log(creep.name + ": have refill job?" + haveRefillJob + " - " + creep.memory.refillEnergyJobId);
             if (!routineRefill.run(creep)) {
-                creepJobQueues.getRefillEnergyJobFor(creep);
+                creepJobQueues.getRefillEnergyJobForCreep(creep);
             }
 
             let haveRefillJob = (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined);
@@ -64,7 +64,6 @@ module.exports = {
                 }
             });
             if (containers.length > 0) {
-                //let refillObject = containers[0];
                 let refillObject = creep.pos.findClosestByPath(containers);
                 let result = creep.transfer(refillObject, RESOURCE_ENERGY);
                 if (result === ERR_NOT_IN_RANGE) {
@@ -84,6 +83,7 @@ module.exports = {
                 }
             });
             if (storage.length > 0) {
+                // only 1 storage structure is allowed per room, so just take it
                 let refillObject = storage[0];
                 let result = creep.transfer(refillObject, RESOURCE_ENERGY);
                 if (result == ERR_NOT_IN_RANGE) {

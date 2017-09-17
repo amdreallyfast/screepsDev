@@ -1,14 +1,17 @@
 
+let isDefined = require("utilityFunctions.isDefined");
+
+
 /*------------------------------------------------------------------------------------------------
 Description:
     Ensures that memory is defined before attempting to access it.  
 Creator:    John Cox, 9/2017
 ------------------------------------------------------------------------------------------------*/
-let ensureJobQueuesExist = function (room) {
-    if (!Memory.creepJobs) {
+let ensureMemoryExists = function (room) {
+    if (!isDefined(Memory.creepJobs)) {
         Memory.creepJobs = {};
     }
-    if (!Memory.creepJobs[room.name]) {
+    if (!isDefined(Memory.creepJobs[room.name])) {
         Memory.creepJobs[room.name] = {};
         Memory.creepJobs[room.name].construction = {
             everythingElse: {},
@@ -154,7 +157,7 @@ module.exports = {
 	Creator:    John Cox, 9/2017
 	--------------------------------------------------------------------------------------------*/
     print: function (room) {
-        ensureJobQueuesExist(room);
+        ensureMemoryExists(room);
         printConstructionJobs(room);
         printRefillEnergyJobs(room);
         printRepairJobs(room);
@@ -168,7 +171,7 @@ module.exports = {
 	--------------------------------------------------------------------------------------------*/
     submitConstructionJob: function (constructionSite) {
         let room = constructionSite.room;
-        ensureJobQueuesExist(room);
+        ensureMemoryExists(room);
         let jobs = Memory.creepJobs[room.name].construction;
         if (constructionSite.structureType === STRUCTURE_ROAD) {
             addJobTo(jobs.roads, constructionSite.id);
@@ -189,7 +192,7 @@ module.exports = {
 	--------------------------------------------------------------------------------------------*/
     submitRefillEnergyJob: function (thing) {
         let room = thing.room;
-        ensureJobQueuesExist(room);
+        ensureMemoryExists(room);
         let jobs = Memory.creepJobs[room.name].refillEnergy;
         let numRefillJobs = addJobTo(jobs, thing.id);
     },
@@ -204,7 +207,7 @@ module.exports = {
 	--------------------------------------------------------------------------------------------*/
     submitRepairJob: function (thing) {
         let room = thing.room;
-        ensureJobQueuesExist(room);
+        ensureMemoryExists(room);
         let jobs = Memory.creepJobs[room.name].repair;
         let numRepairJobs = addJobTo(jobs, thing.id);
     },
@@ -217,8 +220,8 @@ module.exports = {
         construction job.
 	Creator:    John Cox, 9/2017
 	--------------------------------------------------------------------------------------------*/
-    getConstructionJobFor: function (creep) {
-        ensureJobQueuesExist(creep.room);
+    getConstructionJobForCreep: function (creep) {
+        ensureMemoryExists(creep.room);
         //printConstructionJobs(creep.room);
 
         let jobs = Memory.creepJobs[creep.room.name].construction;
@@ -233,14 +236,13 @@ module.exports = {
 
             // if no construction jobs either, then the creep will ask for construction jobs 
             // again later; no big deal
-
-            //let structure = Game.getObjectById(newJobId);
-            //if (!structure) {
-            //    console.log(creep.name + ": getting construction job for " + structure);
-            //}
-            //else {
-            //    console.log(creep.name + ": getting construction job for " + Game.getObjectById(newJobId).structureType);
-            //}
+            let structure = Game.getObjectById(newJobId);
+            if (isDefined(structure)) {
+                console.log(creep.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
+            }
+            else {
+                console.log(creep.name + ": null repair job");
+            }
             creep.memory.constructionJobId = newJobId;
         }
     },
@@ -250,8 +252,8 @@ module.exports = {
         Self-explanatory.
 	Creator:    John Cox, 9/2017
 	--------------------------------------------------------------------------------------------*/
-    getRefillEnergyJobFor: function (creep) {
-        ensureJobQueuesExist(creep.room);
+    getRefillEnergyJobForCreep: function (creep) {
+        ensureMemoryExists(creep.room);
         //printRefillEnergyJobs(creep.room);
 
         let jobs = Memory.creepJobs[creep.room.name].refillEnergy;
@@ -260,13 +262,13 @@ module.exports = {
 
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
-            //let structure = Game.getObjectById(newJobId);
-            //if (!structure) {
-            //    console.log(creep.name + ": getting refill job for " + structure);
-            //}
-            //else {
-            //    console.log(creep.name + ": getting refill job for " + Game.getObjectById(newJobId).structureType);
-            //}
+            let structure = Game.getObjectById(newJobId);
+            if (isDefined(structure)) {
+                console.log(creep.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
+            }
+            else {
+                console.log(creep.name + ": null repair job");
+            }
             creep.memory.refillEnergyJobId = newJobId;
         }
     },
@@ -279,25 +281,25 @@ module.exports = {
         just piggyback on the creeps' job system.
 	Creator:    John Cox, 9/2017
 	--------------------------------------------------------------------------------------------*/
-    getRepairJobFor: function (thing) {
-        ensureJobQueuesExist(thing.room);
-        //printRepairJobs(thing.room);
+    getRepairJobForCreep: function (creep) {
+        ensureMemoryExists(creep.room);
+        //printRepairJobs(creep.room);
 
-        let jobs = Memory.creepJobs[thing.room.name].repair;
-        let needWork = (thing.memory.repairJobId === null || thing.memory.repairJobId === undefined);
+        let jobs = Memory.creepJobs[creep.room.name].repair;
+        let needWork = (creep.memory.repairJobId === null || creep.memory.repairJobId === undefined);
         let haveWork = (Object.keys(jobs).length > 0);
         if (needWork && haveWork) {
             let newJobId = getJobFrom(jobs);
             let structure = Game.getObjectById(newJobId);
-
-            // turrets do not have names, so do not attempt to print out an identified
-            //if (!structure) {
-            //    console.log(thing.name + ": getting repair job for " + structure);
-            //}
-            //else {
-            //    console.log(thing.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
-            //}
-            thing.memory.repairJobId = newJobId;
+            if (isDefined(structure)) {
+                console.log(creep.name + ": getting repair job for " + Game.getObjectById(newJobId).structureType);
+            }
+            else {
+                console.log(creep.name + ": null repair job");
+            }
+            creep.memory.repairJobId = newJobId;
         }
     },
+
+
 }
