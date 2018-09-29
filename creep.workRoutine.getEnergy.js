@@ -1,5 +1,6 @@
 ﻿
 let myConstants = require("myConstants");
+let isDefined = require("utilityFunctions.isDefined");
 
 
 /*------------------------------------------------------------------------------------------------
@@ -95,6 +96,9 @@ let harvestFromSource = function (creep) {
             creep.memory.energySourceType = null;
         }
     }
+    else if (result === ERR_NOT_ENOUGH_RESOURCES) {
+        // too many chefs in the kitchen; wait for the energy to come back
+    }
     else {
         console.log(creep.name + ": creepRoutine.getEnergy, harvestFromSource(...): unknown error " + result);
         creep.memory.energySourceId = null;
@@ -168,10 +172,15 @@ let getFromEnergyDrop = function (creep) {
     let droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
     if (droppedEnergy.length > 0) {
         let pickup = creep.pos.findClosestByPath(droppedEnergy);
-        creep.memory.energySourceId = pickup.id;
-        if (!Game.getObjectById(creep.memory.energySourceId)) {
-            console.log(droppedEnergy)
+        //??how could this be null? apparently it is??
+        if (isDefined(pickup)) {
+            creep.memory.energySourceId = pickup.id;
+            console.log(droppedEnergy);
         }
+        
+        //if (!Game.getObjectById(creep.memory.energySourceId)) {
+        //    console.log(droppedEnergy)
+        //}
         creep.memory.energySourceType = "dropped";
         return true;
     }

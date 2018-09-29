@@ -14,7 +14,7 @@ module.exports = {
 
         let structure = Game.getObjectById(creep.memory.repairJobId);
         if (structure.hits === structure.hitsMax) {
-            console.log(creep.name + ": " + structure.structureType + " finished repairing");
+            //console.log(creep.name + ": " + structure.structureType + " finished repairing");
             creep.memory.repairJobId = null;
             return false;
         }

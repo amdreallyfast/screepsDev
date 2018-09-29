@@ -80,6 +80,7 @@ module.exports = {
                     tower.repair(structure);
                 }
                 else {
+                    //console.log("tower: " + structure.structureType + " finished repairing");
                     towerMemory.repairJobId = null;
                 }
             }

@@ -14,10 +14,13 @@ let bodyBasedOnAvailableEnergy = function (roomPotentialEnergy) {
     let body = [];
 
     // let their move parts be 1/2 of other parts in order to encourage the building of roads
-    if (roomPotentialEnergy >= 600) {
+    if (roomPotentialEnergy >= 750) {
+        body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
+    }
+    else if (roomPotentialEnergy >= 600) {
         body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
-    if (roomPotentialEnergy >= 450) {
+    else if (roomPotentialEnergy >= 450) {
         body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
     }
     else {

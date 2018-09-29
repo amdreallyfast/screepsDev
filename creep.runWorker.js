@@ -59,9 +59,6 @@ module.exports = {
             // very useful for visual indication of what the creep is doing
             // http://unicode.org/emoji/charts/emoji-style.txt
             // or here: https://apps.timwhitlock.info/emoji/tables/unicode
-            let haveRefillJob = (creep.memory.refillEnergyJobId !== null && creep.memory.refillEnergyJobId !== undefined);
-            let haveRepairJob = (creep.memory.repairJobId !== null && creep.memory.repairJobId !== undefined);
-            let haveConstructionJob = (creep.memory.constructionJobId !== null && creep.memory.constructionJobId != undefined);
 
             // Note: The "bootstrapper" creep is the first creep spawned and is responsible for 
             // refilling the spawn long enough to start spawning other creeps.  If there is 

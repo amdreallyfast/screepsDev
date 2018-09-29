@@ -233,10 +233,10 @@ module.exports = {
                 newJobId = getJobFrom(jobs.roads);
             }
 
-            let structure = Game.getObjectById(newJobId);
-            if (isDefined(structure)) {
-                console.log("getting construction job for " + Game.getObjectById(newJobId).structureType);
-            }
+            //let structure = Game.getObjectById(newJobId);
+            //if (isDefined(structure)) {
+            //    console.log("getting construction job for " + Game.getObjectById(newJobId).structureType);
+            //}
             //else {
             //    console.log("null construction job");
             //}
@@ -260,10 +260,10 @@ module.exports = {
         let haveWork = (Object.keys(jobs).length > 0);
         if (haveWork) {
             let newJobId = getJobFrom(jobs);
-            let structure = Game.getObjectById(newJobId);
-            if (isDefined(structure)) {
-                console.log("getting refill job for " + Game.getObjectById(newJobId).structureType);
-            }
+            //let structure = Game.getObjectById(newJobId);
+            //if (isDefined(structure)) {
+            //    console.log("getting refill job for " + Game.getObjectById(newJobId).structureType);
+            //}
             //else {
             //    console.log("null refill job");
             //}
@@ -290,10 +290,10 @@ module.exports = {
         let haveWork = (Object.keys(jobs).length > 0);
         if (haveWork) {
             let newJobId = getJobFrom(jobs);
-            let structure = Game.getObjectById(newJobId);
-            if (isDefined(structure)) {
-                console.log("getting repair job for " + Game.getObjectById(newJobId).structureType);
-            }
+            //let structure = Game.getObjectById(newJobId);
+            //if (isDefined(structure)) {
+            //    console.log("getting repair job for " + Game.getObjectById(newJobId).structureType);
+            //}
             //else {
             //    console.log("null repair job");
             //}

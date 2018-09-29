@@ -79,6 +79,9 @@ module.exports = {
             else if (result === ERR_BUSY) {
                 // still being spawned; ignore
             }
+            else if (result === ERR_NOT_ENOUGH_RESOURCES) {
+                // ran out; perhaps some workers were also harvest before the miner got to it
+            }
             else {
                 // uh oh; problem
                 creep.say("❔");
